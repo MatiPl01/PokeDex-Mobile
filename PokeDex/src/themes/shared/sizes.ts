@@ -1,7 +1,7 @@
 export default {
   xs: '8px',
-  s: '16px',
-  m: '32px',
-  l: '64px',
-  xl: '128px',
+  sm: '16px',
+  md: '32px',
+  lg: '64px',
+  xl: '128px'
 };

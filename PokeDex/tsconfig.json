@@ -7,6 +7,9 @@
     /* Completeness */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
+  "files": [
+    "src/themes/styled.d.ts"
+  ],
   "paths": {
     "@assets/*": [
       "assets/*"

@@ -3,29 +3,37 @@ import { ThemeAction } from './theme.actions';
 import { ThemeActionType, ThemeName, ThemeMode } from './theme.types';
 import defaultTheme from '../../themes/default';
 import oceanTheme from '../../themes/ocean';
+import Theme from '../../themes/types';
 
 export type ThemeState = {
-  readonly theme: any; // TODO - create theme object type
+  readonly theme: Theme;
   readonly name: ThemeName;
   readonly mode: ThemeMode;
 };
 
 const INITIAL_STATE: ThemeState = {
-  theme: defaultTheme[ThemeMode.LIGHT], // TODO - set based on the system preference
+  theme: createTheme(defaultTheme, ThemeMode.LIGHT),
   name: ThemeName.DEFAULT,
-  mode: ThemeMode.LIGHT // TODO - set based on the system preference
+  mode: ThemeMode.LIGHT
 };
 
-// TODO - add return type (add theme type declarations)
 const chooseTheme = (name: ThemeName, mode: ThemeMode): ThemeState => {
   let themeMode = ThemeMode.LIGHT;
   if (Object.values(ThemeMode).includes(mode)) themeMode = mode;
 
   switch (name) {
     case ThemeName.OCEAN:
-      return { mode: themeMode, name, theme: createTheme(oceanTheme, themeMode) };
+      return {
+        mode: themeMode,
+        name,
+        theme: createTheme(oceanTheme, themeMode)
+      };
     default:
-      return { mode: themeMode, name, theme: createTheme(defaultTheme, themeMode) };
+      return {
+        mode: themeMode,
+        name,
+        theme: createTheme(defaultTheme, themeMode)
+      };
   }
 };
 

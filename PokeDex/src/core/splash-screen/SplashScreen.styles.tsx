@@ -1,11 +1,28 @@
-import styled from 'styled-components/native';
 import { Animated } from 'react-native';
+import styled from 'styled-components/native';
 
-export const SplashScreenWrapper = styled.View`
-  flex: 1;
-  background-color: red;
+// TODO - add theme types in styled components
+const Overlay = styled(Animated.View)`
+  height: 100%;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.colors.accent.primary};
 `;
 
-export const AnimatedStatusBar = styled(Animated.View)`
-  display: flex;
+const View = styled.View`
+  position: absolute;
 `;
+
+const ContentContainer = styled(View)`
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+`;
+
+export const AnimatedOverlay = Animated.createAnimatedComponent(Overlay);
+
+export const AnimatedView = Animated.createAnimatedComponent(View);
+
+export const AnimatedContentContainer =
+  Animated.createAnimatedComponent(ContentContainer);

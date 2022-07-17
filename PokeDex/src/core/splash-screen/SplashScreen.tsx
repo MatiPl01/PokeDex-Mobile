@@ -1,132 +1,122 @@
 import React, { useEffect, useRef, type PropsWithChildren } from 'react';
-import { Animated, Dimensions, Platform, View } from 'react-native';
+import { Animated, Dimensions, Platform, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PokeBall from '@assets/svg/poke-ball.svg';
 import Logo from '@assets/svg/logo.svg';
 
-import { SplashScreenWrapper, AnimatedStatusBar } from './SplashScreen.styles';
+import {
+  AnimatedContentContainer,
+  AnimatedOverlay,
+  AnimatedView
+} from './SplashScreen.styles';
 
 type SplashScreenProps = PropsWithChildren;
 
-const SplashScreen: React.FC<SplashScreenProps> = () => {
+const SCREEN_HEIGHT =
+  Platform.OS === 'android' && Platform.Version > 26
+    ? Dimensions.get('screen').height - (StatusBar.currentHeight || 0)
+    : Dimensions.get('window').height;
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const LOGO_BAR_HEIGHT = 65;
+const LOGO_BAR_PADDING_X = 5;
+const LOGO_BAR_PADDING_Y = 5;
+const POKE_BALL_SIZE = SCREEN_WIDTH / 2;
+const FINAL_POKE_BALL_SIZE = LOGO_BAR_HEIGHT - 2 * LOGO_BAR_PADDING_Y;
+const LOGO_HEIGHT = 100;
+const FINAL_LOGO_HEIGHT = FINAL_POKE_BALL_SIZE;
+
+const SplashScreen: React.FC<SplashScreenProps> = ({ children }) => {
   const edges = useSafeAreaInsets();
-  const startAnimation = useRef(new Animated.Value(0)).current;
-  const scaleLogo = useRef(new Animated.Value(1)).current;
-  const scaleTitle = useRef(new Animated.Value(1)).current;
-  const moveIcon = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
-  const moveLogo = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  const overlayTranslateY = useRef(new Animated.Value(0)).current;
+  const contentTranslateY = useRef(
+    new Animated.Value(SCREEN_HEIGHT - LOGO_BAR_HEIGHT - edges.top)
+  ).current;
+  const pokeBallPosition = useRef(
+    new Animated.ValueXY({ x: 0, y: -POKE_BALL_SIZE / 2 })
+  ).current;
+  const pokeBallScale = useRef(new Animated.Value(1)).current;
+  const logoPosition = useRef(
+    new Animated.ValueXY({ x: 0, y: LOGO_HEIGHT / 2 })
+  ).current;
+  const logoScale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     setTimeout(() => {
       Animated.parallel([
-        Animated.timing(startAnimation, {
-          toValue:
-            -Dimensions.get('window').height +
-            (Platform.OS === 'ios' ? edges.top : 0) +
-            65,
+        Animated.timing(overlayTranslateY, {
+          toValue: -SCREEN_HEIGHT + LOGO_BAR_HEIGHT + edges.top,
           useNativeDriver: true
         }),
-        Animated.timing(scaleLogo, {
-          toValue: 0.3,
+        Animated.timing(contentTranslateY, {
+          toValue: 0,
           useNativeDriver: true
         }),
-        Animated.timing(scaleTitle, {
-          toValue: 0.8,
-          useNativeDriver: true
-        }),
-        Animated.timing(moveIcon, {
+        Animated.timing(pokeBallPosition, {
           toValue: {
-            x: -Dimensions.get('window').width / 2 + 40,
-            y:
-              Dimensions.get('window').height / 2 -
-              (Platform.OS === 'ios' ? 27.5 : 5)
+            x:
+              -SCREEN_WIDTH / 2 + FINAL_POKE_BALL_SIZE / 2 + LOGO_BAR_PADDING_X,
+            y: SCREEN_HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
           },
           useNativeDriver: true
         }),
-        Animated.timing(moveLogo, {
+        Animated.timing(pokeBallScale, {
+          toValue: FINAL_POKE_BALL_SIZE / POKE_BALL_SIZE,
+          useNativeDriver: true
+        }),
+        Animated.timing(logoPosition, {
           toValue: {
             x: 0,
-            y:
-              Dimensions.get('window').height / 2 -
-              (Platform.OS === 'ios' ? 25 : 0) -
-              145
+            y: SCREEN_HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
           },
+          useNativeDriver: true
+        }),
+        Animated.timing(logoScale, {
+          toValue: FINAL_LOGO_HEIGHT / LOGO_HEIGHT,
           useNativeDriver: true
         })
       ]).start();
     }, 500);
-  });
+  }, []);
 
   return (
-    // <>
-    //   <Animated.View
-    //     style={{
-    //       height: "100%",
-    //       backgroundColor: '#8C0004',
-    //       transform: [
-    //         // {
-    //         //   translateY: startAnimation
-    //         // }
-    //       ]
-    //     }}
-    //   >
-    //     <View
-    //       style={{
-    //         flex: 1,
-    //         alignItems: 'center',
-    //         justifyContent: 'center'
-    //       }}
-    //     >
-    //       <Animated.View
-    //         style={{
-    //           transform: [
-    //             { translateX: moveIcon.x },
-    //             { translateY: moveIcon.y },
-    //             { scale: scaleLogo }
-    //           ]
-    //         }}
-    //       >
-    //         <PokeBall width={200} height={200} />
-    //       </Animated.View>
-    //       <Animated.View
-    //         style={{
-    //           transform: [
-    //             { translateX: moveLogo.x },
-    //             { translateY: moveLogo.y },
-    //             { scale: scaleTitle }
-    //           ]
-    //         }}
-    //       >
-    //         <Logo width={200} height={75} />
-    //       </Animated.View>
-    //     </View>
-    //   </Animated.View>
-
-    //   <Animated.View
-    //     style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-    //   ></Animated.View>
-    // </>
-
-    <SplashScreenWrapper></SplashScreenWrapper>
-
-    // <View
-    //   style={{
-    //     flex: 1
-    //   }}
-    // >
-    //   <Animated.View
-    //     style={{
-    //       flexBasis: Dimensions.get('window').height,
-    //       backgroundColor: 'red'
-    //     }}
-    //   ></Animated.View>
-    //   <Animated.View style={{
-    //     flexGrow: 1,
-    //     backgroundColor: 'blue'
-    //   }}>
-
-    //   </Animated.View>
-    // </View>
+    <>
+      <AnimatedOverlay
+        style={{
+          transform: [{ translateY: overlayTranslateY }]
+        }}
+      >
+        <AnimatedView
+          style={{
+            transform: [
+              { translateX: pokeBallPosition.x },
+              { translateY: pokeBallPosition.y },
+              { scale: pokeBallScale }
+            ]
+          }}
+        >
+          <PokeBall height={POKE_BALL_SIZE} width={POKE_BALL_SIZE} />
+        </AnimatedView>
+        <AnimatedView
+          style={{
+            transform: [
+              { translateX: logoPosition.x },
+              { translateY: logoPosition.y },
+              { scale: logoScale }
+            ]
+          }}
+        >
+          <Logo height={LOGO_HEIGHT} width={SCREEN_WIDTH} />
+        </AnimatedView>
+      </AnimatedOverlay>
+      <AnimatedContentContainer
+        style={{
+          paddingTop: LOGO_BAR_HEIGHT + edges.top,
+          transform: [{ translateY: contentTranslateY }]
+        }}
+      >
+        {children}
+      </AnimatedContentContainer>
+    </>
   );
 };
 

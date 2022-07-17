@@ -1,10 +1,10 @@
-export const fontWeights = {
+export const fontWeight = {
   regular: 400,
   medium: 500,
   bold: 700
 };
 
-export const fontSizes = {
+export const fontSize = {
   caption: '12px',
   button: '14px',
   body: '16px',

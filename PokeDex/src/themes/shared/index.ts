@@ -1,15 +1,15 @@
-import colors from './colors';
-import { fontSizes, fontWeights } from './fonts';
-import shadows from './shadows';
-import sizes from './sizes';
-import { space, lineHeights } from './spacing';
+import color from './colors';
+import { fontSize, fontWeight } from './fonts';
+import shadow from './shadows';
+import size from './sizes';
+import { space, lineHeight } from './spacing';
 
 export default {
-  colors,
-  fontSizes,
-  fontWeights,
-  shadows,
-  sizes,
+  color,
+  fontSize,
+  fontWeight,
+  shadow,
+  size,
   space,
-  lineHeights,
+  lineHeight
 };
