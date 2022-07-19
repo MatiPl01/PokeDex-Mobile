@@ -3,11 +3,11 @@ import { StatusBar, useColorScheme } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import ThemeTestScreen from './src/screens/theme-test/ThemeTestScreen';
 import { selectTheme, selectThemeMode } from './src/store/theme/theme.selector';
 import { ThemeMode } from './src/store/theme/theme.types';
-import SplashScreen from './src/core/splash-screen/SplashScreen';
 import { setThemeMode } from './src/store/theme/theme.actions';
+import { NavigationContainer } from '@react-navigation/native';
+import DrawerNavigation from './src/core/navigation/DrawerNavigation';
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -29,9 +29,9 @@ const App: React.FC = () => {
       />
       <SafeAreaProvider>
         <StatusBar backgroundColor="transparent" translucent />
-        <SplashScreen>
-          <ThemeTestScreen />
-        </SplashScreen>
+        <NavigationContainer>
+          <DrawerNavigation />
+        </NavigationContainer>
       </SafeAreaProvider>
     </ThemeProvider>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, type PropsWithChildren } from 'react';
 import { Animated, Dimensions, Platform, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// TODO - fix svg these imports
 import PokeBall from '@assets/svg/poke-ball.svg';
 import Logo from '@assets/svg/logo.svg';
 
@@ -53,8 +54,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ children }) => {
         }),
         Animated.timing(pokeBallPosition, {
           toValue: {
-            x:
-              -SCREEN_WIDTH / 2 + FINAL_POKE_BALL_SIZE / 2 + LOGO_BAR_PADDING_X,
+            x: SCREEN_WIDTH / 2 - FINAL_POKE_BALL_SIZE / 2 - LOGO_BAR_PADDING_X,
             y: SCREEN_HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
           },
           useNativeDriver: true
