@@ -1,7 +1,6 @@
 import { Animated } from 'react-native';
 import styled from 'styled-components/native';
 
-// TODO - add theme types in styled components
 const Overlay = styled(Animated.View)`
   height: 100%;
   z-index: 100;

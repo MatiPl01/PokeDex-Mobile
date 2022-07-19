@@ -11,7 +11,9 @@ import {
   AnimatedView
 } from './SplashScreen.styles';
 
-type SplashScreenProps = PropsWithChildren;
+type SplashScreenProps = PropsWithChildren<{
+  menuToggle: React.ReactNode;
+}>;
 
 const SCREEN_HEIGHT =
   Platform.OS === 'android' && Platform.Version > 26
@@ -25,8 +27,12 @@ const POKE_BALL_SIZE = SCREEN_WIDTH / 2;
 const FINAL_POKE_BALL_SIZE = LOGO_BAR_HEIGHT - 2 * LOGO_BAR_PADDING_Y;
 const LOGO_HEIGHT = 100;
 const FINAL_LOGO_HEIGHT = FINAL_POKE_BALL_SIZE;
+const MENU_TOGGLE_SIZE = FINAL_POKE_BALL_SIZE;
 
-const SplashScreen: React.FC<SplashScreenProps> = ({ children }) => {
+const SplashScreen: React.FC<SplashScreenProps> = ({
+  children,
+  menuToggle
+}) => {
   const edges = useSafeAreaInsets();
   const overlayTranslateY = useRef(new Animated.Value(0)).current;
   const contentTranslateY = useRef(
@@ -40,6 +46,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ children }) => {
     new Animated.ValueXY({ x: 0, y: LOGO_HEIGHT / 2 })
   ).current;
   const logoScale = useRef(new Animated.Value(1)).current;
+  const menuToggleTranslateX = useRef(
+    new Animated.Value(-MENU_TOGGLE_SIZE)
+  ).current;
 
   useEffect(() => {
     setTimeout(() => {
@@ -72,6 +81,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ children }) => {
         }),
         Animated.timing(logoScale, {
           toValue: FINAL_LOGO_HEIGHT / LOGO_HEIGHT,
+          useNativeDriver: true
+        }),
+        Animated.timing(menuToggleTranslateX, {
+          delay: 500,
+          duration: 500,
+          toValue: LOGO_BAR_PADDING_X,
           useNativeDriver: true
         })
       ]).start();
@@ -107,6 +122,21 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ children }) => {
         >
           <Logo height={LOGO_HEIGHT} width={SCREEN_WIDTH} />
         </AnimatedView>
+        <AnimatedView
+          style={{
+            height: MENU_TOGGLE_SIZE,
+            width: MENU_TOGGLE_SIZE,
+            top:
+              SCREEN_HEIGHT -
+              MENU_TOGGLE_SIZE / 2 +
+              LOGO_BAR_PADDING_Y -
+              edges.top,
+            left: 0,
+            transform: [{ translateX: menuToggleTranslateX }]
+          }}
+        >
+          {menuToggle}
+        </AnimatedView>
       </AnimatedOverlay>
       <AnimatedContentContainer
         style={{
@@ -121,3 +151,4 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ children }) => {
 };
 
 export default SplashScreen;
+export { MENU_TOGGLE_SIZE as toggleMenuSize };
