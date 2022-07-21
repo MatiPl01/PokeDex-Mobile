@@ -23,5 +23,5 @@ export const AnimatedBar = styled(Animated.View)`
   height: 3px;
   border-radius: 5px;
   background-color: white;
-  transform: rotate(20deg);
+  ${({ theme }) => theme.shadow.strong.md};
 `;

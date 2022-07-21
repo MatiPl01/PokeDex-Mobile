@@ -1,17 +1,17 @@
-import colors from '../../shared/colors';
+import color from '../../shared/colors';
 
 export default {
   accent: {
     primary: '#DF1818'
   },
   text: {
-    primary: colors.black,
-    secondary: colors.gray.dark[1],
-    tertiary: colors.gray.dark[2]
+    primary: color.black,
+    secondary: color.gray.dark[1],
+    tertiary: color.gray.dark[2]
   },
   background: {
-    primary: colors.white,
-    secondary: colors.gray.light[1],
-    tertiary: colors.gray.light[2]
+    primary: color.white,
+    secondary: color.gray.light[1],
+    tertiary: color.gray.light[2]
   }
 };

@@ -1,5 +1,5 @@
-import colors from './colors';
+import color from './colors';
 
 export default {
-  colors
+  color
 };

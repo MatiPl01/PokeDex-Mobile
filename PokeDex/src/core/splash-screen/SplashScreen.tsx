@@ -4,8 +4,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // TODO - fix svg these imports
 import PokeBall from '@assets/svg/poke-ball.svg';
 import Logo from '@assets/svg/logo.svg';
-
 import {
+  InnerWrapper,
   AnimatedContentContainer,
   AnimatedOverlay,
   AnimatedView
@@ -15,7 +15,7 @@ type SplashScreenProps = PropsWithChildren<{
   menuToggle: React.ReactNode;
 }>;
 
-const SCREEN_HEIGHT =
+export const SCREEN_HEIGHT =
   Platform.OS === 'android' && Platform.Version > 26
     ? Dimensions.get('screen').height - (StatusBar.currentHeight || 0)
     : Dimensions.get('window').height;
@@ -95,57 +95,59 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
 
   return (
     <>
-      <AnimatedOverlay
-        style={{
-          transform: [{ translateY: overlayTranslateY }]
-        }}
-      >
-        <AnimatedView
+      <InnerWrapper height={SCREEN_HEIGHT}>
+        <AnimatedOverlay
           style={{
-            transform: [
-              { translateX: pokeBallPosition.x },
-              { translateY: pokeBallPosition.y },
-              { scale: pokeBallScale }
-            ]
+            transform: [{ translateY: overlayTranslateY }]
           }}
         >
-          <PokeBall height={POKE_BALL_SIZE} width={POKE_BALL_SIZE} />
-        </AnimatedView>
-        <AnimatedView
+          <AnimatedView
+            style={{
+              transform: [
+                { translateX: pokeBallPosition.x },
+                { translateY: pokeBallPosition.y },
+                { scale: pokeBallScale }
+              ]
+            }}
+          >
+            <PokeBall height={POKE_BALL_SIZE} width={POKE_BALL_SIZE} />
+          </AnimatedView>
+          <AnimatedView
+            style={{
+              transform: [
+                { translateX: logoPosition.x },
+                { translateY: logoPosition.y },
+                { scale: logoScale }
+              ]
+            }}
+          >
+            <Logo height={LOGO_HEIGHT} width={SCREEN_WIDTH} />
+          </AnimatedView>
+          <AnimatedView
+            style={{
+              height: MENU_TOGGLE_SIZE,
+              width: MENU_TOGGLE_SIZE,
+              top:
+                SCREEN_HEIGHT -
+                MENU_TOGGLE_SIZE / 2 +
+                LOGO_BAR_PADDING_Y -
+                edges.top,
+              left: 0,
+              transform: [{ translateX: menuToggleTranslateX }]
+            }}
+          >
+            {menuToggle}
+          </AnimatedView>
+        </AnimatedOverlay>
+        <AnimatedContentContainer
           style={{
-            transform: [
-              { translateX: logoPosition.x },
-              { translateY: logoPosition.y },
-              { scale: logoScale }
-            ]
+            paddingTop: LOGO_BAR_HEIGHT + edges.top,
+            transform: [{ translateY: contentTranslateY }]
           }}
         >
-          <Logo height={LOGO_HEIGHT} width={SCREEN_WIDTH} />
-        </AnimatedView>
-        <AnimatedView
-          style={{
-            height: MENU_TOGGLE_SIZE,
-            width: MENU_TOGGLE_SIZE,
-            top:
-              SCREEN_HEIGHT -
-              MENU_TOGGLE_SIZE / 2 +
-              LOGO_BAR_PADDING_Y -
-              edges.top,
-            left: 0,
-            transform: [{ translateX: menuToggleTranslateX }]
-          }}
-        >
-          {menuToggle}
-        </AnimatedView>
-      </AnimatedOverlay>
-      <AnimatedContentContainer
-        style={{
-          paddingTop: LOGO_BAR_HEIGHT + edges.top,
-          transform: [{ translateY: contentTranslateY }]
-        }}
-      >
-        {children}
-      </AnimatedContentContainer>
+          {children}
+        </AnimatedContentContainer>
+      </InnerWrapper>
     </>
   );
 };

@@ -50,6 +50,7 @@ type HamburgerIconProps = {
   navigation: DrawerNavigationHelpers;
 };
 
+// TODO - maybe animate this icon based on the drawer progress
 const HamburgerIcon: React.FC<HamburgerIconProps> = ({ navigation }) => {
   const isDrawerOpen = useDrawerStatus() === 'open';
   const animatedValues: AnimatedValues = Object.fromEntries(

@@ -1,35 +1,32 @@
-const color = {
-  soft: 'rgba(0, 0, 0, .15)',
-  normal: 'rgba(0, 0, 0, .25)',
-  strong: 'rgba(0, 0, 0, .5)'
-};
+import { css } from 'styled-components';
+import colors from './colors';
 
-const size = {
+const radius = {
   xs: '1.5px',
   sm: '5px',
-  md: '15px',
-  lg: '30px'
+  md: '10px',
+  lg: '15px'
+};
+
+const createShadow = (radius: string, opacity: number, color: string) => {
+  return css`
+    shadow-radius: ${radius};
+    shadow-opacity: ${opacity};
+    shadow-color: ${color};
+  `;
+};
+
+const createShadowGroup = (opacity: number) => {
+  return {
+    xs: createShadow(radius.xs, opacity, colors.black),
+    sm: createShadow(radius.sm, opacity, colors.black),
+    md: createShadow(radius.md, opacity, colors.black),
+    lg: createShadow(radius.lg, opacity, colors.black)
+  };
 };
 
 export default {
-  soft: {
-    xs: `0 0 ${size.xs} ${color.soft}`,
-    sm: `0 0 ${size.sm} ${color.soft}`,
-    md: `0 0 ${size.md} ${color.soft}`,
-    lg: `0 0 ${size.lg} ${color.soft}`
-  },
-
-  medium: {
-    xs: `0 0 ${size.xs} ${color.normal}`,
-    sm: `0 0 ${size.sm} ${color.normal}`,
-    md: `0 0 ${size.md} ${color.normal}`,
-    lg: `0 0 ${size.lg} ${color.normal}`
-  },
-
-  strong: {
-    xs: `0 0 ${size.xs} ${color.strong}`,
-    sm: `0 0 ${size.sm} ${color.strong}`,
-    md: `0 0 ${size.md} ${color.strong}`,
-    lg: `0 0 ${size.lg} ${color.strong}`
-  }
+  soft: createShadowGroup(0.15),
+  medium: createShadowGroup(0.25),
+  strong: createShadowGroup(0.5)
 };

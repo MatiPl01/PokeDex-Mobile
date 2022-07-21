@@ -5,7 +5,7 @@ import {
   selectThemeMode,
   selectThemeName
 } from '../../store/theme/theme.selector';
-import { ThemeMode, ThemeName } from '../../store/theme/theme.types';
+import { ThemeName, ThemeMode } from '../../store/theme/theme.types';
 import { setTheme, setThemeMode } from '../../store/theme/theme.actions';
 
 const ThemeTestScreen: React.FC = () => {
@@ -43,18 +43,20 @@ const ThemeTestScreen: React.FC = () => {
 
       <Button onPress={switchTheme}>
         <ButtonText>
-          Change to {themeName === ThemeName.DEFAULT ? 'ocean' : 'default'} theme
+          Change to {themeName === ThemeName.DEFAULT ? 'ocean' : 'default'}{' '}
+          theme
         </ButtonText>
       </Button>
     </Container>
   );
 };
 
+// TODO - fix theme types not being recognized by TypeScript
 const Container = styled.View`
   flex: 1;
   align-items: center;
   justify-content: center;
-  background-color: ${({ theme }) => theme.colors.background.primary};
+  background-color: ${({ theme }) => theme.color.background.primary};
 `;
 
 const TextContainer = styled.View`
@@ -64,14 +66,14 @@ const TextContainer = styled.View`
 `;
 
 const Text = styled.Text`
-  color: ${({ theme }) => theme.colors.text.primary};
+  color: ${({ theme }) => theme.color.text.primary};
   font-size: 24px;
   font-weight: 600;
 `;
 
 const Button = styled.TouchableOpacity`
   margin: 32px 0;
-  background-color: ${({ theme }) => theme.colors.background.tertiary};
+  background-color: ${({ theme }) => theme.color.background.tertiary};
   padding: 10px 32px;
   border-radius: 5px;
 `;
@@ -79,7 +81,7 @@ const Button = styled.TouchableOpacity`
 const ButtonText = styled.Text`
   font-size: 15px;
   font-weight: 500;
-  color: ${({ theme }) => theme.colors.text.secondary};
+  color: ${({ theme }) => theme.color.text.secondary};
 `;
 
 export default ThemeTestScreen;
