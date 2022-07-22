@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   selectThemeMode,
   selectThemeName
-} from '../../store/theme/theme.selector';
-import { ThemeName, ThemeMode } from '../../store/theme/theme.types';
-import { setTheme, setThemeMode } from '../../store/theme/theme.actions';
+} from '@store/theme/theme.selector';
+import { ThemeName, ThemeMode } from '@store/theme/theme.types';
+import { setTheme, setThemeMode } from '@store/theme/theme.actions';
 import { catchAsync } from '@utils/errors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

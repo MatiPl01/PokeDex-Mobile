@@ -7,8 +7,8 @@ type SetThemeMode = ActionWithPayload<ThemeActionType.SET_MODE, ThemeMode>;
 
 export type ThemeAction = SetTheme | SetThemeMode;
 
-export const setTheme = (theme: ThemeName) =>
+export const setTheme = (theme: ThemeName): SetTheme =>
   createAction(ThemeActionType.SET_THEME, theme);
 
-export const setThemeMode = (mode: ThemeMode) =>
+export const setThemeMode = (mode: ThemeMode): SetThemeMode =>
   createAction(ThemeActionType.SET_MODE, mode);

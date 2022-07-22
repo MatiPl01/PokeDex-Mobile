@@ -17,7 +17,7 @@ module.exports = {
           // This needs to be mirrored in tsconfig.json
           '@assets': './assets',
           '@components': './src/components',
-          '@config': './src/config',
+          '@config': './src/config.ts',
           '@core': './src/core',
           '@routes': './src/routes',
           '@screens': './src/screens',
