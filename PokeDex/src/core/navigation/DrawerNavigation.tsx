@@ -20,7 +20,7 @@ import FavoritesScreen from '../../screens/favorites/FavoritesScreen';
 import MapScreen from '../../screens/map/MapScreen';
 import SettingsScreen from '../../screens/settings/SettingsScreen';
 import SplashScreen from '../splash-screen/SplashScreen';
-import ThemeTestScreen from '../../screens/theme-test/ThemeTestScreen';
+import ThemeTestScreen from '../../screens/settings/ThemeTestScreen';
 import HamburgerIcon from './hamburger-icon/HamburgerIcon';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 import {
@@ -95,7 +95,6 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
               headerLeft: () => null
             }}
           >
-            <Stack.Screen name="Test" component={ThemeTestScreen} />
             <Stack.Screen name="Pokemon" component={PokemonScreen} />
             <Stack.Screen name="Favorites" component={FavoritesScreen} />
             <Stack.Screen name="Map" component={MapScreen} />
@@ -111,7 +110,6 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
   navigation
 }) => {
   const theme = useSelector(selectTheme);
-  // const themeMode = useSelector(selectThemeMode);
   const labelStyle = { marginLeft: -16, color: theme.color.text.primary };
   const iconProps = { size: 20, color: theme.color.text.primary };
 
@@ -122,7 +120,6 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
       }}
     >
       <Logo height={75} width={175} />
-      <DrawerItem label="Test" onPress={() => navigation.navigate('Test')} />
       <DrawerItem
         label="Pokemon"
         onPress={() => navigation.navigate('Pokemon')}
@@ -154,7 +151,7 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
 const DrawerNavigation: React.FC = () => (
   <DrawerWrapper>
     <Drawer.Navigator
-      initialRouteName="Test" // TODO - replace this route with Pokemon route
+      initialRouteName="Pokemon"
       screenOptions={{
         headerShown: false,
         drawerType: 'slide',

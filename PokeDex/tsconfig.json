@@ -5,14 +5,45 @@
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
 
     /* Completeness */
-    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
+    "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
+    "strict": true,
+    "baseUrl": "./",
+    "paths": {
+      "@assets/*": [
+        "assets/*"
+      ],
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@config/*": [
+        "src/config/*"
+      ],
+      "@core/*": [
+        "src/core/*"
+      ],
+      "@routes/*": [
+        "src/routes/*"
+      ],
+      "@screens/*": [
+        "src/screens/*"
+      ],
+      "@services/*": [
+        "src/services/*"
+      ],
+      "@store/*": [
+        "src/store/*"
+      ],
+      "@themes/*": [
+        "src/themes/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ]
+    }
   },
+  "include": ["./src"],
+  "exclude": ["node_modules"],
   "files": [
     "src/themes/styled.d.ts"
   ],
-  "paths": {
-    "@assets/*": [
-      "assets/*"
-    ]
-  }
 }
