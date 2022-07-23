@@ -47,7 +47,7 @@ const useAnimatedToggleStyles = createAnimatedStyles({
     width: [0, SEARCH_WRAPPER_WIDTH]
   },
   button: {
-    transform: [{ translateX: [SEARCH_ICON_SIZE / 2, 0] }]
+    right: [-SEARCH_ICON_SIZE / 2, 0]
   }
 });
 
@@ -97,6 +97,7 @@ const SearchBar: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [inputText, setInputText] = useState('');
   const [displayEraseIcon, setDisplayEraseIcon] = useState(false);
+  const [focusStylesEnabled, setFocusStylesEnabled] = useState(false);
   // Component references
   const textInputRef = useRef<TextInput | null>(null);
   // Animation progress values
@@ -129,6 +130,22 @@ const SearchBar: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    toggleProgress.value = withTiming(+isOpen, {
+      duration: 500,
+      easing: Easing.bezier(0.6, 0, 0.3, 1)
+    });
+    toggleIconProgress.value = withTiming(+isOpen, {
+      duration: 500,
+      easing: Easing.bezier(0.4, 0, 0.9, 0.65)
+    });
+    if (!isOpen) {
+      textInputRef.current?.blur();
+      setIsFocused(false);
+    }
+    if (!focusStylesEnabled) setFocusStylesEnabled(true);
+  }, [isOpen]);
+
+  useEffect(() => {
     animateOnFocusChange();
   }, [isFocused]);
 
@@ -139,22 +156,6 @@ const SearchBar: React.FC = () => {
   useEffect(() => {
     animateEraseIcon();
   }, [displayEraseIcon]);
-
-  const toggleSearchBar = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen) {
-      textInputRef.current?.blur();
-      setIsFocused(false);
-    }
-    toggleProgress.value = withTiming(+isOpen, {
-      duration: 500,
-      easing: Easing.bezier(0.6, 0, 0.3, 1)
-    });
-    toggleIconProgress.value = withTiming(+isOpen, {
-      duration: 500,
-      easing: Easing.bezier(0.4, 0, 0.9, 0.65)
-    });
-  };
 
   const animateOnFocusChange = () => {
     focusProgress.value = withTiming(+isFocused, {
@@ -178,6 +179,8 @@ const SearchBar: React.FC = () => {
     }
   };
 
+  const toggleSearchBar = () => setIsOpen(!isOpen);
+
   const handleInputChange = (value: string) => {
     setInputText(value);
     // TODO - update and display search suggestions
@@ -186,36 +189,39 @@ const SearchBar: React.FC = () => {
   return (
     <OuterWrapper
       style={[
-        animatedSlideStyle,
-        animatedFocusStyles.wrapper,
-        animatedToggleStyles.wrapper
+        focusStylesEnabled && animatedFocusStyles.wrapper,
+        animatedToggleStyles.wrapper,
+        animatedSlideStyle
       ]}
     >
       <SearchButtonWrapper
-        style={[animatedToggleStyles.button, animatedFocusButtonStyles.button]}
+        style={[
+          focusStylesEnabled && animatedFocusButtonStyles.button,
+          animatedToggleStyles.button
+        ]}
         displayShadow={!isFocused}
       >
         <SearchButton onPress={handleButtonClick}>
           <IconWrapper style={animatedToggleIconStyles.search}>
             <Fontisto name="search" size={25} color={iconColor} />
           </IconWrapper>
-          {(!inputText || !isFocused) && (
-            <IconWrapper
-              style={[
-                animatedFocusIconStyles.close,
-                animatedToggleIconStyles.close
-              ]}
-            >
-              <AnimatedIonIcon
-                name="close"
-                size={35}
-                color={theme.color.text.primary}
-                style={animatedFocusButtonStyles.icon}
-              />
-            </IconWrapper>
-          )}
+          <IconWrapper
+            style={[
+              focusStylesEnabled && animatedFocusIconStyles.close,
+              animatedToggleIconStyles.close
+            ]}
+          >
+            <AnimatedIonIcon
+              name="close"
+              size={35}
+              color={theme.color.text.primary}
+              style={focusStylesEnabled && animatedFocusButtonStyles.icon}
+            />
+          </IconWrapper>
 
-          <IconWrapper style={animatedFocusIconStyles.erase}>
+          <IconWrapper
+            style={focusStylesEnabled && animatedFocusIconStyles.erase}
+          >
             <EntypoIcon
               name="erase"
               size={30}
@@ -224,7 +230,9 @@ const SearchBar: React.FC = () => {
           </IconWrapper>
         </SearchButton>
       </SearchButtonWrapper>
-      <InputWrapper style={animatedFocusStyles.inputWrapper}>
+      <InputWrapper
+        style={focusStylesEnabled && animatedFocusStyles.inputWrapper}
+      >
         <SearchInput
           style={animatedFocusStyles.input}
           onFocus={() => setIsFocused(true)}
