@@ -18,7 +18,7 @@ export const SCREEN_HEIGHT =
   Platform.OS === 'android' && Platform.Version > 26
     ? Dimensions.get('screen').height - (StatusBar.currentHeight || 0)
     : Dimensions.get('window').height;
-const SCREEN_WIDTH = Dimensions.get('window').width;
+export const SCREEN_WIDTH = Dimensions.get('window').width;
 const LOGO_BAR_HEIGHT = 65;
 const LOGO_BAR_PADDING_X = 5;
 const LOGO_BAR_PADDING_Y = 5;
@@ -27,6 +27,9 @@ const FINAL_POKE_BALL_SIZE = LOGO_BAR_HEIGHT - 2 * LOGO_BAR_PADDING_Y;
 const LOGO_HEIGHT = 100;
 const FINAL_LOGO_HEIGHT = FINAL_POKE_BALL_SIZE;
 const MENU_TOGGLE_SIZE = FINAL_POKE_BALL_SIZE;
+export const SPLASH_SCREEN_ANIMATION_DELAY = 500;
+export const MENU_TOGGLE_ANIMATION_DELAY = 1000;
+export const MENU_TOGGLE_ANIMATION_DURATION = 500;
 
 const SplashScreen: React.FC<SplashScreenProps> = ({
   children,
@@ -83,13 +86,13 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
           useNativeDriver: true
         }),
         Animated.timing(menuToggleTranslateX, {
-          delay: 500,
-          duration: 500,
+          delay: MENU_TOGGLE_ANIMATION_DELAY - SPLASH_SCREEN_ANIMATION_DELAY,
+          duration: MENU_TOGGLE_ANIMATION_DURATION,
           toValue: LOGO_BAR_PADDING_X,
           useNativeDriver: true
         })
       ]).start();
-    }, 500);
+    }, SPLASH_SCREEN_ANIMATION_DELAY);
   }, []);
 
   return (

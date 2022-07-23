@@ -17,14 +17,14 @@ module.exports = {
           // This needs to be mirrored in tsconfig.json
           '@assets': './assets',
           '@components': './src/components',
-          '@config': './src/config.ts',
           '@core': './src/core',
-          '@routes': './src/routes',
           '@screens': './src/screens',
           '@services': './src/services',
           '@store': './src/store',
+          '@styles': './src/styles',
           '@themes': './src/themes',
-          '@utils': './src/utils'
+          '@utils': './src/utils',
+          '@config': './src/config.ts'
         }
       }
     ]

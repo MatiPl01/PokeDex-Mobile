@@ -15,14 +15,8 @@
       "@components/*": [
         "src/components/*"
       ],
-      "@config": [
-        "src/config.ts"
-      ],
       "@core/*": [
         "src/core/*"
-      ],
-      "@routes/*": [
-        "src/routes/*"
       ],
       "@screens/*": [
         "src/screens/*"
@@ -36,11 +30,17 @@
       "@store/*": [
         "src/store/*"
       ],
+      "@styles/*": [
+        "src/styles/*"
+      ],
       "@themes/*": [
         "src/themes/*"
       ],
       "@utils/*": [
         "src/utils/*"
+      ],
+      "@config": [
+        "src/config.ts"
       ]
     },
     "typeRoots": ["src/@types", "node_modules/@types"]
