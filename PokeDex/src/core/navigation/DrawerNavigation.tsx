@@ -1,12 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
-import Animated, {
-  Extrapolate,
-  useAnimatedStyle,
-  interpolate,
-  SharedValue
-} from 'react-native-reanimated';
+import Animated, { SharedValue } from 'react-native-reanimated';
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
@@ -23,6 +18,7 @@ import FavoritesScreen from '@screens/favorites/FavoritesScreen';
 import MapScreen from '@screens/map/MapScreen';
 import SettingsScreen from '@screens/settings/SettingsScreen';
 import { selectTheme } from '@store/theme/theme.selector';
+import { createAnimatedStyles } from '@utils/reanimated';
 import Logo from '@assets/svg/logo.svg';
 import HamburgerIcon from './hamburger-icon/HamburgerIcon';
 import {
@@ -37,49 +33,36 @@ IonIcon.loadFont();
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
-type ScreensProps = {
-  navigation: DrawerNavigationHelpers;
-};
-
 // This component must be declared in this file in order to work
 // (styles aren't applied when component is imported from the styles file)
 const OuterWrapper = Animated.createAnimatedComponent(styled.View`
   ${({ theme }) => theme.shadow.medium.lg};
 `);
 
+const useAnimatedScreensStyles = createAnimatedStyles({
+  outerWrapper: {
+    transform: [{ scale: [1, FINAL_SCREEN_SCALE] }]
+  },
+  innerWrapper: {
+    borderRadius: [0, 10],
+    transform: [{ rotate: [0, 5] }]
+  }
+});
+
+type ScreensProps = {
+  navigation: DrawerNavigationHelpers;
+};
+
 const Screens: React.FC<ScreensProps> = ({ navigation }) => {
-  const progress = useDrawerProgress() as Readonly<SharedValue<number>>;
   const theme = useSelector(selectTheme);
-
-  const animatedTransformStyle = useAnimatedStyle(() => {
-    const scale = interpolate(
-      progress.value,
-      [0, 1],
-      [1, FINAL_SCREEN_SCALE],
-      Extrapolate.CLAMP
-    );
-
-    return {
-      transform: [{ scale }]
-    };
-  });
-
-  const animatedBorderStyle = useAnimatedStyle(() => {
-    const borderRadius = interpolate(
-      progress.value,
-      [0, 1],
-      [0, 10],
-      Extrapolate.CLAMP
-    );
-
-    return {
-      borderRadius
-    };
-  });
+  const progress = useDrawerProgress() as Readonly<SharedValue<number>>;
+  const animatedStyles = useAnimatedScreensStyles(progress);
 
   return (
-    <OuterWrapper style={animatedTransformStyle}>
-      <Animated.View style={[animatedBorderStyle, { overflow: 'hidden' }]}>
+    <OuterWrapper style={animatedStyles.outerWrapper}>
+      <Animated.View
+        style={[{ overflow: 'hidden' }, animatedStyles.innerWrapper]}
+      >
         <SplashScreen menuToggle={<HamburgerIcon navigation={navigation} />}>
           <Stack.Navigator
             screenOptions={{

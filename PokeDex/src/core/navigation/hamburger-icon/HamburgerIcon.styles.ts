@@ -1,5 +1,5 @@
 import styled from 'styled-components/native';
-import { Animated } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 export const AnimatedButton = styled(Animated.View)`
