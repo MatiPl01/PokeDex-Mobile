@@ -30,6 +30,9 @@
       "@services/*": [
         "src/services/*"
       ],
+      "@store": [
+        "src/store/index.ts"
+      ],
       "@store/*": [
         "src/store/*"
       ],
@@ -39,11 +42,16 @@
       "@utils/*": [
         "src/utils/*"
       ]
-    }
+    },
+    "typeRoots": ["src/@types", "node_modules/@types"]
   },
-  "include": ["./src"],
-  "exclude": ["node_modules"],
-  "files": [
-    "src/themes/styled.d.ts"
+  "include": [
+    "./src", 
+    "./assets", 
+    "src/@types/styled.d.ts", 
+    "src/@types/assets.d.ts",
+    "App.tsx", 
+    "index.tsx"
   ],
+  "exclude": ["node_modules"]
 }

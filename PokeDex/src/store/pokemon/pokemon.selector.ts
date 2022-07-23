@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { PokemonState } from './pokemon.reducer';
-import { RootState } from './../store';
 import { Pokemon } from './pokemon.types';
+import { RootState } from '@store';
 
 const selectPokemonState = (state: RootState): PokemonState => state.pokemon;
 

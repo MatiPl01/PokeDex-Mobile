@@ -2,12 +2,12 @@ import React, { useRef, useEffect } from 'react';
 import { Animated, Easing } from 'react-native';
 import { useDrawerStatus } from '@react-navigation/drawer';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
+import { toggleMenuSize as TOGGLE_MENU_SIZE } from '@core/splash-screen/SplashScreen';
 import {
   AnimatedButton,
   AnimatedBar,
   TouchableWrapper
 } from './HamburgerIcon.styles';
-import { toggleMenuSize as TOGGLE_MENU_SIZE } from '../../splash-screen/SplashScreen';
 
 const ANIMATION_DURATION = 400; // ms
 
@@ -81,8 +81,8 @@ const HamburgerIcon: React.FC<HamburgerIconProps> = ({ navigation }) => {
   const openIconAnimation = () => {
     Animated.parallel(
       Object.keys(animatedValues).map(key => {
-        return Animated.timing(animatedValues[key], {
-          toValue: animatedValuesConfig[key].to,
+        return Animated.timing(animatedValues[key as keyof AnimatedValues], {
+          toValue: animatedValuesConfig[key as keyof AnimatedValues].to,
           useNativeDriver: true,
           duration: ANIMATION_DURATION,
           easing: Easing.ease
@@ -94,8 +94,8 @@ const HamburgerIcon: React.FC<HamburgerIconProps> = ({ navigation }) => {
   const closeIconAnimation = () => {
     Animated.parallel(
       Object.keys(animatedValues).map(key => {
-        return Animated.timing(animatedValues[key], {
-          toValue: animatedValuesConfig[key].from,
+        return Animated.timing(animatedValues[key as keyof AnimatedValues], {
+          toValue: animatedValuesConfig[key as keyof AnimatedValues].from,
           useNativeDriver: true,
           duration: ANIMATION_DURATION,
           easing: Easing.ease

@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { ThemeState } from './theme.reducer';
-import { RootState } from './../store';
+import { RootState } from '..';
 
 const selectThemeState = (state: RootState): ThemeState => state.theme;
 

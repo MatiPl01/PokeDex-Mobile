@@ -1,12 +1,12 @@
-import { createTheme } from './../../themes/utils';
+import { DefaultTheme } from 'styled-components/native';
+import { createTheme } from '@themes/utils';
+import defaultTheme from '@themes/default';
+import oceanTheme from '@themes/ocean';
 import { ThemeAction } from './theme.actions';
 import { ThemeActionType, ThemeName, ThemeMode } from './theme.types';
-import defaultTheme from '../../themes/default';
-import oceanTheme from '../../themes/ocean';
-import Theme from '../../themes/types';
 
 export type ThemeState = {
-  readonly theme: Theme;
+  readonly theme: DefaultTheme;
   readonly name: ThemeName;
   readonly mode: ThemeMode;
 };

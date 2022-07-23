@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import shared from './shared';
 import defaultTheme from './default';
-import { ThemeMode } from '../store/theme/theme.types';
-import Theme, {
+import { ThemeMode } from '@store/theme/theme.types';
+import {
+  DefaultTheme,
   ThemeColors,
   ThemeFontWeights,
   ThemeFontSizes,
@@ -10,7 +11,7 @@ import Theme, {
   ThemeSizes,
   ThemeLineHeights,
   ThemeSpaces
-} from './types';
+} from 'styled-components/native';
 
 interface PartialTheme {
   color?: Partial<ThemeColors>;
@@ -25,6 +26,6 @@ interface PartialTheme {
 export const createTheme = (
   theme: { light: PartialTheme; dark: PartialTheme },
   mode: ThemeMode
-): Theme => {
-  return _.merge({}, shared, defaultTheme[mode], theme[mode]) as Theme;
+): DefaultTheme => {
+  return _.merge({}, shared, defaultTheme[mode], theme[mode]) as DefaultTheme;
 };

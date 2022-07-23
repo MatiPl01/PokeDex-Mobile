@@ -1,7 +1,7 @@
 // TODO - this is a temporary settings screen
 import React from 'react';
-import styled from 'styled-components/native';
 import { useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   selectThemeMode,
   selectThemeName
@@ -9,7 +9,7 @@ import {
 import { ThemeName, ThemeMode } from '@store/theme/theme.types';
 import { setTheme, setThemeMode } from '@store/theme/theme.actions';
 import { catchAsync } from '@utils/errors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Container, TextContainer, Text, Button, ButtonText } from './SettingsScreen.styles';
 
 const ThemeTestScreen: React.FC = () => {
   const dispatch = useDispatch();
@@ -59,38 +59,5 @@ const ThemeTestScreen: React.FC = () => {
     </Container>
   );
 };
-
-// TODO - fix theme types not being recognized by TypeScript
-const Container = styled.View`
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.color.background.primary};
-`;
-
-const TextContainer = styled.View`
-  border: 1px solid #000;
-  padding: 10px;
-  border-radius: 5px;
-`;
-
-const Text = styled.Text`
-  color: ${({ theme }) => theme.color.text.primary};
-  font-size: 24px;
-  font-weight: 600;
-`;
-
-const Button = styled.TouchableOpacity`
-  margin: 32px 0;
-  background-color: ${({ theme }) => theme.color.background.tertiary};
-  padding: 10px 32px;
-  border-radius: 5px;
-`;
-
-const ButtonText = styled.Text`
-  font-size: 15px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.color.text.secondary};
-`;
 
 export default ThemeTestScreen;

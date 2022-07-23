@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, type PropsWithChildren } from 'react';
 import { Animated, Dimensions, Platform, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-// TODO - fix svg these imports
 import PokeBall from '@assets/svg/poke-ball.svg';
 import Logo from '@assets/svg/logo.svg';
 import {

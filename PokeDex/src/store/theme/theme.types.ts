@@ -9,6 +9,6 @@ export enum ThemeMode {
 }
 
 export enum ThemeActionType {
-  SET_THEME = 'THEME_SET',
-  SET_MODE = 'THEME_SET_MODE'
+  SET_THEME = 'theme/SET_THEME',
+  SET_MODE = 'theme/SET_MODE'
 }

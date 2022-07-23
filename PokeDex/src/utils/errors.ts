@@ -4,6 +4,6 @@ export const catchAsync =
     try {
       return fn(...args);
     } catch (err) {
-      console.error(err.message);
+      console.error((err as Error).message);
     }
   };

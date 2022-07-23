@@ -1,6 +1,6 @@
 import styled from 'styled-components/native';
+import { SCREEN_HEIGHT } from '@core/splash-screen/SplashScreen';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
-import { SCREEN_HEIGHT } from './../splash-screen/SplashScreen';
 
 export const FINAL_SCREEN_SCALE = 0.75;
 const DRAWER_HEIGHT = FINAL_SCREEN_SCALE * SCREEN_HEIGHT;

@@ -5,14 +5,14 @@ import {
   PokemonResponse
 } from '@store/pokemon/pokemon.types';
 
-// TODO - add error handling
-export const fetchPokemonList = async (url: string): Promise<PokemonListResponse> => {
-  return await(await fetch(url)).json();
+export const fetchPokemonList = async (
+  url: string
+): Promise<PokemonListResponse> => {
+  return (await axios.get<PokemonListResponse>(url)).data;
 };
 
 export const fetchPokemonData = async (url: string): Promise<Pokemon> => {
-  const res = (await (await fetch(url)).json()) as PokemonResponse;
-  console.log('resp', { res });
+  const res = (await axios.get<PokemonResponse>(url)).data;
   return pokemonDataTransform(res);
 };
 

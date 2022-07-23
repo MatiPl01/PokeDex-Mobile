@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
 import Animated, {
   Extrapolate,
@@ -12,25 +13,23 @@ import {
   DrawerItem,
   useDrawerProgress
 } from '@react-navigation/drawer';
+import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 import { createStackNavigator } from '@react-navigation/stack';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import PokemonScreen from '../../screens/pokemon/PokemonScreen';
-import FavoritesScreen from '../../screens/favorites/FavoritesScreen';
-import MapScreen from '../../screens/map/MapScreen';
-import SettingsScreen from '../../screens/settings/SettingsScreen';
-import SplashScreen from '../splash-screen/SplashScreen';
-import ThemeTestScreen from '../../screens/settings/ThemeTestScreen';
+import SplashScreen from '@core/splash-screen/SplashScreen';
+import PokemonScreen from '@screens/pokemon/PokemonScreen';
+import FavoritesScreen from '@screens/favorites/FavoritesScreen';
+import MapScreen from '@screens/map/MapScreen';
+import SettingsScreen from '@screens/settings/SettingsScreen';
+import { selectTheme } from '@store/theme/theme.selector';
+import Logo from '@assets/svg/logo.svg';
 import HamburgerIcon from './hamburger-icon/HamburgerIcon';
-import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 import {
   FINAL_SCREEN_SCALE,
   DrawerContentScrollView,
   DrawerWrapper
 } from './DrawerNavigation.styles';
-import Logo from '@assets/svg/logo.svg';
-import { useSelector } from 'react-redux';
-import { selectTheme } from '../../store/theme/theme.selector';
 
 MaterialIcon.loadFont();
 IonIcon.loadFont();

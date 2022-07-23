@@ -23,16 +23,16 @@ const pokemonReducer = (
   action: PokemonAction
 ): PokemonState => {
   switch (action.type) {
-    case PokemonActionType.FETCH_NEXT_POKEMON_START:
+    case PokemonActionType.FETCH_NEXT_START:
       return { ...state, isLoading: true };
-    case PokemonActionType.FETCH_NEXT_POKEMON_SUCCESS:
+    case PokemonActionType.FETCH_NEXT_SUCCESS:
       return {
         ...state,
         pokemonList: [...state.pokemonList, ...action.payload.pokemonList],
         nextUrl: action.payload.nextUrl,
         isLoading: false
       };
-    case PokemonActionType.FETCH_NEXT_POKEMON_FAILURE:
+    case PokemonActionType.FETCH_NEXT_FAILURE:
       return { ...state, error: action.payload, isLoading: false };
     default:
       return state;

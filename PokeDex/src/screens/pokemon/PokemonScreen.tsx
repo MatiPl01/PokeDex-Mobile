@@ -12,6 +12,9 @@ const PokemonScreen: React.FC = () => {
   const nextUrl = useSelector(selectNextPokemonFetchUrl);
   const pokemonList = useSelector(selectPokemonList);
 
+  console.log({ nextUrl });
+  
+
   useEffect(() => {
     dispatch(fetchNextPokemonAsync(nextUrl));
   }, []);

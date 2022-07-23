@@ -1,17 +1,15 @@
-import { selectNextPokemonFetchUrl } from './pokemon.selector';
-import { useSelector } from 'react-redux';
-import {
-  fetchPokemonList,
-  fetchPokemonData
-} from './../../services/pokemon.service';
-import { PokemonActionType, Pokemon } from './pokemon.types';
-import { Action, ActionWithPayload, createAction } from './../utils';
+import { PokemonState } from './pokemon.reducer';
 import { Dispatch } from 'react';
+import { ActionCreator } from 'redux';
+import { ThunkAction } from 'redux-thunk';
+import { fetchPokemonList, fetchPokemonData } from '@services/pokemon.service';
+import { Action, ActionWithPayload, createAction } from '@store/utils';
+import { PokemonActionType, Pokemon } from './pokemon.types';
 
-type FetchNextPokemonStart = Action<PokemonActionType.FETCH_NEXT_POKEMON_START>;
+type FetchNextPokemonStart = Action<PokemonActionType.FETCH_NEXT_START>;
 
 type FetchNextPokemonSuccess = ActionWithPayload<
-  PokemonActionType.FETCH_NEXT_POKEMON_SUCCESS,
+  PokemonActionType.FETCH_NEXT_SUCCESS,
   {
     pokemonList: Pokemon[];
     nextUrl: string | null;
@@ -19,7 +17,7 @@ type FetchNextPokemonSuccess = ActionWithPayload<
 >;
 
 type FetchNextPokemonFailure = ActionWithPayload<
-  PokemonActionType.FETCH_NEXT_POKEMON_FAILURE,
+  PokemonActionType.FETCH_NEXT_FAILURE,
   Error
 >;
 
@@ -29,13 +27,13 @@ export type PokemonAction =
   | FetchNextPokemonFailure;
 
 export const fetchNextPokemonStart = (): FetchNextPokemonStart =>
-  createAction(PokemonActionType.FETCH_NEXT_POKEMON_START);
+  createAction(PokemonActionType.FETCH_NEXT_START);
 
 export const fetchNextPokemonSuccess = (
   pokemonList: Pokemon[],
   nextUrl: string | null
 ): FetchNextPokemonSuccess =>
-  createAction(PokemonActionType.FETCH_NEXT_POKEMON_SUCCESS, {
+  createAction(PokemonActionType.FETCH_NEXT_SUCCESS, {
     pokemonList,
     nextUrl
   });
@@ -43,21 +41,21 @@ export const fetchNextPokemonSuccess = (
 export const fetchNextPokemonFailure = (
   error: Error
 ): FetchNextPokemonFailure =>
-  createAction(PokemonActionType.FETCH_NEXT_POKEMON_FAILURE, error);
+  createAction(PokemonActionType.FETCH_NEXT_FAILURE, error);
 
-export const fetchNextPokemonAsync =
-  (nextUrl: string | null) => async (dispatch: Dispatch<PokemonAction>) => {
+export const fetchNextPokemonAsync: ActionCreator<
+  ThunkAction<Promise<void>, PokemonState, void, PokemonAction>
+> =
+  (nextUrl: string | null) =>
+  async (dispatch: Dispatch<PokemonAction>): Promise<void> => {
     if (!nextUrl) return;
-    console.log('START');
     dispatch(fetchNextPokemonStart());
 
     try {
       const res = await fetchPokemonList(nextUrl);
-      console.log({ res })
       const pokemonList = await Promise.all(
         res.results.map(({ url }) => fetchPokemonData(url))
       );
-      console.log('SUCCESS');
 
       dispatch(fetchNextPokemonSuccess(pokemonList, res.next));
     } catch (err) {
