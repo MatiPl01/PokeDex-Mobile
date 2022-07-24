@@ -85,12 +85,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   const flatListRef = useRef<FlatList | null>(null);
   // Component state
   const [suggestions, setSuggestions] = useState<SearchSuggestionItem[]>([]);
-  const [displayedSuggestions, setDisplayedSuggestions] = useState<
-    SearchSuggestionItem[]
-  >([]);
   const [lastVisibleItemIdx, setLastVisibleItemIdx] = useState(-1);
-  const [scrollToEnd, setScrollToEnd] = useState(false);
-  const [renderedNewSuggestions, setRenderedNewSuggestions] = useState(false); // Indicated that the FLatList content has changed (new suggestions were rendered)
   const [isRefreshing, setIsRefreshing] = useState(false);
   // Animation progress values
   const revealProgress = useSharedValue(0);
@@ -118,7 +113,6 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   useEffect(() => {
     const newSuggestions = getSearchSuggestions(searchValue, data);
     setSuggestions(newSuggestions);
-    setDisplayedSuggestions(newSuggestions.slice(0, limit));
   }, [data, searchValue]);
 
   useEffect(() => {
@@ -137,47 +131,22 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       }
     );
     // Scroll top button animations
-    const showScrollTopButton = +(lastVisibleItemIdx >= limit);
+    const showScrollTopButton = +(lastVisibleItemIdx > limit);
     scrollTopButtonProgress.value = withTiming(+showScrollTopButton, {
-      duration: 300,
-      easing: Easing.bezier(0.175, 0.885, 0.32, 1.275)
+      duration: 250
     });
     scrollTopIconProgress.value = withDelay(
-      100,
+      50,
       withTiming(+showScrollTopButton, {
-        duration: 300,
-        easing: Easing.bezier(0.175, 0.885, 0.32, 1.275)
+        duration: 250
       })
     );
   }, [lastVisibleItemIdx]);
 
   useEffect(() => {
-    if (!scrollToEnd) return;
-    if (
-      // All suggestions were rendered and scrollToEnd was set to true
-      displayedSuggestions.length === suggestions.length ||
-      // New suggestions were rendered
-      renderedNewSuggestions
-    ) {
-      // This timeout adds a delay to make sure that list item were rendered
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd();
-      }, 0);
-      setRenderedNewSuggestions(false);
-      setScrollToEnd(false);
-    }
-  }, [renderedNewSuggestions, scrollToEnd]);
-
-  useEffect(() => {
     // Stop refreshing if the new search data was provided
     setIsRefreshing(false);
   }, [data]);
-
-  const displayMoreSuggestions = (count = 1) => {
-    const newSuggestionsCount = displayedSuggestions.length + count;
-    const newSuggestions = suggestions.slice(0, newSuggestionsCount);
-    setDisplayedSuggestions(newSuggestions);
-  };
 
   const handleSuggestionListChange = useCallback(
     ({ viewableItems }: { viewableItems: { index: number }[] }) => {
@@ -194,22 +163,10 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
     onSearchFetchRequest();
   }, []);
 
-  const scrollToNextItem = () => {
-    // A number of suggestions that have been loaded and will be rendered below
-    // the currently last displayed item
-    const itemsAfterLastDisplayedCount =
-      displayedSuggestions.length - lastVisibleItemIdx - 1;
-
-    if (itemsAfterLastDisplayedCount >= limit) {
-      flatListRef.current?.scrollToIndex({
-        index: lastVisibleItemIdx + 1
-      });
-    } else {
-      if (displayedSuggestions.length < suggestions.length) {
-        displayMoreSuggestions(limit - itemsAfterLastDisplayedCount);
-      }
-      setScrollToEnd(true);
-    }
+  const scrollToNextItems = () => {
+    flatListRef.current?.scrollToIndex({
+      index: Math.min(lastVisibleItemIdx + 1, suggestions.length - 1)
+    });
   };
 
   const scrollToTop = () => {
@@ -235,21 +192,21 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   return (
     <OuterWrapper
       style={[animatedRevealStyles.wrapper, animatedShowMoreWrapperStyle]}
+      itemCount={Math.min(suggestions.length, limit)}
     >
       <SuggestionList
         ref={flatListRef}
         // TODO- fix TypeScript error with data attribute
-        data={displayedSuggestions}
+        data={suggestions}
         keyExtractor={(item: SearchSuggestionItem) => item.item.id}
         renderItem={renderItem}
         ItemSeparatorComponent={ListSeparator}
-        onEndReached={loadMoreOnScroll && (() => displayMoreSuggestions())}
         scrollEnabled={loadMoreOnScroll}
         onViewableItemsChanged={handleSuggestionListChange}
         viewabilityConfig={{
           itemVisiblePercentThreshold: 25
         }}
-        onContentSizeChange={() => setRenderedNewSuggestions(true)}
+        onScrollToIndexFailed={() => flatListRef.current?.scrollToEnd()}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -265,7 +222,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       {loadMoreOnScroll && suggestions.length > limit && (
         <>
           <Footer style={animatedShowMoreFooterStyle}>
-            <TouchableOpacity onPress={scrollToNextItem}>
+            <TouchableOpacity onPress={scrollToNextItems}>
               <FooterText>Scroll to see more suggestions</FooterText>
             </TouchableOpacity>
           </Footer>

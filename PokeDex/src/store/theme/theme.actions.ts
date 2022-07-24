@@ -1,5 +1,5 @@
 import { ThemeActionType, ThemeName, ThemeMode } from './theme.types';
-import { ActionWithPayload, createAction } from '../utils';
+import { ActionWithPayload, createAction } from '@store/utils';
 
 type SetTheme = ActionWithPayload<ThemeActionType.SET_THEME, ThemeName>;
 

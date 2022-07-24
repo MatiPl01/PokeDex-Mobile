@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchNextPokemonAsync } from '@store/pokemon/pokemon.actions';
-import {
-  selectNextPokemonFetchUrl,
-  selectPokemonList
-} from '@store/pokemon/pokemon.selector';
+// import {
+//   selectNextPokemonFetchUrl,
+//   selectPokemonList
+// } from '@store/pokemon/pokemon.selector';
 import SearchBar from '@components/SearchBar/SearchBar';
+import { selectSearchItemsList } from '@store/search/search.selector';
+import { fetchSearchItemsAsync } from '@store/search/search.actions';
 
 // TODO - use data from the API
 const mockedData = [
@@ -27,12 +27,22 @@ const mockedData = [
 
 const PokemonScreen: React.FC = () => {
   const dispatch = useDispatch();
-  const nextUrl = useSelector(selectNextPokemonFetchUrl);
-  const pokemonList = useSelector(selectPokemonList);
+  const searchItems = useSelector(selectSearchItemsList);
+  // const nextUrl = useSelector(selectNextPokemonFetchUrl);
+  // const pokemonList = useSelector(selectPokemonList);
 
   useEffect(() => {
-    // dispatch(fetchNextPokemonAsync(nextUrl));
+    fetchSearchItems();
   }, []);
+
+  useEffect(() => {
+    console.log('change');
+  }, [searchItems]);
+
+  const fetchSearchItems = () => {
+    console.log('fetch');
+    dispatch(fetchSearchItemsAsync());
+  };
 
   const handleSearch = (value: string) => {
     console.log(value);
@@ -41,14 +51,15 @@ const PokemonScreen: React.FC = () => {
   return (
     <>
       <SearchBar
+        data={searchItems}
         onSearchChange={handleSearch}
-        data={mockedData}
+        onSearchFetchRequest={fetchSearchItems}
         showSuggestions
       />
-      {pokemonList &&
+      {/* {pokemonList &&
         pokemonList.map(pokemon => (
           <Text key={pokemon.id}>{pokemon.name}</Text>
-        ))}
+        ))} */}
     </>
   );
 };

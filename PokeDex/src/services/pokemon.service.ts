@@ -1,14 +1,44 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { API_URL, FETCH_SEARCH_ITEMS_LIMIT } from '@config';
+import { Pokemon, PokemonResponse } from '@store/pokemon/pokemon.types';
 import {
-  Pokemon,
-  PokemonListResponse,
-  PokemonResponse
-} from '@store/pokemon/pokemon.types';
+  PokemonSearchItemsResponse,
+  PokemonSearchItemResponse,
+  PokemonSearchItem
+} from '@store/search/search.types';
 
-export const fetchPokemonList = async (
-  url: string
-): Promise<PokemonListResponse> => {
-  return (await axios.get<PokemonListResponse>(url)).data;
+export const fetchPokemonSearchItems = async (): Promise<
+  PokemonSearchItem[]
+> => {
+  const endpoint = `${API_URL}/pokemon`;
+  const results: PokemonSearchItem[] = [];
+  let url:
+    | string
+    | null = `${endpoint}?offset=0&limit=${FETCH_SEARCH_ITEMS_LIMIT}`;
+
+  try {
+    do {
+      const res: PokemonSearchItemsResponse = (
+        await axios.get<PokemonSearchItemsResponse>(url)
+      ).data;
+      console.log('fetch 3 >>> ', url);
+
+      url = res.next;
+
+      results.push(
+        ...res.results.map((item: PokemonSearchItemResponse) => ({
+          value: item.name,
+          url: item.url,
+          id: item.url.replace(endpoint, '').replace(/\//g, '')
+        }))
+      );
+    } while (url);
+
+    return results;
+  } catch (error) {
+    const err = error as AxiosError;
+    throw new Error(err.message);
+  }
 };
 
 export const fetchPokemonData = async (url: string): Promise<Pokemon> => {

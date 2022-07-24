@@ -16,7 +16,7 @@ const SCROLL_TOP_BUTTON_PADDING = SUGGESTION_LIST_PADDING / 2;
 const SCROLL_TOP_BUTTON_SIZE =
   SUGGESTIONS_FOOTER_HEIGHT - 2 * SCROLL_TOP_BUTTON_PADDING;
 
-export const OuterWrapper = styled(Animated.View)`
+export const OuterWrapper = styled(Animated.View)<{ itemCount: number }>`
   position: absolute;
   width: 100%;
   z-index: -2;
@@ -24,6 +24,7 @@ export const OuterWrapper = styled(Animated.View)`
   overflow: hidden;
   background-color: ${({ theme }) => theme.color.background.secondary};
   border: 1px solid ${({ theme }) => theme.color.text.tertiary};
+  min-height: ${({ itemCount }) => SUGGESTION_ITEM_HEIGHT * itemCount}px;
   ${({ theme }) => theme.shadow.strong.lg};
 `;
 

@@ -98,13 +98,15 @@ type SearchBarProps = {
   data: SearchItem[];
   suggestionsLimit?: number;
   showSuggestions?: boolean;
+  onSearchFetchRequest?: () => void;
 };
 
 const SearchBar: React.FC<SearchBarProps> = ({
   onSearchChange,
   data,
   suggestionsLimit,
-  showSuggestions
+  showSuggestions,
+  onSearchFetchRequest
 }) => {
   const theme = useTheme();
   const iconColor = theme.color.white;
@@ -158,7 +160,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       textInputRef.current?.blur();
       setIsFocused(false);
     }
-    if (!focusStylesEnabled) setFocusStylesEnabled(true);
+    if (isOpen && !focusStylesEnabled) setFocusStylesEnabled(true);
   }, [isOpen]);
 
   useEffect(() => {
@@ -210,15 +212,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
   return (
     <OuterWrapper
       style={[
-        focusStylesEnabled && animatedFocusStyles.wrapper,
+        animatedSlideStyle,
         animatedToggleStyles.wrapper,
-        animatedSlideStyle
+        focusStylesEnabled && animatedFocusStyles.wrapper
       ]}
     >
       <SearchButtonWrapper
         style={[
-          focusStylesEnabled && animatedFocusButtonStyles.button,
-          animatedToggleStyles.button
+          animatedToggleStyles.button,
+          focusStylesEnabled && animatedFocusButtonStyles.button
         ]}
         displayShadow={!isFocused}
       >
@@ -228,8 +230,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
           </IconWrapper>
           <IconWrapper
             style={[
-              focusStylesEnabled && animatedFocusIconStyles.close,
-              animatedToggleIconStyles.close
+              animatedToggleIconStyles.close,
+              focusStylesEnabled && animatedFocusIconStyles.close
             ]}
           >
             <AnimatedIonIcon
@@ -271,7 +273,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           isRevealed={isFocused && Boolean(searchValue)}
           limit={suggestionsLimit}
           onSelect={handleSuggestionSelect}
-          onSearchFetchRequest={() => console.log('request fetch')}
+          onSearchFetchRequest={onSearchFetchRequest}
         />
       )}
     </OuterWrapper>

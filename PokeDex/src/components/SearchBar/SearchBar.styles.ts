@@ -19,7 +19,6 @@ export const OuterWrapper = styled(Animated.View)`
   top: ${SEARCH_BAR_PADDING_TOP}px;
   padding-top: ${(SEARCH_ICON_SIZE - SEARCH_BAR_HEIGHT) / 2}px;
   padding-right: ${SEARCH_ICON_SIZE / 2}px;
-  width: 0;
   z-index: 1;
 `;
 
