@@ -7,7 +7,10 @@ import Animated, {
   withDelay,
   Easing
 } from 'react-native-reanimated';
+// TODO - debug this app on a real device and calculate the number of suggestions based on the available space after the keyboard is displayed
+// import { useKeyboard } from '@react-native-community/hooks';
 import { createAnimatedStyle, createAnimatedStyles } from '@utils/reanimated';
+import { SearchItem } from '@utils/search';
 import {
   MENU_TOGGLE_ANIMATION_DURATION,
   MENU_TOGGLE_ANIMATION_DELAY,
@@ -30,6 +33,7 @@ import {
   SEARCH_BAR_HORIZONTAL_PADDING,
   SEARCH_WRAPPER_WIDTH
 } from './SearchBar.styles';
+import SearchSuggestions from './SearchSuggestions';
 
 const SEARCH_BUTTON_ANIMATION_DELAY = MENU_TOGGLE_ANIMATION_DELAY + 250;
 
@@ -89,13 +93,25 @@ const useAnimatedInputIconStyles = createAnimatedStyles({
   }
 });
 
-const SearchBar: React.FC = () => {
+type SearchBarProps = {
+  onSearchChange: (value: string) => void;
+  data: SearchItem[];
+  suggestionsLimit?: number;
+  showSuggestions?: boolean;
+};
+
+const SearchBar: React.FC<SearchBarProps> = ({
+  onSearchChange,
+  data,
+  suggestionsLimit,
+  showSuggestions
+}) => {
   const theme = useTheme();
   const iconColor = theme.color.white;
   // Component state
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [inputText, setInputText] = useState('');
+  const [searchValue, setSearchValue] = useState('');
   const [displayEraseIcon, setDisplayEraseIcon] = useState(false);
   const [focusStylesEnabled, setFocusStylesEnabled] = useState(false);
   // Component references
@@ -150,8 +166,8 @@ const SearchBar: React.FC = () => {
   }, [isFocused]);
 
   useEffect(() => {
-    setDisplayEraseIcon(Boolean(inputText) && isFocused);
-  }, [inputText, isFocused]);
+    setDisplayEraseIcon(Boolean(searchValue) && isFocused);
+  }, [searchValue, isFocused]);
 
   useEffect(() => {
     animateEraseIcon();
@@ -171,8 +187,8 @@ const SearchBar: React.FC = () => {
   };
 
   const handleButtonClick = () => {
-    if (inputText) {
-      setInputText('');
+    if (searchValue) {
+      setSearchValue('');
       if (!isFocused) toggleSearchBar();
     } else {
       toggleSearchBar();
@@ -182,8 +198,13 @@ const SearchBar: React.FC = () => {
   const toggleSearchBar = () => setIsOpen(!isOpen);
 
   const handleInputChange = (value: string) => {
-    setInputText(value);
-    // TODO - update and display search suggestions
+    setSearchValue(value);
+    onSearchChange(value);
+  };
+
+  // TODO - open screen with the corresponding item view instead of calling this function
+  const handleSuggestionSelect = (item: SearchItem) => {
+    setSearchValue(item.value);
   };
 
   return (
@@ -236,12 +257,23 @@ const SearchBar: React.FC = () => {
         <SearchInput
           style={animatedFocusStyles.input}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onBlur={() => setIsFocused(false)} // TODO - maybe need a fix in Android (seems to be closing the suggestions bar after pressing outside the textInput)
           onChangeText={handleInputChange}
-          value={inputText}
+          value={searchValue}
           ref={textInputRef}
         />
       </InputWrapper>
+
+      {showSuggestions && (
+        <SearchSuggestions
+          data={data}
+          searchValue={searchValue}
+          isRevealed={isFocused && Boolean(searchValue)}
+          limit={suggestionsLimit}
+          onSelect={handleSuggestionSelect}
+          onSearchFetchRequest={() => console.log('request fetch')}
+        />
+      )}
     </OuterWrapper>
   );
 };

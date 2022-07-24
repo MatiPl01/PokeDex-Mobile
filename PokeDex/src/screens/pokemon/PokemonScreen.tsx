@@ -8,6 +8,23 @@ import {
 } from '@store/pokemon/pokemon.selector';
 import SearchBar from '@components/SearchBar/SearchBar';
 
+// TODO - use data from the API
+const mockedData = [
+  'bulbasaur',
+  'ivysaur',
+  'venusaur',
+  'charmander',
+  'charmeleon',
+  'charizard',
+  'squirtle',
+  'wartortle',
+  'blastoise',
+  'caterpie'
+].map((value, idx) => ({
+  id: String(idx),
+  value
+}));
+
 const PokemonScreen: React.FC = () => {
   const dispatch = useDispatch();
   const nextUrl = useSelector(selectNextPokemonFetchUrl);
@@ -17,9 +34,17 @@ const PokemonScreen: React.FC = () => {
     // dispatch(fetchNextPokemonAsync(nextUrl));
   }, []);
 
+  const handleSearch = (value: string) => {
+    console.log(value);
+  };
+
   return (
     <>
-      <SearchBar />
+      <SearchBar
+        onSearchChange={handleSearch}
+        data={mockedData}
+        showSuggestions
+      />
       {pokemonList &&
         pokemonList.map(pokemon => (
           <Text key={pokemon.id}>{pokemon.name}</Text>
