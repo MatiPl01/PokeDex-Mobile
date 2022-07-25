@@ -1,16 +1,17 @@
-import { SearchState } from './search.reducer';
 import { Dispatch } from 'react';
 import { ActionCreator } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { Action, ActionWithPayload, createAction } from '@store/utils';
 import { fetchPokemonSearchItems } from '@services/pokemon.service';
-import { SearchActionType, PokemonSearchItem } from './search.types';
+import { SearchItem } from '@utils/search';
+import { SearchState } from './search.reducer';
+import { SearchActionType } from './search.types';
 
 type FetchSearchItemsStart = Action<SearchActionType.FETCH_SEARCH_ITEMS_START>;
 
 type FetchSearchItemsSuccess = ActionWithPayload<
   SearchActionType.FETCH_SEARCH_ITEMS_SUCCESS,
-  PokemonSearchItem[]
+  SearchItem[]
 >;
 
 type FetchSearchItemsFailure = ActionWithPayload<
@@ -27,7 +28,7 @@ export const fetchSearchItemsStart = (): FetchSearchItemsStart =>
   createAction(SearchActionType.FETCH_SEARCH_ITEMS_START);
 
 export const fetchSearchItemsSuccess = (
-  searchItems: PokemonSearchItem[]
+  searchItems: SearchItem[]
 ): FetchSearchItemsSuccess =>
   createAction(SearchActionType.FETCH_SEARCH_ITEMS_SUCCESS, searchItems);
 
@@ -41,7 +42,6 @@ export const fetchSearchItemsAsync: ActionCreator<
 > =
   () =>
   async (dispatch: Dispatch<SearchAction>): Promise<void> => {
-    console.log('fetch 2')
     dispatch(fetchSearchItemsStart());
 
     try {

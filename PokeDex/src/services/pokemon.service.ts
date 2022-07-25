@@ -1,50 +1,67 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
+import { SearchItem } from '@utils/search';
 import { API_URL, FETCH_SEARCH_ITEMS_LIMIT } from '@config';
-import { Pokemon, PokemonResponse } from '@store/pokemon/pokemon.types';
+import {
+  Pokemon,
+  PokemonResponse,
+  PokemonSearchResponse
+} from '@store/pokemon/pokemon.types';
 import {
   PokemonSearchItemsResponse,
-  PokemonSearchItemResponse,
-  PokemonSearchItem
+  PokemonSearchItemResponse
 } from '@store/search/search.types';
+import { catchThrowAxiosError } from '@utils/errors';
 
-export const fetchPokemonSearchItems = async (): Promise<
-  PokemonSearchItem[]
-> => {
-  const endpoint = `${API_URL}/pokemon`;
-  const results: PokemonSearchItem[] = [];
-  let url:
-    | string
-    | null = `${endpoint}?offset=0&limit=${FETCH_SEARCH_ITEMS_LIMIT}`;
+export const getPokemonIdFromUrl = (url: string): string => {
+  return url.replace(`${API_URL}/pokemon`, '').replace(/\//g, '');
+};
 
-  try {
+export const fetchPokemonSearchItems = catchThrowAxiosError(
+  async (): Promise<SearchItem[]> => {
+    const results: SearchItem[] = [];
+    let url:
+      | string
+      | null = `${API_URL}/pokemon?offset=0&limit=${FETCH_SEARCH_ITEMS_LIMIT}`;
+
     do {
       const res: PokemonSearchItemsResponse = (
         await axios.get<PokemonSearchItemsResponse>(url)
       ).data;
-      console.log('fetch 3 >>> ', url);
 
       url = res.next;
 
       results.push(
         ...res.results.map((item: PokemonSearchItemResponse) => ({
           value: item.name,
-          url: item.url,
-          id: item.url.replace(endpoint, '').replace(/\//g, '')
+          id: getPokemonIdFromUrl(item.url)
         }))
       );
     } while (url);
 
     return results;
-  } catch (error) {
-    const err = error as AxiosError;
-    throw new Error(err.message);
   }
-};
+);
 
-export const fetchPokemonData = async (url: string): Promise<Pokemon> => {
-  const res = (await axios.get<PokemonResponse>(url)).data;
-  return pokemonDataTransform(res);
-};
+export const fetchPokemonList = catchThrowAxiosError(
+  async (url: string): Promise<PokemonSearchResponse> => {
+    console.log('????', url);
+    return (await axios.get(url)).data;
+  }
+);
+
+export const fetchSinglePokemonDataByUrl = catchThrowAxiosError(
+  async (url: string): Promise<Pokemon> => {
+    const res = (await axios.get<PokemonResponse>(url)).data;
+    return pokemonDataTransform(res);
+  }
+);
+
+export const fetchSinglePokemonDataById = catchThrowAxiosError(
+  async (id: string): Promise<Pokemon> => {
+    const url = `${API_URL}/pokemon/${id}`;
+    return await fetchSinglePokemonDataByUrl(url);
+  }
+);
 
 const pokemonDataTransform = ({
   id,

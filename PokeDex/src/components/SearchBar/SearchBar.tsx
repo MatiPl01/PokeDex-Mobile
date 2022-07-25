@@ -94,18 +94,20 @@ const useAnimatedInputIconStyles = createAnimatedStyles({
 });
 
 type SearchBarProps = {
-  onSearchChange: (value: string) => void;
   data: SearchItem[];
+  onSearchSubmit: (value: SearchItem) => void;
   suggestionsLimit?: number;
   showSuggestions?: boolean;
+  onSearchChange?: (value: string) => void;
   onSearchFetchRequest?: () => void;
 };
 
 const SearchBar: React.FC<SearchBarProps> = ({
-  onSearchChange,
   data,
   suggestionsLimit,
   showSuggestions,
+  onSearchChange,
+  onSearchSubmit,
   onSearchFetchRequest
 }) => {
   const theme = useTheme();
@@ -201,12 +203,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleInputChange = (value: string) => {
     setSearchValue(value);
-    onSearchChange(value);
+    if (onSearchChange) onSearchChange(value);
   };
 
-  // TODO - open screen with the corresponding item view instead of calling this function
   const handleSuggestionSelect = (item: SearchItem) => {
     setSearchValue(item.value);
+    onSearchSubmit(item)
   };
 
   return (
@@ -261,6 +263,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)} // TODO - maybe need a fix in Android (seems to be closing the suggestions bar after pressing outside the textInput)
           onChangeText={handleInputChange}
+          onSubmitEditing={onSearchSubmit}
           value={searchValue}
           ref={textInputRef}
         />

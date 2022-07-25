@@ -1,26 +1,37 @@
-// import { createSelector } from 'reselect';
-// import { PokemonState } from './pokemon.reducer';
-// import { Pokemon } from './pokemon.types';
-// import { RootState } from '@store';
+import { PokemonListItem } from './pokemon.types';
+import { createSelector } from 'reselect';
+import { RootState } from '@store';
 
-// const selectPokemonState = (state: RootState): PokemonState => state.pokemon;
+const selectPokemonState = (state: RootState) => state.pokemon;
 
-// export const selectPokemonList = createSelector(
-//   [selectPokemonState],
-//   ({ pokemonList }) => pokemonList
-// );
+export const selectPokemonMap = createSelector(
+  [selectPokemonState],
+  ({ pokemonMap }) => pokemonMap
+);
 
-// export const selectPokemonWithId = (id: number) =>
-//   createSelector([selectPokemonState], ({ pokemonList }): Pokemon | undefined =>
-//     pokemonList.find(pokemon => pokemon.id === id)
-//   );
+export const selectPokemonList = createSelector(
+  [selectPokemonMap],
+  (pokemonMap): PokemonListItem[] => {
+    const idNumbers = Object.keys(pokemonMap).map(id => +id);
+    // This ensures that the array will always have pokemon stored in the same order
+    idNumbers.sort((a, b) => a - b);
+    console.log(idNumbers);
+    const ids = idNumbers.map(id => String(id));
+    return ids.map(id => ({ id, ...pokemonMap[id] }));
+  }
+);
 
-// export const selectPokemonIsLoading = createSelector(
-//   [selectPokemonState],
-//   ({ isLoading }) => isLoading
-// );
+export const selectPokemonIsFetchingList = createSelector(
+  [selectPokemonState],
+  ({ isFetchingList }) => isFetchingList
+);
 
-// export const selectNextPokemonFetchUrl = createSelector(
-//   [selectPokemonState],
-//   ({ nextUrl }) => nextUrl
-// );
+export const selectSinglePokemon = createSelector(
+  [selectPokemonMap, (pokemonMap, id: string) => id],
+  (pokemonMap, id) => pokemonMap[id]
+);
+
+export const selectSinglePokemonIsLoading = createSelector(
+  [selectPokemonMap, (pokemonMap, id: string) => id],
+  (pokemonMap, id) => pokemonMap[id].isLoading
+);

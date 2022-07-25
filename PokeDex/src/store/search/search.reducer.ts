@@ -1,8 +1,9 @@
+import { SearchItem } from '@utils/search';
 import { SearchAction } from './search.actions';
-import { PokemonSearchItem, SearchActionType } from './search.types';
+import { SearchActionType } from './search.types';
 
 export type SearchState = {
-  readonly searchItems: PokemonSearchItem[];
+  readonly searchItems: SearchItem[];
   readonly isLoading: boolean;
   readonly error: Error | null;
 };

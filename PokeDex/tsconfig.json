@@ -48,8 +48,6 @@
   "include": [
     "./src", 
     "./assets", 
-    "src/@types/styled.d.ts", 
-    "src/@types/assets.d.ts",
     "App.tsx", 
     "index.tsx"
   ],

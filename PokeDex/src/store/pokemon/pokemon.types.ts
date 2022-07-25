@@ -1,24 +1,29 @@
+import { SinglePokemonState } from './pokemon.reducer';
+
 export enum PokemonActionType {
-  FETCH_NEXT_START = 'pokemon/FETCH_NEXT_START',
-  FETCH_NEXT_SUCCESS = 'pokemon/FETCH_NEXT_SUCCESS',
-  FETCH_NEXT_FAILURE = 'pokemon/FETCH_NEXT_FAILURE'
+  FETCH_NEXT_LIST_START = 'pokemon/FETCH_NEXT_LIST_START',
+  FETCH_NEXT_LIST_SUCCESS = 'pokemon/FETCH_NEXT_LIST_SUCCESS',
+  FETCH_NEXT_LIST_FAILURE = 'pokemon/FETCH_NEXT_LIST_FAILURE',
+  FETCH_SINGLE_START = 'pokemon/FETCH_SINGLE_START',
+  FETCH_SINGLE_SUCCESS = 'pokemon/FETCH_SINGLE_SUCCESS',
+  FETCH_SINGLE_FAILURE = 'pokemon/FETCH_SINGLE_FAILURE'
 }
 
-export type PokemonListEntry = {
+export type PokemonSearchEntry = {
   name: string;
   url: string;
 };
 
-export type PokemonListResponse = {
+export type PokemonSearchResponse = {
   count: number;
   next: string | null;
   previous: string | null;
-  results: PokemonListEntry[];
+  results: PokemonSearchEntry[];
 };
 
 // The type below contains only properties that will be used to create the Pokemon object
 export type PokemonResponse = {
-  id: number;
+  id: string;
   name: string;
   sprites: {
     other: {
@@ -61,7 +66,7 @@ export type PokemonResponse = {
 };
 
 export type Pokemon = {
-  id: number;
+  id: string;
   name: string;
   spriteImgUrl: string;
   height: number;
@@ -73,3 +78,7 @@ export type Pokemon = {
     value: number;
   }[];
 };
+
+export type PokemonListItem = {
+  id: string;
+} & SinglePokemonState;
