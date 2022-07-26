@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   FlatList,
   ListRenderItem,
+  ViewToken,
   RefreshControl,
   TouchableOpacity
 } from 'react-native';
@@ -149,9 +150,12 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   }, [data]);
 
   const handleSuggestionListChange = useCallback(
-    ({ viewableItems }: { viewableItems: { index: number }[] }) => {
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
       let lastItemIdx = viewableItems.length - 1;
-      if (lastItemIdx > 0) lastItemIdx = viewableItems[lastItemIdx].index;
+      const lastViewableItem = viewableItems[lastItemIdx];
+      if (lastItemIdx > 0 && lastViewableItem.index) {
+        lastItemIdx = lastViewableItem.index;
+      }
       setLastVisibleItemIdx(lastItemIdx);
     },
     []
@@ -177,8 +181,6 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
 
   const renderItem: ListRenderItem<SearchSuggestionItem> = ({
     item: { item, prefix, suffix }
-  }: {
-    item: SearchSuggestionItem;
   }) => (
     <SuggestionItem onPress={() => onSelect(item)}>
       <SuggestionTextBold>{prefix}</SuggestionTextBold>
@@ -196,7 +198,6 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
     >
       <SuggestionList
         ref={flatListRef}
-        // TODO- fix TypeScript error with data attribute
         data={suggestions}
         keyExtractor={(item: SearchSuggestionItem) => item.item.id}
         renderItem={renderItem}

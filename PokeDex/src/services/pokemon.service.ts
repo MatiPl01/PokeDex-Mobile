@@ -44,7 +44,6 @@ export const fetchPokemonSearchItems = catchThrowAxiosError(
 
 export const fetchPokemonList = catchThrowAxiosError(
   async (url: string): Promise<PokemonSearchResponse> => {
-    console.log('????', url);
     return (await axios.get(url)).data;
   }
 );
@@ -76,7 +75,7 @@ const pokemonDataTransform = ({
   return {
     id,
     name,
-    spriteImgUrl:
+    imageUrl:
       sprites.other.dream_world.front_default ||
       sprites.other.home.front_default ||
       sprites.other['official-artwork'].front_default ||

@@ -12,7 +12,7 @@ export type SinglePokemonState = {
 
 export type PokemonState = {
   readonly pokemonMap: { [key: string]: SinglePokemonState };
-  readonly loading: string[]; // array of loading pokemon ids
+  loading: string[]; // array of loading pokemon ids
   readonly errors: { [key: string]: Error | null }; // Errors that happened while fetching particular pokemon
   readonly isFetchingList: boolean; // Indicates that pokemon list is being fetched
   readonly fetchingListError: Error | null; // Error that happened while fetching a list of pokemon
@@ -28,61 +28,77 @@ const INITIAL_STATE: PokemonState = {
   nextUrl: `${API_URL}/pokemon?offset=0&limit=${FETCH_NEXT_POKEMON_COUNT}`
 };
 
+const handleFetchNextListSuccess = (
+  state: PokemonState,
+  { nextUrl, pokemonIds }: { nextUrl: string | null; pokemonIds: string[] }
+): PokemonState => {
+  const newPokemonMap = { ...state.pokemonMap };
+  pokemonIds.forEach(id => {
+    if (newPokemonMap[id]) return;
+    newPokemonMap[id] = {
+      pokemon: null,
+      isLoading: false,
+      error: null
+    };
+  });
+
+  return {
+    ...state,
+    nextUrl,
+    isFetchingList: false,
+    pokemonMap: newPokemonMap
+  };
+};
+
 const handleFetchNextListFailure = (
   state: PokemonState,
   error: Error
-): PokemonState => ({
-  ...state,
-  isFetchingList: false,
-  fetchingListError: error
-});
+): PokemonState => {
+  return {
+    ...state,
+    isFetchingList: false,
+    fetchingListError: error
+  };
+};
 
 const handleFetchSingleStart = (
   state: PokemonState,
   id: string
 ): PokemonState => {
   state.loading.push(id);
-  return {
-    ...state,
-    loading: [...new Set(state.loading)],
-    pokemonMap: Object.assign({}, state.pokemonMap, {
-      [id]: {
-        ...state.pokemonMap[id],
-        isLoading: true
-      }
-    })
+  state.loading = [...new Set(state.loading)];
+  state.pokemonMap[id] = {
+    ...state.pokemonMap[id],
+    isLoading: true
   };
+  return state;
 };
 
 const handleFetchSingleSuccess = (
   state: PokemonState,
   pokemon: Pokemon
-): PokemonState => ({
-  ...state,
-  loading: state.loading.filter(id => id !== pokemon.id),
-  pokemonMap: Object.assign({}, state.pokemonMap, {
-    [pokemon.id]: {
-      ...state.pokemonMap[pokemon.id],
-      pokemon,
-      isLoading: false
-    }
-  })
-});
+): PokemonState => {
+  state.loading = state.loading.filter(id => id !== pokemon.id);
+  state.pokemonMap[pokemon.id] = {
+    ...state.pokemonMap[pokemon.id],
+    pokemon,
+    isLoading: false
+  };
+  return state;
+};
 
 const handleFetchSingleFailure = (
   state: PokemonState,
   { id, error }: { id: string; error: Error }
-): PokemonState => ({
-  ...state,
-  loading: state.loading.filter(loadingId => loadingId !== id),
-  pokemonMap: Object.assign({}, state.pokemonMap, {
-    [id]: {
-      ...state.pokemonMap[id],
-      isLoading: false,
-      error
-    }
-  })
-});
+): PokemonState => {
+  state.loading = state.loading.filter(loadingId => loadingId !== id);
+  state.pokemonMap[id] = {
+    ...state.pokemonMap[id],
+    isLoading: false,
+    error
+  };
+  return state;
+};
 
 const pokemonReducer = (
   state = INITIAL_STATE,
@@ -92,8 +108,7 @@ const pokemonReducer = (
     case PokemonActionType.FETCH_NEXT_LIST_START:
       return { ...state, isFetchingList: true };
     case PokemonActionType.FETCH_NEXT_LIST_SUCCESS:
-      // State of each pokemon that was fetched will be updated individually after FETCH_SINGLE_SUCCESS action is dispatched
-      return { ...state, isFetchingList: false, nextUrl: action.payload };
+      return handleFetchNextListSuccess(state, action.payload);
     case PokemonActionType.FETCH_NEXT_LIST_FAILURE:
       return handleFetchNextListFailure(state, action.payload);
     case PokemonActionType.FETCH_SINGLE_START:

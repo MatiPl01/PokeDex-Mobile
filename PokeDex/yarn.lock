@@ -6242,6 +6242,11 @@ react-native-gradle-plugin@^0.0.7:
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.0.7.tgz#96602f909745239deab7b589443f14fce5da2056"
   integrity sha512-+4JpbIx42zGTONhBTIXSyfyHICHC29VTvhkkoUOJAh/XHPEixpuBduYgf6Y4y9wsN1ARlQhBBoptTvXvAFQf5g==
 
+react-native-linear-gradient@^2.6.2:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.6.2.tgz#56598a76832724b2afa7889747635b5c80948f38"
+  integrity sha512-Z8Xxvupsex+9BBFoSYS87bilNPWcRfRsGC0cpJk72Nxb5p2nEkGSBv73xZbEHnW2mUFvP+huYxrVvjZkr/gRjQ==
+
 react-native-reanimated@^2.9.1:
   version "2.9.1"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.9.1.tgz#d9a932e312c13c05b4f919e43ebbf76d996e0bc1"
@@ -6278,10 +6283,10 @@ react-native-svg-transformer@^1.0.0:
     "@svgr/plugin-svgo" "^6.1.2"
     path-dirname "^1.0.2"
 
-react-native-svg@^12.4.0:
-  version "12.4.0"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-12.4.0.tgz#934a89d3da7936aa76361b748e4ba58a1bcb9bf5"
-  integrity sha512-m2Hn5FMC7wF/BSwxrbZFVElOMAJZXLJl2bBMDXvs/fFy2v4oLBfcw8MwaBTlaIyk0p24WRC9lWv51kSA/Plj5w==
+react-native-svg@^12.4.3:
+  version "12.4.3"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-12.4.3.tgz#d383c6f587f6f3f3664413ae0e73134e91d11317"
+  integrity sha512-8OF+vvXsI854YlHBOQkanNcyio+7oQO0nQsS/Noji2VmPoMnLiJiMaxmOD9RHxGkbbo7lzbYWdxVdNibjN/8IA==
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"

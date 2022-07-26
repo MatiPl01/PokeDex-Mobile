@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FlatList, Text } from 'react-native';
 import { selectSearchItemsList } from '@store/search/search.selector';
 import { fetchSearchItemsAsync } from '@store/search/search.actions';
 import { fetchNextPokemonListAsync } from '@store/pokemon/pokemon.actions';
 import { selectPokemonList } from '@store/pokemon/pokemon.selector';
 import { SearchItem } from '@utils/search';
-import SearchBar from '@components/SearchBar/SearchBar';
-import { PokemonListItem } from '@store/pokemon/pokemon.types';
+import SearchBar from '@components/shared/SearchBar/SearchBar';
+import PokemonList from '@components/pokemon/PokemonList/PokemonList';
 
 // TODO - display loading indicator in search suggestions when fetching data from the API
 const PokemonScreen: React.FC = () => {
@@ -17,17 +16,14 @@ const PokemonScreen: React.FC = () => {
 
   useEffect(() => {
     fetchSearchItems();
-    fetchNextPokemon();
-    setTimeout(() => {
-      fetchNextPokemon();
-    }, 100);
+    fetchNextPokemonList();
   }, []);
 
   const fetchSearchItems = () => {
     dispatch(fetchSearchItemsAsync());
   };
 
-  const fetchNextPokemon = () => {
+  const fetchNextPokemonList = () => {
     dispatch(fetchNextPokemonListAsync());
   };
 
@@ -36,20 +32,7 @@ const PokemonScreen: React.FC = () => {
     console.log(item);
   };
 
-  const renderPokemonCard = ({
-    item: { id, isLoading, pokemon }
-  }: {
-    item: PokemonListItem;
-  }) => (
-    <Text
-      style={{
-        fontSize: 16,
-        padding: 10
-      }}
-    >
-      {id} - {pokemon?.name} - {isLoading ? 'true' : 'false'}
-    </Text>
-  );
+  console.log(pokemonList);
 
   return (
     <>
@@ -59,12 +42,9 @@ const PokemonScreen: React.FC = () => {
         onSearchFetchRequest={fetchSearchItems}
         showSuggestions
       />
-      <FlatList
-        data={pokemonList}
-        keyExtractor={item => item.id}
-        renderItem={renderPokemonCard}
-        onEndReached={fetchNextPokemon}
-        onEndReachedThreshold={0}
+      <PokemonList
+        pokemonList={pokemonList}
+        onFetchNextRequest={fetchNextPokemonList}
       />
     </>
   );

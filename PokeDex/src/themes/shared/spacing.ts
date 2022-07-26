@@ -4,7 +4,7 @@ export const lineHeight = {
 };
 
 export const space = {
-  xs: '0px',
+  xs: '2px',
   sm: '4px',
   md: '8px',
   lg: '16px',

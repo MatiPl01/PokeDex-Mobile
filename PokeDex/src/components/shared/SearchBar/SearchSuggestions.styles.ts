@@ -1,8 +1,8 @@
-import { flexCenter } from './../../styles/shared';
-import { SearchSuggestionItem } from './../../utils/search';
-import { FlatList, TouchableOpacity } from 'react-native';
+import { FlatList, FlatListProps, TouchableOpacity } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
+import { SearchSuggestionItem } from '@utils/search';
+import { flexCenter } from '@styles/shared';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import {
   SEARCH_BAR_HEIGHT,
@@ -29,7 +29,9 @@ export const OuterWrapper = styled(Animated.View)<{ itemCount: number }>`
 `;
 
 export const SuggestionList = styled(
-  FlatList as new () => FlatList<SearchSuggestionItem>
+  FlatList as new (
+    props: FlatListProps<SearchSuggestionItem>
+  ) => FlatList<SearchSuggestionItem>
 )``;
 
 export const SuggestionItem = styled(TouchableOpacity)`

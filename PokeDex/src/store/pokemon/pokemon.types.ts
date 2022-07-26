@@ -21,6 +21,27 @@ export type PokemonSearchResponse = {
   results: PokemonSearchEntry[];
 };
 
+export enum PokemonType {
+  NORMAL = 'normal',
+  FIGHTING = 'fighting',
+  FLYING = 'flying',
+  POISON = 'poison',
+  GROUND = 'ground',
+  ROCK = 'rock',
+  BUG = 'bug',
+  GHOST = 'ghost',
+  STEEL = 'steel',
+  FIRE = 'fire',
+  WATER = 'water',
+  GRASS = 'grass',
+  ELECTRIC = 'electric',
+  PSYCHIC = 'psychic',
+  ICE = 'ice',
+  DRAGON = 'dragon',
+  DARK = 'dark',
+  FAIRY = 'fairy'
+}
+
 // The type below contains only properties that will be used to create the Pokemon object
 export type PokemonResponse = {
   id: string;
@@ -44,7 +65,7 @@ export type PokemonResponse = {
   types: [
     {
       type: {
-        name: string;
+        name: PokemonType;
       };
     }
   ];
@@ -68,10 +89,10 @@ export type PokemonResponse = {
 export type Pokemon = {
   id: string;
   name: string;
-  spriteImgUrl: string;
+  imageUrl: string;
   height: number;
   weight: number;
-  types: string[];
+  types: PokemonType[];
   abilities: string[];
   stats: {
     name: string;

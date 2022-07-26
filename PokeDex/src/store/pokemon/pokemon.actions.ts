@@ -17,7 +17,10 @@ type FetchNextPokemonListStart =
 
 type FetchNextPokemonListSuccess = ActionWithPayload<
   PokemonActionType.FETCH_NEXT_LIST_SUCCESS,
-  string | null
+  {
+    nextUrl: string | null;
+    pokemonIds: string[];
+  }
 >;
 
 type FetchNextPokemonListFailure = ActionWithPayload<
@@ -55,9 +58,13 @@ export const fetchNextPokemonListStart = (): FetchNextPokemonListStart =>
   createAction(PokemonActionType.FETCH_NEXT_LIST_START);
 
 export const fetchNextPokemonListSuccess = (
-  nextUrl: string | null
+  nextUrl: string | null,
+  pokemonIds: string[]
 ): FetchNextPokemonListSuccess =>
-  createAction(PokemonActionType.FETCH_NEXT_LIST_SUCCESS, nextUrl);
+  createAction(PokemonActionType.FETCH_NEXT_LIST_SUCCESS, {
+    nextUrl,
+    pokemonIds
+  });
 
 export const fetchNextPokemonListFailure = (
   error: Error
@@ -106,18 +113,18 @@ export const fetchNextPokemonListAsync: ActionCreator<
     dispatch(fetchNextPokemonListStart());
 
     try {
-      console.log('here');
       const nextPokemonSearchResponse = await fetchPokemonList(url);
-      console.log('res', nextPokemonSearchResponse);
-      const pokemonPromises: Promise<void>[] =
-        nextPokemonSearchResponse.results.map(
-          async (entry: PokemonSearchEntry) => {
-            const id = getPokemonIdFromUrl(entry.url);
-            return store.dispatch(fetchSinglePokemonAsync(id));
-          }
-        );
+      const pokemonIds = nextPokemonSearchResponse.results.map(
+        (entry: PokemonSearchEntry) => getPokemonIdFromUrl(entry.url)
+      );
+      dispatch(
+        fetchNextPokemonListSuccess(nextPokemonSearchResponse.next, pokemonIds)
+      );
+      const pokemonPromises: Promise<void>[] = pokemonIds.map(
+        async (id: string) =>
+          store.dispatch(fetchSinglePokemonAsync(id))
+      );
       await Promise.all(pokemonPromises);
-      dispatch(fetchNextPokemonListSuccess(nextPokemonSearchResponse.next));
     } catch (err) {
       dispatch(fetchNextPokemonListFailure(err as Error));
     }
