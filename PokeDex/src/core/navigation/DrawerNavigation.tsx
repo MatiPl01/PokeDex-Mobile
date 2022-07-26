@@ -27,9 +27,6 @@ import {
   DrawerWrapper
 } from './DrawerNavigation.styles';
 
-MaterialIcon.loadFont();
-IonIcon.loadFont();
-
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 

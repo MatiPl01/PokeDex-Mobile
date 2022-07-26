@@ -1,9 +1,10 @@
 import styled, { css } from 'styled-components/native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SvgUri } from 'react-native-svg';
-import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen';
 import { flexCenter } from '@styles/shared';
 import { PokemonType } from '@store/pokemon/pokemon.types';
+import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen';
+import { TYPE_BADGE_WIDTH } from '../PokemonTypeBadge/PokemonTypeBadge.styles';
 
 const BACKGROUND_HEIGH = 0.4 * SCREEN_WIDTH;
 const BACKGROUND_TEXT_WRAPPER_WIDTH = 1000; // Some really big value
@@ -79,6 +80,7 @@ export const BackgroundText = styled.Text`
 
 export const CardTitle = styled.Text`
   text-transform: capitalize;
+
   ${({ theme }) => css`
     line-height: ${theme.lineHeight.title};
     font-size: ${theme.fontSize.title};
@@ -105,7 +107,6 @@ export const BackgroundGradientsWrapper = styled.View`
   bottom: 0;
   left: 50%;
   flex-direction: row;
-  background-color: blue;
   transform: translateX(-${GRADIENTS_WRAPPER_WIDTH / 2}px);
   width: ${GRADIENTS_WRAPPER_WIDTH}px;
 `;
@@ -124,4 +125,17 @@ export const BackgroundGradient = styled(LinearGradient).attrs<{
   transform: skewX(-10deg);
   height: 100%;
   ${({ theme }) => theme.shadow.strong.lg};
+`;
+
+export const CardTitleSkeletonWrapper = styled.View`
+  ${({ theme }) => css`
+    height: ${`${parseInt(theme.lineHeight.title) - 4}px`};
+    margin: 2px;
+    width: 100px;
+  `};
+`;
+
+export const TypeBadgeSkeletonWrapper = styled(TypeBadgeWrapper)`
+  width: ${TYPE_BADGE_WIDTH}px;
+  height: ${({ theme }) => `${parseInt(theme.fontSize.caption) + 10}px`};
 `;

@@ -1,4 +1,4 @@
-import styled from 'styled-components/native';
+import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
@@ -22,6 +22,8 @@ export const AnimatedBar = styled(Animated.View)`
   width: 100%;
   height: 3px;
   border-radius: 5px;
-  background-color: white;
-  ${({ theme }) => theme.shadow.strong.md};
+  ${({ theme }) => css`
+    background-color: ${theme.color.white};
+    ${theme.shadow.strong.md};
+  `};
 `;

@@ -1,10 +1,10 @@
 import React from 'react';
-import { Text } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useTheme } from 'styled-components/native';
 import { RootState } from '@store';
 import { PokemonType } from '@store/pokemon/pokemon.types';
 import { selectSinglePokemonState } from '@store/pokemon/pokemon.selector';
+import SkeletonPlaceholder from '@components/shared/SkeletonPlaceholder/SkeletonPlaceholder';
+import PokemonTypeBadge from '../PokemonTypeBadge/PokemonTypeBadge';
 import {
   CardWrapper,
   BackgroundWrapper,
@@ -17,23 +17,45 @@ import {
   BackgroundText,
   CardTitle,
   TypeBadgesWrapper,
-  TypeBadgeWrapper
+  TypeBadgeWrapper,
+  CardTitleSkeletonWrapper,
+  TypeBadgeSkeletonWrapper
 } from './PokemonCard.styles';
-import PokemonTypeBadge from '../PokemonTypeBadge/PokemonTypeBadge';
+
+const PokemonCardSkeleton: React.FC = () => (
+  <CardWrapper>
+    <BackgroundWrapper>
+      <BackgroundClip>
+        <SkeletonPlaceholder />
+      </BackgroundClip>
+    </BackgroundWrapper>
+    <CardFooter>
+      <CardTitleSkeletonWrapper>
+        <SkeletonPlaceholder />
+      </CardTitleSkeletonWrapper>
+      <TypeBadgesWrapper>
+        <TypeBadgeSkeletonWrapper>
+          <SkeletonPlaceholder />
+        </TypeBadgeSkeletonWrapper>
+        <TypeBadgeSkeletonWrapper>
+          <SkeletonPlaceholder />
+        </TypeBadgeSkeletonWrapper>
+      </TypeBadgesWrapper>
+    </CardFooter>
+  </CardWrapper>
+);
 
 type PokemonCardProps = {
   pokemonId: string;
 };
 
 const PokemonCard: React.FC<PokemonCardProps> = ({ pokemonId }) => {
-  // TODO = implement skeleton animation on loading
-
-  const theme = useTheme();
   const { pokemon, isLoading } = useSelector((state: RootState) =>
     selectSinglePokemonState(state, pokemonId)
   );
 
-  if (!pokemon) return <Text>loading...</Text>;
+  if (isLoading) return <PokemonCardSkeleton />;
+  if (!pokemon) return null;
   const { id, name, types, imageUrl } = pokemon;
 
   return (
@@ -47,12 +69,12 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemonId }) => {
           </BackgroundTextWrapper>
           <BackgroundGradientsWrapper>
             {types.map((type: PokemonType) => (
-                <BackgroundGradient
-                  pokemonType={type}
-                  key={`${id}-${type}-gradient`}
-                  colors={[]}
-                />
-              ))}
+              <BackgroundGradient
+                pokemonType={type}
+                key={`${id}-${type}-gradient`}
+                colors={[]}
+              />
+            ))}
           </BackgroundGradientsWrapper>
         </BackgroundClip>
         <PokemonSvg uri={imageUrl} />

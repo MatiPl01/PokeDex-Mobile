@@ -36,10 +36,6 @@ import {
 import SearchSuggestions from './SearchSuggestions';
 
 const SEARCH_BUTTON_ANIMATION_DELAY = MENU_TOGGLE_ANIMATION_DELAY + 250;
-
-Fontisto.loadFont(); // TODO - check if loading fonts in each file is correct
-IonIcon.loadFont();
-EntypoIcon.loadFont();
 const AnimatedIonIcon = Animated.createAnimatedComponent(IonIcon);
 
 const useAnimatedSlideStyle = createAnimatedStyle({
@@ -208,7 +204,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleSuggestionSelect = (item: SearchItem) => {
     setSearchValue(item.value);
-    onSearchSubmit(item)
+    onSearchSubmit(item);
   };
 
   return (

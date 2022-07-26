@@ -19,7 +19,6 @@ import {
   SearchSuggestionItem
 } from '@utils/search';
 import { createAnimatedStyle, createAnimatedStyles } from '@utils/reanimated';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
 import {
   SEARCH_BAR_HEIGHT,
   FOCUSED_SEARCH_BAR_HEIGHT
@@ -38,8 +37,6 @@ import {
   SUGGESTION_ITEM_HEIGHT,
   SUGGESTIONS_FOOTER_HEIGHT
 } from './SearchSuggestions.styles';
-
-EntypoIcon.loadFont(); // TODO - check if loading fonts in each file is correct
 
 const useAnimatedRevealStyles = createAnimatedStyles({
   wrapper: {
