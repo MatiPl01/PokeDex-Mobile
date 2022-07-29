@@ -1,8 +1,6 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '@store';
-import { PokemonType } from '@store/pokemon/pokemon.types';
-import { selectSinglePokemonState } from '@store/pokemon/pokemon.selector';
+import React, { useState } from 'react';
+import Svg from 'react-native-remote-svg';
+import { Pokemon, PokemonType } from '@store/pokemon/pokemon.types';
 import SkeletonPlaceholder from '@components/shared/SkeletonPlaceholder/SkeletonPlaceholder';
 import PokemonTypeBadge from '../PokemonTypeBadge/PokemonTypeBadge';
 import {
@@ -46,13 +44,12 @@ const PokemonCardSkeleton: React.FC = () => (
 );
 
 type PokemonCardProps = {
-  pokemonId: string;
+  pokemon: Pokemon | null;
+  isLoading?: boolean;
 };
 
-const PokemonCard: React.FC<PokemonCardProps> = ({ pokemonId }) => {
-  const { pokemon, isLoading } = useSelector((state: RootState) =>
-    selectSinglePokemonState(state, pokemonId)
-  );
+const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
+  const [isImageLoading, setIsImageLoading] = useState(true);
 
   if (isLoading) return <PokemonCardSkeleton />;
   if (!pokemon) return null;
@@ -61,23 +58,36 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemonId }) => {
   return (
     <CardWrapper>
       <BackgroundWrapper>
-        <BackgroundClip>
-          <BackgroundTextWrapper>
-            <BackgroundText numberOfLines={1} ellipsizeMode="clip">
-              {name}
-            </BackgroundText>
-          </BackgroundTextWrapper>
-          <BackgroundGradientsWrapper>
-            {types.map((type: PokemonType) => (
-              <BackgroundGradient
-                pokemonType={type}
-                key={`${id}-${type}-gradient`}
-                colors={[]}
-              />
-            ))}
-          </BackgroundGradientsWrapper>
-        </BackgroundClip>
-        <PokemonSvg uri={imageUrl} />
+        {isImageLoading ? (
+          <>
+            <SkeletonPlaceholder />
+            {/* The Svg component below is used to determine if the Svg image was fetched from the server and finished loading. Using this Svg component to display the image results in showing cropped image. Therefore, another library is used for displaying the actual image */}
+            <Svg
+              source={{ uri: pokemon.imageUrl }}
+              onLoadEnd={() => setIsImageLoading(false)}
+            />
+          </>
+        ) : (
+          <>
+            <BackgroundClip>
+              <BackgroundTextWrapper>
+                <BackgroundText numberOfLines={1} ellipsizeMode="clip">
+                  {name}
+                </BackgroundText>
+              </BackgroundTextWrapper>
+              <BackgroundGradientsWrapper>
+                {types.map((type: PokemonType) => (
+                  <BackgroundGradient
+                    pokemonType={type}
+                    key={`${id}-${type}`}
+                    colors={[]}
+                  />
+                ))}
+              </BackgroundGradientsWrapper>
+            </BackgroundClip>
+            <PokemonSvg uri={imageUrl} />
+          </>
+        )}
       </BackgroundWrapper>
       <CardFooter>
         <CardTitle>{name}</CardTitle>
@@ -93,4 +103,4 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemonId }) => {
   );
 };
 
-export default PokemonCard;
+export default React.memo(PokemonCard);

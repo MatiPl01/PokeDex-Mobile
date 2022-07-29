@@ -1,12 +1,13 @@
-import { SinglePokemonState } from './pokemon.reducer';
-
 export enum PokemonActionType {
   FETCH_NEXT_LIST_START = 'pokemon/FETCH_NEXT_LIST_START',
-  FETCH_NEXT_LIST_SUCCESS = 'pokemon/FETCH_NEXT_LIST_SUCCESS',
+  FETCH_NEXT_LIST_SUCCESS = 'pokemon/FETCH_NEXT_LIST_SUCCESS', 
+  FETCH_NEXT_LIST_SINGLE_START = 'pokemon/FETCH_NEXT_LIST_SINGLE_START',
   FETCH_NEXT_LIST_FAILURE = 'pokemon/FETCH_NEXT_LIST_FAILURE',
+  FETCH_NEXT_LIST_SINGLE_FAILURE = 'pokemon/FETCH_NEXT_LIST_SINGLE_FAILURE',
   FETCH_SINGLE_START = 'pokemon/FETCH_SINGLE_START',
   FETCH_SINGLE_SUCCESS = 'pokemon/FETCH_SINGLE_SUCCESS',
-  FETCH_SINGLE_FAILURE = 'pokemon/FETCH_SINGLE_FAILURE'
+  FETCH_SINGLE_FAILURE = 'pokemon/FETCH_SINGLE_FAILURE',
+  CLEAR_POKEMON_LIST = 'pokemon/CLEAR_POKEMON_LIST'
 }
 
 export type PokemonSearchEntry = {
@@ -99,7 +100,3 @@ export type Pokemon = {
     value: number;
   }[];
 };
-
-export type PokemonListItem = {
-  id: string;
-} & SinglePokemonState;

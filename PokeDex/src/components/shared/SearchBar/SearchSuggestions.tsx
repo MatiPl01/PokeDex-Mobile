@@ -134,9 +134,9 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       duration: 250
     });
     scrollTopIconProgress.value = withDelay(
-      50,
+      100,
       withTiming(+showScrollTopButton, {
-        duration: 250
+        duration: 200
       })
     );
   }, [lastVisibleItemIdx]);
@@ -214,8 +214,6 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
             progressViewOffset={15}
           />
         }
-        onRefresh={handleSearchRefresh}
-        refreshing={isRefreshing}
       />
       {loadMoreOnScroll && suggestions.length > limit && (
         <>

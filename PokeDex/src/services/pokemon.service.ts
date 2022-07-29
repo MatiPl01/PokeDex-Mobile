@@ -73,7 +73,7 @@ const pokemonDataTransform = ({
   stats
 }: PokemonResponse): Pokemon => {
   return {
-    id,
+    id: String(id),
     name,
     imageUrl:
       sprites.other.dream_world.front_default ||

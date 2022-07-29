@@ -24,15 +24,15 @@ export type SearchAction =
   | FetchSearchItemsSuccess
   | FetchSearchItemsFailure;
 
-export const fetchSearchItemsStart = (): FetchSearchItemsStart =>
+const fetchSearchItemsStart = (): FetchSearchItemsStart =>
   createAction(SearchActionType.FETCH_SEARCH_ITEMS_START);
 
-export const fetchSearchItemsSuccess = (
+const fetchSearchItemsSuccess = (
   searchItems: SearchItem[]
 ): FetchSearchItemsSuccess =>
   createAction(SearchActionType.FETCH_SEARCH_ITEMS_SUCCESS, searchItems);
 
-export const fetchSearchItemsFailure = (
+const fetchSearchItemsFailure = (
   error: Error
 ): FetchSearchItemsFailure =>
   createAction(SearchActionType.FETCH_SEARCH_ITEMS_FAILURE, error);

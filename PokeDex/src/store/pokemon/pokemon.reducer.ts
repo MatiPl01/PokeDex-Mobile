@@ -1,63 +1,115 @@
-import { FETCH_NEXT_POKEMON_COUNT } from './../../config';
-import { API_URL } from '@config';
+import { FETCH_NEXT_POKEMON_COUNT, API_URL } from '@config';
 import { Pokemon, PokemonActionType } from '@store/pokemon/pokemon.types';
 import { PokemonAction } from './pokemon.actions';
+import { idToIdx } from './pokemon.utils';
 
-// Store stare separately for each pokemon to display correct loading indicators
 export type SinglePokemonState = {
-  pokemon: Pokemon | null;
-  isLoading: boolean;
-  error: Error | null;
+  readonly id: string;
+  readonly pokemon: Pokemon | null;
+  readonly isLoading: boolean;
+  readonly error: Error | null;
 };
 
+const createSinglePokemonState = (id: string): SinglePokemonState => ({
+  id,
+  pokemon: null,
+  isLoading: true,
+  error: null
+});
+
 export type PokemonState = {
-  readonly pokemonMap: { [key: string]: SinglePokemonState };
-  loading: string[]; // array of loading pokemon ids
-  readonly errors: { [key: string]: Error | null }; // Errors that happened while fetching particular pokemon
+  readonly pokemonList: SinglePokemonState[];
   readonly isFetchingList: boolean; // Indicates that pokemon list is being fetched
   readonly fetchingListError: Error | null; // Error that happened while fetching a list of pokemon
   readonly nextUrl: string | null; // Url to fetch next pokemon list
 };
 
 const INITIAL_STATE: PokemonState = {
-  pokemonMap: {},
-  loading: [],
-  errors: {},
+  pokemonList: [],
   isFetchingList: false,
   fetchingListError: null,
   nextUrl: `${API_URL}/pokemon?offset=0&limit=${FETCH_NEXT_POKEMON_COUNT}`
 };
 
+const handleFetchNextListStart = (state: PokemonState): PokemonState => ({
+  ...state,
+  isFetchingList: true
+});
+
+const handleFetchNextListSingleStart = (
+  state: PokemonState,
+  pokemonIds: string[]
+): PokemonState => {
+  const pokemonList = [...state.pokemonList];
+
+  pokemonIds.forEach(id => {
+    const idx = idToIdx(id);
+    if (!pokemonList[idx]) pokemonList[idx] = createSinglePokemonState(id);
+    else
+      pokemonList[idx] = {
+        ...state.pokemonList[idx],
+        isLoading: true
+      };
+  });
+
+  return {
+    ...state,
+    pokemonList
+  };
+};
+
 const handleFetchNextListSuccess = (
   state: PokemonState,
-  { nextUrl, pokemonIds }: { nextUrl: string | null; pokemonIds: string[] }
+  {
+    nextUrl,
+    pokemonMap
+  }: { nextUrl: string | null; pokemonMap: { [key: string]: Pokemon } }
 ): PokemonState => {
-  const newPokemonMap = { ...state.pokemonMap };
-  pokemonIds.forEach(id => {
-    if (newPokemonMap[id]) return;
-    newPokemonMap[id] = {
-      pokemon: null,
+  const pokemonList = [...state.pokemonList];
+
+  Object.entries(pokemonMap).forEach(([id, pokemon]) => {
+    const idx = idToIdx(id);
+    pokemonList[idx] = {
+      ...pokemonList[idx],
       isLoading: false,
-      error: null
+      pokemon
     };
   });
 
   return {
     ...state,
-    nextUrl,
-    isFetchingList: false,
-    pokemonMap: newPokemonMap
+    pokemonList,
+    nextUrl
   };
 };
 
 const handleFetchNextListFailure = (
   state: PokemonState,
   error: Error
+): PokemonState => ({
+  ...state,
+  isFetchingList: false,
+  fetchingListError: error
+});
+
+const handleFetchNextListSingleFailure = (
+  state: PokemonState,
+  errorsMap: { [key: string]: Error }
 ): PokemonState => {
+  const pokemonList = [...state.pokemonList];
+
+  Object.entries(errorsMap).forEach(([id, error]) => {
+    const idx = idToIdx(id);
+    pokemonList[idx] = {
+      ...pokemonList[idx],
+      isLoading: false,
+      error
+    };
+  });
+
   return {
     ...state,
-    isFetchingList: false,
-    fetchingListError: error
+    pokemonList
   };
 };
 
@@ -65,39 +117,57 @@ const handleFetchSingleStart = (
   state: PokemonState,
   id: string
 ): PokemonState => {
-  state.loading.push(id);
-  state.loading = [...new Set(state.loading)];
-  state.pokemonMap[id] = {
-    ...state.pokemonMap[id],
-    isLoading: true
+  const pokemonList = [...state.pokemonList];
+  const idx = idToIdx(id);
+
+  if (!pokemonList[idx]) {
+    pokemonList[idx] = createSinglePokemonState(id);
+  } else {
+    pokemonList[idx] = { ...pokemonList[idx], isLoading: true };
+  }
+
+  return {
+    ...state,
+    pokemonList
   };
-  return state;
 };
 
 const handleFetchSingleSuccess = (
   state: PokemonState,
   pokemon: Pokemon
 ): PokemonState => {
-  state.loading = state.loading.filter(id => id !== pokemon.id);
-  state.pokemonMap[pokemon.id] = {
-    ...state.pokemonMap[pokemon.id],
-    pokemon,
-    isLoading: false
+  const pokemonList = [...state.pokemonList];
+  const idx = idToIdx(pokemon.id);
+
+  pokemonList[idx] = {
+    ...pokemonList[idx],
+    isLoading: false,
+    pokemon
   };
-  return state;
+
+  return {
+    ...state,
+    pokemonList
+  };
 };
 
 const handleFetchSingleFailure = (
   state: PokemonState,
   { id, error }: { id: string; error: Error }
 ): PokemonState => {
-  state.loading = state.loading.filter(loadingId => loadingId !== id);
-  state.pokemonMap[id] = {
-    ...state.pokemonMap[id],
+  const pokemonList = [...state.pokemonList];
+  const idx = idToIdx(id);
+
+  pokemonList[idx] = {
+    ...pokemonList[idx],
     isLoading: false,
     error
   };
-  return state;
+
+  return {
+    ...state,
+    pokemonList
+  };
 };
 
 const pokemonReducer = (
@@ -106,17 +176,32 @@ const pokemonReducer = (
 ): PokemonState => {
   switch (action.type) {
     case PokemonActionType.FETCH_NEXT_LIST_START:
-      return { ...state, isFetchingList: true };
+      console.log('FETCH_NEXT_LIST_START');
+      return handleFetchNextListStart(state);
+    case PokemonActionType.FETCH_NEXT_LIST_SINGLE_START:
+      console.log('FETCH_NEXT_LIST_SINGLE_START');
+      return handleFetchNextListSingleStart(state, action.payload);
     case PokemonActionType.FETCH_NEXT_LIST_SUCCESS:
+      console.log('FETCH_NEXT_LIST_SUCCESS');
       return handleFetchNextListSuccess(state, action.payload);
     case PokemonActionType.FETCH_NEXT_LIST_FAILURE:
+      console.log('FETCH_NEXT_LIST_FAILURE');
       return handleFetchNextListFailure(state, action.payload);
+    case PokemonActionType.FETCH_NEXT_LIST_SINGLE_FAILURE:
+      console.log('FETCH_NEXT_LIST_SINGLE_FAILURE');
+      return handleFetchNextListSingleFailure(state, action.payload);
     case PokemonActionType.FETCH_SINGLE_START:
+      console.log('FETCH_SINGLE_START');
       return handleFetchSingleStart(state, action.payload);
     case PokemonActionType.FETCH_SINGLE_SUCCESS:
+      console.log('FETCH_SINGLE_SUCCESS');
       return handleFetchSingleSuccess(state, action.payload);
     case PokemonActionType.FETCH_SINGLE_FAILURE:
+      console.log('FETCH_SINGLE_FAILURE');
       return handleFetchSingleFailure(state, action.payload);
+    case PokemonActionType.CLEAR_POKEMON_LIST:
+      console.log('CLEAR_POKEMON_LIST');
+      return INITIAL_STATE;
     default:
       return state;
   }
