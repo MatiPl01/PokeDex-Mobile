@@ -1,19 +1,22 @@
 import styled, { css } from 'styled-components/native';
-import LinearGradient from 'react-native-linear-gradient';
+import { Animated } from 'react-native';
 import { SvgUri } from 'react-native-svg';
+import LinearGradient from 'react-native-linear-gradient';
 import { flexCenter } from '@styles/shared';
 import { PokemonType } from '@store/pokemon/pokemon.types';
 import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen';
 import { TYPE_BADGE_WIDTH } from '../PokemonTypeBadge/PokemonTypeBadge.styles';
 
 const BACKGROUND_HEIGH = 0.4 * SCREEN_WIDTH;
+const FOOTER_HEIGHT = 85;
 const BACKGROUND_TEXT_WRAPPER_WIDTH = 1000; // Some really big value
 const MAX_IMAGE_WIDTH = 0.4 * SCREEN_WIDTH;
 const MAX_IMAGE_HEIGHT = BACKGROUND_HEIGH;
 const CARD_WIDTH = 300;
 const GRADIENTS_WRAPPER_WIDTH = 1.2 * CARD_WIDTH;
+export const CARD_HEIGHT = BACKGROUND_HEIGH + FOOTER_HEIGHT;
 
-export const CardWrapper = styled.View`
+export const CardWrapper = styled(Animated.View)`
   border-radius: 5px;
   max-width: 100%;
   width: ${CARD_WIDTH}px;
@@ -30,10 +33,9 @@ export const CardFooter = styled.View`
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
   align-items: center;
-  ${({ theme }) => css`
-    padding: ${theme.space.md};
-    background-color: ${theme.color.background.primary};
-  `};
+  justify-content: center;;
+  height: ${FOOTER_HEIGHT}px;
+  background-color: ${({ theme }) => theme.color.background.primary};
 `;
 
 export const PokemonSvg = styled(SvgUri).attrs({

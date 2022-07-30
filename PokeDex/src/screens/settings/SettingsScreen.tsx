@@ -2,14 +2,17 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  selectThemeMode,
-  selectThemeName
-} from '@store/theme/theme.selector';
+import { selectThemeMode, selectThemeName } from '@store/theme/theme.selector';
 import { ThemeName, ThemeMode } from '@store/theme/theme.types';
 import { setTheme, setThemeMode } from '@store/theme/theme.actions';
 import { catchAsync } from '@utils/errors';
-import { Container, TextContainer, Text, Button, ButtonText } from './SettingsScreen.styles';
+import {
+  Container,
+  TextContainer,
+  Text,
+  Button,
+  ButtonText
+} from './SettingsScreen.styles';
 
 const ThemeTestScreen: React.FC = () => {
   const dispatch = useDispatch();
@@ -28,14 +31,14 @@ const ThemeTestScreen: React.FC = () => {
     const newThemeMode =
       themeMode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK;
     dispatch(setThemeMode(newThemeMode));
-    saveThemeMode(newThemeMode as string);
+    saveThemeMode(newThemeMode);
   };
 
   const switchTheme = () => {
     const newThemeName =
       themeName === ThemeName.DEFAULT ? ThemeName.OCEAN : ThemeName.DEFAULT;
     dispatch(setTheme(newThemeName));
-    saveThemeName(newThemeName as string);
+    saveThemeName(newThemeName);
   };
 
   return (

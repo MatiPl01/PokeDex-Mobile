@@ -19,7 +19,7 @@ export const SCREEN_HEIGHT =
     ? Dimensions.get('screen').height - (StatusBar.currentHeight || 0)
     : Dimensions.get('window').height;
 export const SCREEN_WIDTH = Dimensions.get('window').width;
-const LOGO_BAR_HEIGHT = 65;
+export const LOGO_BAR_HEIGHT = 65;
 const LOGO_BAR_PADDING_X = 5;
 const LOGO_BAR_PADDING_Y = 5;
 const POKE_BALL_SIZE = SCREEN_WIDTH / 2;
