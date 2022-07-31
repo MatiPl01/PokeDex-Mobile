@@ -6,46 +6,81 @@ import {
   interpolateColor
 } from 'react-native-reanimated';
 
-// TODO - maybe improve types
-type AnimatedNumberRange = [number, number];
-type AnimatedStringRange = string[];
-type AnimatedValueRange = AnimatedNumberRange | AnimatedStringRange;
-type AnimatedValueList = { [key: string]: AnimatedValueRange }[];
-type AnimatedValue = AnimatedValueRange | AnimatedValueList;
+// TODO - maybe improve types, maybe improve isInterpolatedValuesList function
+type InterpolationNumbers = readonly number[];
+type InterpolationStrings = readonly string[];
+type InterpolationRange = InterpolationNumbers | InterpolationStrings;
+type InterpolationValuesList = { [key: string]: InterpolationRange }[];
 
-export type AnimatedStyleConfig = { [key: string]: AnimatedValue };
+type InterpolationRanges = {
+  inputRange: InterpolationNumbers;
+  outputRange: InterpolationRange | InterpolationValuesList;
+};
+
+type InterpolationPropertyValue =
+  | InterpolationRanges
+  | InterpolationRange // default inputRange will be used
+  | InterpolationValuesList; // default inputRange will be used
+
+export type AnimatedStyleConfig = { [key: string]: InterpolationPropertyValue };
 
 export type AnimatedStylesConfig = { [key: string]: AnimatedStyleConfig };
 
+type InterpolatedValue =
+  | string
+  | number
+  | { [key: string]: InterpolatedValue }[];
 /**
  * Interpolate the progress value to the specific range
  *
- * @param range - 2-number array specifying the initial and the final value
- *                of the animated property
- * @param progress - animated value between 0 and 1 indicating animation progress
- * @returns - interpolated value calculated based on the animation progress
+ * @param {
+ *  inputRange - array of interpolation input values
+ *  outputRange - array of interpolation output values
+ *  progress - animation progress value
+ * }
+ *
+ * @return - value calculated based on the interpolation inputRange, outputRange and the progress value
  */
-const interpolateNumberValue = (
-  range: AnimatedNumberRange,
-  progress: Readonly<SharedValue<number>>
-) => {
+const interpolateNumbers = ({
+  inputRange = [0, 1],
+  outputRange,
+  progress
+}: {
+  inputRange?: InterpolationNumbers;
+  outputRange: InterpolationNumbers;
+  progress: Readonly<SharedValue<number>>;
+}): number => {
   'worklet';
-  return interpolate(progress.value, [0, 1], range, Extrapolate.CLAMP);
+  return interpolate(
+    progress.value,
+    inputRange,
+    outputRange,
+    Extrapolate.CLAMP
+  );
 };
 
 /**
  * Interpolate the progress value to to the color range
  *
- * @param range - array of colors
- * @param progress - animated value between 0 and 1 indicating animation progress
- * @returns - interpolated color value calculated based on the animation progress
+ * @param {
+ *  inputRange - array of interpolation input values
+ *  outputRange - array of interpolation output colors
+ *  progress - animation progress value
+ * }
+ *
+ * @return - color calculated based on the interpolation inputRange, outputRange and the progress value
  */
-const interpolateColorValue = (
-  range: AnimatedStringRange,
-  progress: Readonly<SharedValue<number>>
-) => {
+const interpolateColors = ({
+  inputRange = [0, 1],
+  outputRange,
+  progress
+}: {
+  inputRange?: InterpolationNumbers;
+  outputRange: InterpolationStrings;
+  progress: Readonly<SharedValue<number>>;
+}): string => {
   'worklet';
-  return interpolateColor(progress.value, [0, 1], range, 'RGB');
+  return interpolateColor(progress.value, inputRange, outputRange, 'RGB');
 };
 
 /**
@@ -56,13 +91,9 @@ const interpolateColorValue = (
  * @returns - boolean value indicating if the value provided is a range
  *            of numbers
  */
-const isNumberRange = (value: any[]): boolean => {
+const isNumberRange = (value: readonly any[]): boolean => {
   'worklet';
-  return (
-    value instanceof Array &&
-    value.length === 2 &&
-    value.every(v => typeof v === 'number')
-  );
+  return value.every(v => typeof v === 'number');
 };
 
 /**
@@ -73,14 +104,98 @@ const isNumberRange = (value: any[]): boolean => {
  * @returns - boolean value indicating if the value provided is a range
  *            of strings
  */
-const isStringRange = (value: any[]): boolean => {
+const isStringRange = (value: readonly any[]): boolean => {
   'worklet';
-  return (
-    value instanceof Array &&
-    value.length >= 2 &&
-    value.every(v => typeof v === 'string')
-  );
+  return value.every(v => typeof v === 'string');
 };
+
+/**
+ * Detects if the value assigned to the animated property is a list of objects containing properties and interpolation ranges
+ *
+ * @param value - array of values expected to be a list of objects containing animated values
+ * @returns - boolean value indicating if the value provided is an array of objects with properties and interpolation ranges
+ */
+const isInterpolatedValuesList = (value: readonly any[]): boolean => {
+  'worklet';
+  return value.every(v => v instanceof Object);
+};
+
+/**
+ * Interpolate values assigned to the specific property
+ *
+ * @param progress - animation progress value
+ * @param propertyName - name of a property which has interpolation values assigned to it
+ * @param value - interpolated property value]
+ * @returns
+ */
+function interpolateValue(
+  progress: Readonly<SharedValue<number>>,
+  propertyName: string,
+  value: InterpolationPropertyValue
+): InterpolatedValue {
+  'worklet';
+  // TODO - set better return type
+  let inputRange: InterpolationNumbers | undefined;
+  let outputRange: InterpolationRange | InterpolationValuesList | undefined;
+
+  // If value is an { inputRange, outputRange } object
+  if (
+    value instanceof Object &&
+    ['inputRange', 'outputRange'].every(prop =>
+      Object.keys(value).includes(prop)
+    )
+  ) {
+    const ranges = value as InterpolationRanges;
+    inputRange = ranges.inputRange;
+    outputRange = ranges.outputRange;
+  }
+
+  if (value instanceof Array) {
+    // If value is an InterpolatedValuesList
+    if (isInterpolatedValuesList(value)) {
+      return (value as InterpolationValuesList).map(listValue =>
+        Object.fromEntries(
+          Object.entries(listValue).map(([propName, propValue]) => [
+            propName,
+            interpolateValue(
+              progress,
+              propName,
+              propValue as InterpolationPropertyValue
+            )
+          ])
+        )
+      );
+    }
+    // If value is an interpolation outputRange
+    else outputRange = value;
+  }
+
+  if (!outputRange) {
+    throw new Error(
+      `Interpolation outputRange was not specified ${propertyName} ${JSON.stringify(
+        value
+      )}`
+    );
+  }
+  // If outputRange is an InterpolationNumbers range
+  if (isNumberRange(outputRange as InterpolationRange)) {
+    outputRange = outputRange as InterpolationNumbers;
+    const result = interpolateNumbers({ progress, inputRange, outputRange });
+    if (propertyName === 'rotate') return `${result}deg`;
+    return result;
+  }
+  // If outputRange is an InterpolationStrings range
+  else if (isStringRange(outputRange as InterpolationRange)) {
+    outputRange = outputRange as InterpolationStrings;
+    if (!['color', 'backgroundColor'].includes(propertyName)) {
+      throw new Error('Unexpected property name for a string range value');
+    }
+    // Color values are animated
+    return interpolateColors({ progress, inputRange, outputRange });
+  }
+
+  throw new Error(`outputRange ${outputRange} is not a valid range`);
+}
 
 /**
  * Create animated style hook based on the config object
@@ -93,46 +208,10 @@ export const createAnimatedStyle =
     useAnimatedStyle(() => {
       'worklet';
       return Object.fromEntries(
-        Object.entries(config).map(([property, values]) => {
-          let interpolatedValues;
-
-          if (isNumberRange(values)) {
-            // Single value is animated for the current property (e.g. opacity)
-            interpolatedValues = interpolateNumberValue(
-              values as AnimatedNumberRange,
-              progress
-            );
-          } else if (isStringRange(values)) {
-            // Wrong property name
-            if (!['color', 'backgroundColor'].includes(property)) {
-              throw new Error(
-                'Unexpected property name for a string range value'
-              );
-            }
-            // Color values are animated
-            interpolatedValues = interpolateColorValue(
-              values as AnimatedStringRange,
-              progress
-            );
-          } else {
-            // Multiple values are animated for the current property (e.g. transform)
-            interpolatedValues = values.map(value => {
-              return Object.fromEntries(
-                Object.entries(value).map(([name, range]) => {
-                  let value: number | string = interpolateNumberValue(
-                    range,
-                    progress
-                  );
-                  // Add the deg unit if the animated property name is rotate
-                  if (name === 'rotate') value = `${value}deg`;
-                  return [name, value];
-                })
-              );
-            });
-          }
-
-          return [property, interpolatedValues];
-        })
+        Object.entries(config).map(([property, value]) => [
+          property,
+          interpolateValue(progress, property, value)
+        ])
       );
     });
 

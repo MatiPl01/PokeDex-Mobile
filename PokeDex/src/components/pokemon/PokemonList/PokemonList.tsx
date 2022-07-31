@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Animated } from 'react-native';
-import { useTheme } from 'styled-components/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
+  Animated,
   ListRenderItem,
   ViewToken,
   FlatList,
   RefreshControl
 } from 'react-native';
+import { useTheme } from 'styled-components/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   fetchNextPokemonListAsync,
   refetchPokemonList
