@@ -30,6 +30,21 @@ type InterpolatedValue =
   | string
   | number
   | { [key: string]: InterpolatedValue }[];
+
+/**
+ *
+ * @param stops - number of animation stop values (the same as the number of outputRange values)
+ * @returns - uniformly distributed inputRange values
+ */
+const createUniformInputRange = (stops: number): number[] => {
+  'worklet';
+  const inputRange: number[] = [];
+  const step = 1 / (stops - 1);
+  for (let i = 0; i < stops - 1; i++) inputRange.push(step * i);
+  inputRange.push(1);
+  return inputRange;
+};
+
 /**
  * Interpolate the progress value to the specific range
  *
@@ -42,7 +57,7 @@ type InterpolatedValue =
  * @return - value calculated based on the interpolation inputRange, outputRange and the progress value
  */
 const interpolateNumbers = ({
-  inputRange = [0, 1],
+  inputRange,
   outputRange,
   progress
 }: {
@@ -53,7 +68,7 @@ const interpolateNumbers = ({
   'worklet';
   return interpolate(
     progress.value,
-    inputRange,
+    inputRange || createUniformInputRange(outputRange.length),
     outputRange,
     Extrapolate.CLAMP
   );
@@ -71,7 +86,7 @@ const interpolateNumbers = ({
  * @return - color calculated based on the interpolation inputRange, outputRange and the progress value
  */
 const interpolateColors = ({
-  inputRange = [0, 1],
+  inputRange,
   outputRange,
   progress
 }: {
@@ -80,7 +95,12 @@ const interpolateColors = ({
   progress: Readonly<SharedValue<number>>;
 }): string => {
   'worklet';
-  return interpolateColor(progress.value, inputRange, outputRange, 'RGB');
+  return interpolateColor(
+    progress.value,
+    inputRange || createUniformInputRange(outputRange.length),
+    outputRange,
+    'RGB'
+  );
 };
 
 /**
@@ -134,7 +154,6 @@ function interpolateValue(
   value: InterpolationPropertyValue
 ): InterpolatedValue {
   'worklet';
-  // TODO - set better return type
   let inputRange: InterpolationNumbers | undefined;
   let outputRange: InterpolationRange | InterpolationValuesList | undefined;
 

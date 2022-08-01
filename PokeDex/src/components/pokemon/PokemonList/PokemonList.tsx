@@ -13,10 +13,14 @@ import {
   fetchNextPokemonListAsync,
   refetchPokemonList
 } from '@store/pokemon/pokemon.actions';
-import { selectPokemonList } from '@store/pokemon/pokemon.selector';
+import {
+  selectPokemonList,
+  selectPokemonReachedEnd
+} from '@store/pokemon/pokemon.selector';
 import { SinglePokemonState } from '@store/pokemon/pokemon.reducer';
 import ScrollTopButton from '@components/shared/ScrollTopButton/ScrollTopButton';
 import PokemonCard from '../PokemonCard/PokemonCard';
+import PokemonListFooter from './PokemonListFooter';
 import { CARD_HEIGHT } from '../PokemonCard/PokemonCard.styles';
 import {
   LIST_SEPARATOR_HEIGHT,
@@ -39,6 +43,7 @@ const PokemonList: React.FC = () => {
   const cardListRef = useRef<FlatList | null>(null);
   // Data
   const pokemonList = useSelector(selectPokemonList);
+  const reachedEnd = useSelector(selectPokemonReachedEnd);
   // Animated values
   const scrollY = useRef(new Animated.Value(0)).current;
   // Interpolation input range
@@ -122,15 +127,18 @@ const PokemonList: React.FC = () => {
         renderItem={renderItem}
         ItemSeparatorComponent={ListSeparator}
         onEndReached={loadMorePokemon}
+        onViewableItemsChanged={handleVisibleCardsChange}
         onEndReachedThreshold={0.5}
         scrollEventThrottle={16}
         updateCellsBatchingPeriod={200}
-        onViewableItemsChanged={handleVisibleCardsChange}
+        maxToRenderPerBatch={8}
+        ListFooterComponent={() => (
+          <PokemonListFooter reachedEnd={reachedEnd} />
+        )}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true }
         )}
-        maxToRenderPerBatch={8}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}

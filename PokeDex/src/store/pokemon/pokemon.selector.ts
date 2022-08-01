@@ -7,7 +7,7 @@ const selectPokemonState = (state: RootState) => state.pokemon;
 
 export const selectPokemonList = createSelector(
   selectPokemonState,
-  ({ pokemonList }) => pokemonList
+  ({ pokemonList }) => pokemonList.filter(Boolean) // skip empty array slots
 );
 
 export const selectPokemonIsFetchingList = createSelector(
@@ -23,4 +23,9 @@ export const selectPokemonFetchingListError = createSelector(
 export const selectSinglePokemonState = createSelector(
   [selectPokemonList, (state: RootState, id: string) => id],
   (pokemonList, id): SinglePokemonState | undefined => pokemonList[idToIdx(id)]
+);
+
+export const selectPokemonReachedEnd = createSelector(
+  selectPokemonState,
+  ({ nextUrl }) => !nextUrl
 );

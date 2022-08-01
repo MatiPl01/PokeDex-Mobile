@@ -1,7 +1,6 @@
 import styled from 'styled-components/native';
 import { FlatList, FlatListProps, Animated } from 'react-native';
 import { SinglePokemonState } from '@store/pokemon/pokemon.reducer';
-import { SCREEN_HEIGHT } from '@core/splash-screen/SplashScreen';
 
 export const LIST_SEPARATOR_HEIGHT = 30;
 
@@ -15,7 +14,7 @@ export const CardList = styled(
     props: FlatListProps<SinglePokemonState>
   ) => FlatList<SinglePokemonState>
 )`
-  padding: 45px 15px ${SCREEN_HEIGHT}px 15px;
+  padding: 45px 15px;
 `;
 
 export const ListSeparator = styled.View`
