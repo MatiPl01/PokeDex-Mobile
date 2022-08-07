@@ -7,7 +7,7 @@ const selectPokemonState = (state: RootState) => state.pokemon;
 
 export const selectAllPokemonList = createSelector(
   selectPokemonState,
-  ({ allPokemonList }) => allPokemonList  // this array can have empty slots
+  ({ allPokemonList }) => allPokemonList // this array can have empty slots
 );
 
 export const selectDisplayedPokemonList = createSelector(
@@ -23,4 +23,9 @@ export const selectSinglePokemonState = createSelector(
 export const selectPokemonReachedEnd = createSelector(
   selectPokemonState,
   ({ nextUrl }) => !nextUrl
+);
+
+export const selectPokemonAreAllDisplayed = createSelector(
+  selectPokemonState,
+  ({ areAllDisplayed }) => areAllDisplayed
 );

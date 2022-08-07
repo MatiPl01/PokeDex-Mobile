@@ -2,6 +2,7 @@ export type SearchItem = { id: string; value: string };
 export type SearchSuggestionItem = {
   item: SearchItem;
   prefix: string;
+  infix: string;
   suffix: string;
 };
 
@@ -21,12 +22,11 @@ export const getSearchSuggestions = (
     if (index < 0) return;
     if (!suggestionsMap[index]) suggestionsMap[index] = [];
     const value = item.value;
-    const prefix = value.slice(0, index);
-    const suffix = value.slice(index + searchValue.length);
     suggestionsMap[index].push({
       item,
-      prefix,
-      suffix
+      prefix: value.slice(0, index),
+      infix: value.slice(index, index + searchValue.length),
+      suffix: value.slice(index + searchValue.length)
     });
   });
 

@@ -1,5 +1,6 @@
 import styled from 'styled-components/native';
-import { FlatList, FlatListProps, Animated } from 'react-native';
+import ReAnimated from 'react-native-reanimated';
+import { FlatList, FlatListProps, Animated, View } from 'react-native';
 import { SinglePokemonState } from '@store/pokemon/pokemon.reducer';
 
 export const LIST_SEPARATOR_HEIGHT = 30;
@@ -20,3 +21,9 @@ export const CardList = styled(
 export const ListSeparator = styled.View`
   height: ${LIST_SEPARATOR_HEIGHT}px;
 `;
+
+export const EmptyListFooter = styled.View`
+  height: 100px;
+`;
+
+export const PokemonListHeader = ReAnimated.createAnimatedComponent(View);

@@ -16,7 +16,7 @@ import {
   MENU_TOGGLE_ANIMATION_DELAY,
   SCREEN_WIDTH
 } from '@core/splash-screen/SplashScreen';
-import Fontisto from 'react-native-vector-icons/Fontisto';
+import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import {
@@ -95,6 +95,8 @@ type SearchBarProps = {
   suggestionsLimit?: number;
   showSuggestions?: boolean;
   onSearchChange?: (value: string) => void;
+  onSearchBarOpen?: () => void;
+  onSearchBarClose?: () => void;
   onSearchFetchRequest?: () => void;
 };
 
@@ -104,6 +106,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   showSuggestions,
   onSearchChange,
   onSearchSubmit,
+  onSearchBarOpen,
+  onSearchBarClose,
   onSearchFetchRequest
 }) => {
   const theme = useTheme();
@@ -198,7 +202,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
   };
 
-  const toggleSearchBar = () => setIsOpen(!isOpen);
+  const toggleSearchBar = () => {
+    if (isOpen) {
+      if (onSearchBarClose) onSearchBarClose();
+    } else {
+      if (onSearchBarOpen) onSearchBarOpen();
+    }
+    setIsOpen(!isOpen);
+  }
 
   const handleInputChange = (value: string) => {
     setSearchValue(value);
@@ -235,7 +246,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       >
         <SearchButton onPress={handleButtonClick}>
           <IconWrapper style={animatedToggleIconStyles.search}>
-            <Fontisto name="search" size={25} color={iconColor} />
+            <FontistoIcon name="search" size={25} color={iconColor} />
           </IconWrapper>
           <IconWrapper
             style={[

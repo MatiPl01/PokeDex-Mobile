@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   Animated,
   ListRenderItem,
@@ -7,18 +6,30 @@ import {
   FlatList,
   RefreshControl
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { createAnimatedStyle } from '@utils/reanimated';
 import {
   fetchNextPokemonBatchAsync,
   refetchPokemonList
 } from '@store/pokemon/pokemon.actions';
 import {
   selectDisplayedPokemonList,
+  selectPokemonAreAllDisplayed,
   selectPokemonReachedEnd
 } from '@store/pokemon/pokemon.selector';
 import { SinglePokemonState } from '@store/pokemon/pokemon.reducer';
 import ScrollTopButton from '@components/shared/ScrollTopButton/ScrollTopButton';
+import {
+  SCREEN_HEIGHT,
+  LOGO_BAR_HEIGHT
+} from '@core/splash-screen/SplashScreen';
+import {
+  SEARCH_BAR_HEIGHT,
+  SEARCH_BAR_PADDING_TOP
+} from '@components/shared/SearchBar/SearchBar.styles';
 import PokemonCard from '../PokemonCard/PokemonCard';
 import PokemonListFooter from './PokemonListFooter';
 import { CARD_HEIGHT } from '../PokemonCard/PokemonCard.styles';
@@ -26,17 +37,26 @@ import {
   LIST_SEPARATOR_HEIGHT,
   CardListWrapper,
   CardList,
-  ListSeparator
+  ListSeparator,
+  EmptyListFooter,
+  PokemonListHeader
 } from './PokemonList.styles';
-import {
-  SCREEN_HEIGHT,
-  LOGO_BAR_HEIGHT
-} from '@core/splash-screen/SplashScreen';
 
 const LIST_CONTAINER_HEIGHT = SCREEN_HEIGHT - LOGO_BAR_HEIGHT;
 const LIST_ITEM_HEIGHT = CARD_HEIGHT + LIST_SEPARATOR_HEIGHT;
+const POKEMON_LIST_PADDING_TOP = SEARCH_BAR_HEIGHT + SEARCH_BAR_PADDING_TOP;
 
-const PokemonList: React.FC = () => {
+const useAnimatedCardListHeaderStyle = createAnimatedStyle({
+  paddingTop: [0, POKEMON_LIST_PADDING_TOP]
+});
+
+type PokemonListProps = {
+  isSearchBarOpen?: boolean;
+};
+
+const PokemonList: React.FC<PokemonListProps> = ({
+  isSearchBarOpen = false
+}) => {
   const edges = useSafeAreaInsets();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -44,8 +64,14 @@ const PokemonList: React.FC = () => {
   // Data
   const pokemonList = useSelector(selectDisplayedPokemonList);
   const reachedEnd = useSelector(selectPokemonReachedEnd);
+  const areAllDisplayed = useSelector(selectPokemonAreAllDisplayed);
   // Animated values
   const scrollY = useRef(new Animated.Value(0)).current;
+  const cardListHeaderAnimationProgress = useSharedValue(0);
+  // Animated styles
+  const animatedCardListHeaderStyle = useAnimatedCardListHeaderStyle(
+    cardListHeaderAnimationProgress
+  );
   // Interpolation input range
   const inputRange = [
     -LIST_ITEM_HEIGHT,
@@ -58,12 +84,18 @@ const PokemonList: React.FC = () => {
   const [scrollTopButtonVisible, setScrollTopButtonVisible] = useState(false);
 
   useEffect(() => {
-    loadMorePokemon();
+    if (areAllDisplayed) loadMorePokemon();
   }, []);
 
   useEffect(() => {
     if (isRefreshing && pokemonList.length) setIsRefreshing(false);
   }, [pokemonList]);
+
+  useEffect(() => {
+    cardListHeaderAnimationProgress.value = withTiming(+isSearchBarOpen, {
+      duration: 500
+    });
+  }, [isSearchBarOpen]);
 
   const handleVisibleCardsChange = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -118,7 +150,16 @@ const PokemonList: React.FC = () => {
     );
   };
 
-  const renderFooter = () => <PokemonListFooter reachedEnd={reachedEnd} />;
+  const renderHeader = () => (
+    <PokemonListHeader style={animatedCardListHeaderStyle} />
+  );
+
+  const renderFooter = () =>
+    areAllDisplayed ? (
+      <PokemonListFooter reachedEnd={reachedEnd} />
+    ) : (
+      <EmptyListFooter />
+    );
 
   return (
     <CardListWrapper>
@@ -128,13 +169,14 @@ const PokemonList: React.FC = () => {
         keyExtractor={(item: SinglePokemonState) => item.id}
         renderItem={renderItem}
         ItemSeparatorComponent={ListSeparator}
-        onEndReached={loadMorePokemon}
+        onEndReached={areAllDisplayed ? loadMorePokemon : undefined}
         onViewableItemsChanged={handleVisibleCardsChange}
         onEndReachedThreshold={1}
         scrollEventThrottle={16}
         updateCellsBatchingPeriod={200}
         maxToRenderPerBatch={8}
         ListFooterComponent={renderFooter}
+        ListHeaderComponent={renderHeader}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true }

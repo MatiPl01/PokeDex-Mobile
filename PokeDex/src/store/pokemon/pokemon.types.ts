@@ -1,3 +1,5 @@
+import { ImageExtension } from '@utils/files';
+
 export enum PokemonActionType {
   FETCH_BATCH_START = 'pokemon/FETCH_BATCH_START',
   FETCH_BATCH_SUCCESS = 'pokemon/FETCH_BATCH_SUCCESS',
@@ -6,8 +8,8 @@ export enum PokemonActionType {
   FETCH_NEXT_URLS_SUCCESS = 'pokemon/FETCH_NEXT_URLS_SUCCESS',
   FETCH_NEXT_URLS_FAILURE = 'pokemon/FETCH_NEXT_URLS_FAILURE',
   RESET_POKEMON_STATE = 'pokemon/RESET_POKEMON_STATE',
-  DISPLAY_ALL_POKEMON = 'pokemon/DISPLAY_ALL_POKEMON',
-  DISPLAY_POKEMON_WITH_IDS = 'pokemon/DISPLAY_POKEMON_WITH_IDS'
+  SET_DISPLAYED_POKEMON_WIDTH_IDS = 'pokemon/SET_DISPLAYED_POKEMON_WIDTH_IDS',
+  DISPLAY_ALL_POKEMON = 'pokemon/DISPLAY_ALL_POKEMON'
 }
 
 export type PokemonSearchEntry = {
@@ -90,7 +92,8 @@ export type PokemonResponse = {
 export type Pokemon = {
   id: string;
   name: string;
-  imageUrl: string;
+  imageUrl: string | null;
+  imageExtension: ImageExtension | null;
   height: number;
   weight: number;
   types: PokemonType[];

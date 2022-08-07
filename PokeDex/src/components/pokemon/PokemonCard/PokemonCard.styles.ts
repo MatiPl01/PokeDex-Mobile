@@ -6,14 +6,16 @@ import { flexCenter } from '@styles/shared';
 import { PokemonType } from '@store/pokemon/pokemon.types';
 import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen';
 import { TYPE_BADGE_WIDTH } from '../PokemonTypeBadge/PokemonTypeBadge.styles';
+import FontistoIcon from 'react-native-vector-icons/Fontisto';
+import { ThemeMode } from '@store/theme/theme.types';
 
 const BACKGROUND_HEIGH = 0.4 * SCREEN_WIDTH;
 const FOOTER_HEIGHT = 85;
 const BACKGROUND_TEXT_WRAPPER_WIDTH = 1000; // Some really big value
-const MAX_IMAGE_WIDTH = 0.4 * SCREEN_WIDTH;
-const MAX_IMAGE_HEIGHT = BACKGROUND_HEIGH;
 const CARD_WIDTH = 300;
 const GRADIENTS_WRAPPER_WIDTH = 1.2 * CARD_WIDTH;
+export const MAX_IMAGE_WIDTH = 0.4 * SCREEN_WIDTH;
+export const MAX_IMAGE_HEIGHT = BACKGROUND_HEIGH;
 export const CARD_HEIGHT = BACKGROUND_HEIGH + FOOTER_HEIGHT;
 
 export const CardWrapper = styled(Animated.View)`
@@ -33,15 +35,12 @@ export const CardFooter = styled.View`
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
   align-items: center;
-  justify-content: center;;
+  justify-content: center;
   height: ${FOOTER_HEIGHT}px;
   background-color: ${({ theme }) => theme.color.background.primary};
 `;
 
-export const PokemonSvg = styled(SvgUri).attrs({
-  height: MAX_IMAGE_HEIGHT,
-  width: MAX_IMAGE_WIDTH
-})`
+const pokemonImageStyles = css`
   position: absolute;
   z-index: 1;
   left: 50%;
@@ -50,6 +49,19 @@ export const PokemonSvg = styled(SvgUri).attrs({
     bottom: ${theme.space.lg};
     ${theme.shadow.medium.md};
   `};
+`;
+
+export const PokemonSvg = styled(SvgUri).attrs({
+  height: MAX_IMAGE_HEIGHT,
+  width: MAX_IMAGE_WIDTH
+})`
+  ${pokemonImageStyles};
+`;
+
+export const PokemonImage = styled.Image`
+  height: ${MAX_IMAGE_HEIGHT}px;
+  width: ${MAX_IMAGE_WIDTH}px;
+  ${pokemonImageStyles};
 `;
 
 export const BackgroundClip = styled.View`
@@ -141,4 +153,20 @@ export const CardTitleSkeletonWrapper = styled.View`
 export const TypeBadgeSkeletonWrapper = styled(TypeBadgeWrapper)`
   width: ${TYPE_BADGE_WIDTH}px;
   height: ${({ theme }) => `${parseInt(theme.fontSize.caption) + 10}px`};
+`;
+
+export const PlaceholderImageIcon = styled(FontistoIcon).attrs({
+  name: 'question',
+  size: MAX_IMAGE_WIDTH
+})<{ themeMode?: ThemeMode }>`
+  height: ${MAX_IMAGE_HEIGHT}px;
+  width: ${MAX_IMAGE_WIDTH}px;
+  text-align: center;
+  ${pokemonImageStyles};
+  ${({ theme, themeMode }) => css`
+    color: ${themeMode === ThemeMode.DARK
+      ? theme.color.gray.dark[3]
+      : theme.color.gray.light[1]};
+    ${theme.shadow.medium.sm};
+  `}
 `;

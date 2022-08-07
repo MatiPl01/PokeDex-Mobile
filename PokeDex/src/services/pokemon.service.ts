@@ -11,6 +11,7 @@ import {
   PokemonSearchItemResponse
 } from '@store/search/search.types';
 import { catchThrowAxiosError } from '@utils/errors';
+import { getImageExtensionFromUrl } from '@utils/files';
 
 export const getPokemonIdFromUrl = (url: string): string => {
   return url.replace(`${API_URL}/pokemon`, '').replace(/\//g, '');
@@ -77,14 +78,17 @@ const pokemonDataTransform = ({
   abilities,
   stats
 }: PokemonResponse): Pokemon => {
+  const imageUrl =
+    sprites.other.dream_world.front_default ||
+    sprites.other.home.front_default ||
+    sprites.other['official-artwork'].front_default ||
+    sprites.front_default;
+
   return {
     id: String(id),
     name,
-    imageUrl:
-      sprites.other.dream_world.front_default ||
-      sprites.other.home.front_default ||
-      sprites.other['official-artwork'].front_default ||
-      sprites.front_default,
+    imageUrl,
+    imageExtension: imageUrl ? getImageExtensionFromUrl(imageUrl) : null,
     height,
     weight,
     types: types.map(({ type }) => type.name),

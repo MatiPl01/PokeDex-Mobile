@@ -5,12 +5,12 @@ import { name as appName } from './app.json';
 import App from './App';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
-import Fontisto from 'react-native-vector-icons/Fontisto';
+import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import store from '@store';
 
 // Load icon fonts
-[MaterialIcon, EntypoIcon, Fontisto, IonIcon].map(icon => icon.loadFont());
+[MaterialIcon, EntypoIcon, FontistoIcon, IonIcon].map(icon => icon.loadFont());
 
 const Root: React.FC = () => (
   <Provider store={store}>

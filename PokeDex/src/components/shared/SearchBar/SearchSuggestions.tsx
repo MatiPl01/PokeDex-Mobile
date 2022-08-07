@@ -180,11 +180,11 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   };
 
   const renderItem: ListRenderItem<SearchSuggestionItem> = ({
-    item: { item, prefix, suffix }
+    item: { item, prefix, infix, suffix }
   }) => (
     <SuggestionItem onPress={() => onSelect(item)}>
       <SuggestionTextBold>{prefix}</SuggestionTextBold>
-      <SuggestionText>{searchValue}</SuggestionText>
+      <SuggestionText>{infix}</SuggestionText>
       <SuggestionTextBold>{suffix}</SuggestionTextBold>
     </SuggestionItem>
   );

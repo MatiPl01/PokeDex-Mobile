@@ -7,11 +7,13 @@ import {
   fetchPokemonList,
   fetchSinglePokemonDataById
 } from '@services/pokemon.service';
+import { FETCH_BATCH_POKEMON_COUNT, BATCH_FETCH_INTERVAL } from '@config';
 import { Pokemon } from '@store/pokemon/pokemon.types';
 import { Action, ActionWithPayload, createAction } from '@store/utils';
+import { sleep } from '@utils/time';
+import store from '@store';
 import { PokemonState } from './pokemon.reducer';
 import { PokemonActionType } from './pokemon.types';
-import store from '@store';
 
 type FetchPokemonBatchStart = ActionWithPayload<
   PokemonActionType.FETCH_BATCH_START,
@@ -25,6 +27,7 @@ type FetchPokemonBatchSuccess = ActionWithPayload<
   PokemonActionType.FETCH_BATCH_SUCCESS,
   {
     pokemonMap: { [key: string]: Pokemon };
+    updateIdsOrder: string[];
     updateDisplayed: boolean;
   }
 >;
@@ -33,6 +36,7 @@ type FetchPokemonBatchFailure = ActionWithPayload<
   PokemonActionType.FETCH_BATCH_FAILURE,
   {
     errorsMap: { [key: string]: Error };
+    updateIdsOrder: string[];
     updateDisplayed: boolean;
   }
 >;
@@ -54,8 +58,8 @@ type ResetPokemonState = Action<PokemonActionType.RESET_POKEMON_STATE>;
 
 type DisplayAllPokemon = Action<PokemonActionType.DISPLAY_ALL_POKEMON>;
 
-type DisplayPokemonWithIds = ActionWithPayload<
-  PokemonActionType.DISPLAY_POKEMON_WITH_IDS,
+type SetDisplayedPokemonWithIds = ActionWithPayload<
+  PokemonActionType.SET_DISPLAYED_POKEMON_WIDTH_IDS,
   string[]
 >;
 
@@ -67,30 +71,37 @@ export type PokemonAction =
   | FetchNextPokemonUrlsSuccess
   | FetchNextPokemonUrlsFailure
   | ResetPokemonState
-  | DisplayAllPokemon
-  | DisplayPokemonWithIds;
+  | SetDisplayedPokemonWithIds
+  | DisplayAllPokemon;
 
 const fetchPokemonBatchStart = (
   ids: string[],
   updateDisplayed: boolean
 ): FetchPokemonBatchStart =>
-  createAction(PokemonActionType.FETCH_BATCH_START, { ids, updateDisplayed });
+  createAction(PokemonActionType.FETCH_BATCH_START, {
+    ids,
+    updateDisplayed
+  });
 
 const fetchPokemonBatchSuccess = (
   pokemonMap: { [key: string]: Pokemon },
+  updateIdsOrder: string[],
   updateDisplayed: boolean
 ): FetchPokemonBatchSuccess =>
   createAction(PokemonActionType.FETCH_BATCH_SUCCESS, {
     pokemonMap,
+    updateIdsOrder,
     updateDisplayed
   });
 
 const fetchPokemonBatchFailure = (
   errorsMap: { [key: string]: Error },
+  updateIdsOrder: string[],
   updateDisplayed: boolean
 ): FetchPokemonBatchFailure =>
   createAction(PokemonActionType.FETCH_BATCH_FAILURE, {
     errorsMap,
+    updateIdsOrder,
     updateDisplayed
   });
 
@@ -110,11 +121,29 @@ const fetchNextPokemonUrlsFailure = (
 const resetPokemonState = (): ResetPokemonState =>
   createAction(PokemonActionType.RESET_POKEMON_STATE);
 
+const setDisplayedPokemonWithIds = (
+  ids: string[]
+): SetDisplayedPokemonWithIds =>
+  createAction(PokemonActionType.SET_DISPLAYED_POKEMON_WIDTH_IDS, ids);
+
 export const displayAllPokemon = (): DisplayAllPokemon =>
   createAction(PokemonActionType.DISPLAY_ALL_POKEMON);
 
-export const displayPokemonWithIds = (ids: string[]): DisplayPokemonWithIds =>
-  createAction(PokemonActionType.DISPLAY_POKEMON_WITH_IDS, ids);
+export const displayPokemonWithIds: ActionCreator<
+  ThunkAction<Promise<void>, PokemonState, void, PokemonAction>
+> =
+  (ids: string[]) =>
+  async (
+    dispatch: Dispatch<
+      | PokemonAction
+      | ThunkAction<Promise<void>, PokemonState, void, PokemonAction>
+    >
+  ): Promise<void> => {
+    // Display Pokemon that have been already fetched
+    dispatch(setDisplayedPokemonWithIds(ids));
+    // Fetch remaining Pokemon
+    dispatch(fetchPokemonBatchByIdsAsync(ids));
+  };
 
 export const fetchPokemonBatchByIdsAsync: ActionCreator<
   ThunkAction<Promise<void>, PokemonState, void, PokemonAction>
@@ -131,20 +160,33 @@ export const fetchPokemonBatchByIdsAsync: ActionCreator<
     // Fetch next pokemon data
     const pokemonMap: { [key: string]: Pokemon } = {};
     const errorsMap: { [key: string]: Error } = {};
+    // Fetch Pokemon in portions (not all at once)
+    for (
+      let i = 0;
+      i < pokemonToFetchIds.length;
+      i += FETCH_BATCH_POKEMON_COUNT
+    ) {
+      const fetchPortionIds = pokemonToFetchIds.slice(
+        i,
+        i + FETCH_BATCH_POKEMON_COUNT
+      );
 
-    for (const id of pokemonToFetchIds) {
-      try {
-        pokemonMap[id] = await fetchSinglePokemonDataById(id);
-      } catch (err) {
-        errorsMap[id] = err as Error;
+      for (const id of fetchPortionIds) {
+        try {
+          pokemonMap[id] = await fetchSinglePokemonDataById(id);
+        } catch (err) {
+          errorsMap[id] = err as Error;
+        }
       }
-    }
 
-    if (Object.keys(errorsMap).length) {
-      dispatch(fetchPokemonBatchFailure(errorsMap, updateDisplayed));
-    }
-    if (Object.keys(pokemonMap).length) {
-      dispatch(fetchPokemonBatchSuccess(pokemonMap, updateDisplayed));
+      if (Object.keys(errorsMap).length) {
+        dispatch(fetchPokemonBatchFailure(errorsMap, ids, updateDisplayed));
+      }
+      if (Object.keys(pokemonMap).length) {
+        dispatch(fetchPokemonBatchSuccess(pokemonMap, ids, updateDisplayed));
+      }
+
+      await sleep(BATCH_FETCH_INTERVAL);
     }
   };
 
