@@ -22,5 +22,6 @@ export const FooterText = styled.Text`
     font-size: ${theme.fontSize.title};
     font-weight: ${theme.fontWeight.medium};
     color: ${theme.color.text.primary};
+    line-height: ${theme.lineHeight.title};
   `};
 `;

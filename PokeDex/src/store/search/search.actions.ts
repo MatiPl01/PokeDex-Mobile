@@ -32,9 +32,7 @@ const fetchSearchItemsSuccess = (
 ): FetchSearchItemsSuccess =>
   createAction(SearchActionType.FETCH_SEARCH_ITEMS_SUCCESS, searchItems);
 
-const fetchSearchItemsFailure = (
-  error: Error
-): FetchSearchItemsFailure =>
+const fetchSearchItemsFailure = (error: Error): FetchSearchItemsFailure =>
   createAction(SearchActionType.FETCH_SEARCH_ITEMS_FAILURE, error);
 
 export const fetchSearchItemsAsync: ActionCreator<

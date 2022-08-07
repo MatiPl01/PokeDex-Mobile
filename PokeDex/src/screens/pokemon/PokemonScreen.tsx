@@ -19,9 +19,13 @@ const PokemonScreen: React.FC = () => {
     dispatch(fetchSearchItemsAsync());
   };
 
-  const handlePokemonSearch = (item: SearchItem) => {
-    // TODO - display corresponding pokemon screen on search
-    console.log(item);
+  const handlePokemonSearch = (items: SearchItem[]) => {
+    if (items.length === 1) {
+      // TODO - display single Pokemon details screen when there is only one search result  
+    } else {
+      // Display all suggested Pokemon cards
+      
+    }
   };
 
   return (

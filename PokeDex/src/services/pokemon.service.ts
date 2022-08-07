@@ -16,6 +16,11 @@ export const getPokemonIdFromUrl = (url: string): string => {
   return url.replace(`${API_URL}/pokemon`, '').replace(/\//g, '');
 };
 
+export const getNextPokemonCountFromUrl = (url: string) => {
+  const match = url.match(/limit=\d+/);
+  return match ? match[0]?.replace('limit=', '') : 0;
+};
+
 export const fetchPokemonSearchItems = catchThrowAxiosError(
   async (): Promise<SearchItem[]> => {
     const results: SearchItem[] = [];

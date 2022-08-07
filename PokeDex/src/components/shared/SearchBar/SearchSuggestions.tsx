@@ -64,16 +64,18 @@ type SearchSuggestionsProps = {
   data: SearchItemType[];
   searchValue: string;
   onSelect: (item: SearchItemType) => void;
-  onSearchFetchRequest?: () => void;
   isRevealed?: boolean;
   limit?: number;
   loadMoreOnScroll?: boolean;
+  onSuggestionsChange?: (items: SearchSuggestionItem[]) => void;
+  onSearchFetchRequest?: () => void;
 };
 
 const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   data,
   searchValue,
   onSelect,
+  onSuggestionsChange,
   onSearchFetchRequest,
   isRevealed = true,
   limit = 5,
@@ -111,6 +113,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   useEffect(() => {
     const newSuggestions = getSearchSuggestions(searchValue, data);
     setSuggestions(newSuggestions);
+    if (onSuggestionsChange) onSuggestionsChange(newSuggestions);
   }, [data, searchValue]);
 
   useEffect(() => {

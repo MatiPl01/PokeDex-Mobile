@@ -10,11 +10,11 @@ import {
 import { useTheme } from 'styled-components/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  fetchNextPokemonListAsync,
+  fetchNextPokemonBatchAsync,
   refetchPokemonList
 } from '@store/pokemon/pokemon.actions';
 import {
-  selectPokemonList,
+  selectDisplayedPokemonList,
   selectPokemonReachedEnd
 } from '@store/pokemon/pokemon.selector';
 import { SinglePokemonState } from '@store/pokemon/pokemon.reducer';
@@ -42,7 +42,7 @@ const PokemonList: React.FC = () => {
   const theme = useTheme();
   const cardListRef = useRef<FlatList | null>(null);
   // Data
-  const pokemonList = useSelector(selectPokemonList);
+  const pokemonList = useSelector(selectDisplayedPokemonList);
   const reachedEnd = useSelector(selectPokemonReachedEnd);
   // Animated values
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -79,7 +79,7 @@ const PokemonList: React.FC = () => {
   };
 
   const loadMorePokemon = () => {
-    dispatch(fetchNextPokemonListAsync());
+    dispatch(fetchNextPokemonBatchAsync());
   };
 
   const scrollToTop = () => {
@@ -118,6 +118,8 @@ const PokemonList: React.FC = () => {
     );
   };
 
+  const renderFooter = () => <PokemonListFooter reachedEnd={reachedEnd} />;
+
   return (
     <CardListWrapper>
       <CardList
@@ -128,13 +130,11 @@ const PokemonList: React.FC = () => {
         ItemSeparatorComponent={ListSeparator}
         onEndReached={loadMorePokemon}
         onViewableItemsChanged={handleVisibleCardsChange}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={1}
         scrollEventThrottle={16}
         updateCellsBatchingPeriod={200}
         maxToRenderPerBatch={8}
-        ListFooterComponent={() => (
-          <PokemonListFooter reachedEnd={reachedEnd} />
-        )}
+        ListFooterComponent={renderFooter}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true }

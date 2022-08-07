@@ -5,23 +5,18 @@ import { idToIdx } from './pokemon.utils';
 
 const selectPokemonState = (state: RootState) => state.pokemon;
 
-export const selectPokemonList = createSelector(
+export const selectAllPokemonList = createSelector(
   selectPokemonState,
-  ({ pokemonList }) => pokemonList.filter(Boolean) // skip empty array slots
+  ({ allPokemonList }) => allPokemonList  // this array can have empty slots
 );
 
-export const selectPokemonIsFetchingList = createSelector(
+export const selectDisplayedPokemonList = createSelector(
   selectPokemonState,
-  ({ isFetchingList }) => isFetchingList
-);
-
-export const selectPokemonFetchingListError = createSelector(
-  selectPokemonState,
-  ({ fetchingListError }) => fetchingListError
+  ({ displayedPokemonList }) => displayedPokemonList
 );
 
 export const selectSinglePokemonState = createSelector(
-  [selectPokemonList, (state: RootState, id: string) => id],
+  [selectAllPokemonList, (state: RootState, id: string) => id],
   (pokemonList, id): SinglePokemonState | undefined => pokemonList[idToIdx(id)]
 );
 

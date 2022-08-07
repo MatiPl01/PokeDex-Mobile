@@ -1,5 +1,5 @@
 export const lineHeight = {
-  title: '28px',
+  title: '32px',
   copy: '20px'
 };
 

@@ -7,14 +7,14 @@ export type SearchSuggestionItem = {
 
 export const getSearchSuggestions = (
   searchValue: string,
-  data: SearchItem[]
+  items: SearchItem[]
 ): SearchSuggestionItem[] => {
   if (!searchValue) return [];
   const suggestionsMap: {
     [key: number]: SearchSuggestionItem[];
   } = {};
 
-  data.forEach(item => {
+  items.forEach(item => {
     const index = item.value
       .toLocaleLowerCase()
       .indexOf(searchValue.toLocaleLowerCase());

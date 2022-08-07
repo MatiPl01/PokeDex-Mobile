@@ -7,10 +7,10 @@ import Animated, {
   withDelay,
   Easing
 } from 'react-native-reanimated';
-// TODO - debug this app on a real device and calculate the number of suggestions based on the available space after the keyboard is displayed
+// TODO - debug this app on an actual device and calculate the number of suggestions based on the available space after the keyboard is displayed
 // import { useKeyboard } from '@react-native-community/hooks';
 import { createAnimatedStyle, createAnimatedStyles } from '@utils/reanimated';
-import { SearchItem } from '@utils/search';
+import { SearchItem, SearchSuggestionItem } from '@utils/search';
 import {
   MENU_TOGGLE_ANIMATION_DURATION,
   MENU_TOGGLE_ANIMATION_DELAY,
@@ -91,7 +91,7 @@ const useAnimatedInputIconStyles = createAnimatedStyles({
 
 type SearchBarProps = {
   data: SearchItem[];
-  onSearchSubmit: (value: SearchItem) => void;
+  onSearchSubmit: (items: SearchItem[]) => void;
   suggestionsLimit?: number;
   showSuggestions?: boolean;
   onSearchChange?: (value: string) => void;
@@ -113,6 +113,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [displayEraseIcon, setDisplayEraseIcon] = useState(false);
+  const [searchSuggestions, setSearchSuggestions] = useState<
+    SearchSuggestionItem[]
+  >([]);
   const [focusStylesEnabled, setFocusStylesEnabled] = useState(false);
   // Component references
   const textInputRef = useRef<TextInput | null>(null);
@@ -202,9 +205,17 @@ const SearchBar: React.FC<SearchBarProps> = ({
     if (onSearchChange) onSearchChange(value);
   };
 
+  const handleSuggestionsChange = (items: SearchSuggestionItem[]) => {
+    setSearchSuggestions(items);
+  };
+
   const handleSuggestionSelect = (item: SearchItem) => {
     setSearchValue(item.value);
-    onSearchSubmit(item);
+    onSearchSubmit([item]);
+  };
+
+  const handleSubmit = () => {
+    onSearchSubmit(searchSuggestions.map(({ item }) => item));
   };
 
   return (
@@ -259,7 +270,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)} // TODO - maybe need a fix in Android (seems to be closing the suggestions bar after pressing outside the textInput)
           onChangeText={handleInputChange}
-          onSubmitEditing={onSearchSubmit}
+          onSubmitEditing={handleSubmit}
           value={searchValue}
           ref={textInputRef}
         />
@@ -272,6 +283,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           isRevealed={isFocused && Boolean(searchValue)}
           limit={suggestionsLimit}
           onSelect={handleSuggestionSelect}
+          onSuggestionsChange={handleSuggestionsChange}
           onSearchFetchRequest={onSearchFetchRequest}
         />
       )}
