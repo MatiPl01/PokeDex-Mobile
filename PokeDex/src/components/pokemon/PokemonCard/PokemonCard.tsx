@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import Svg from 'react-native-remote-svg';
 import { Pokemon, PokemonType } from '@store/pokemon/pokemon.types';
-import { selectThemeMode } from '@store/theme/theme.selector';
 import SkeletonPlaceholder from '@components/shared/SkeletonPlaceholder/SkeletonPlaceholder';
 import PokemonTypeBadge from '../PokemonTypeBadge/PokemonTypeBadge';
 import {
@@ -17,12 +15,17 @@ import {
   BackgroundTextWrapper,
   BackgroundText,
   CardTitle,
+  PokemonId,
   TypeBadgesWrapper,
   TypeBadgeWrapper,
   CardTitleSkeletonWrapper,
   TypeBadgeSkeletonWrapper,
-  PlaceholderImageIcon
+  PlaceholderImageIcon,
+  PokemonIdSkeletonWrapper,
+  AddToFavoritesButtonWrapper,
+  FAVORITES_BUTTON_SIZE
 } from './PokemonCard.styles';
+import AddToFavoritesButton from '@components/shared/AddToFavoritesButton/AddToFavoritesButton';
 
 const PokemonCardSkeleton: React.FC = () => (
   <CardWrapper>
@@ -43,6 +46,14 @@ const PokemonCardSkeleton: React.FC = () => (
           <SkeletonPlaceholder />
         </TypeBadgeSkeletonWrapper>
       </TypeBadgesWrapper>
+      <PokemonId>
+        <PokemonIdSkeletonWrapper>
+          <SkeletonPlaceholder />
+        </PokemonIdSkeletonWrapper>
+      </PokemonId>
+      <AddToFavoritesButtonWrapper>
+        <SkeletonPlaceholder />
+      </AddToFavoritesButtonWrapper>
     </CardFooter>
   </CardWrapper>
 );
@@ -53,16 +64,13 @@ type PokemonCardProps = {
 };
 
 const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
-  const themeMode = useSelector(selectThemeMode);
-  const [isImageLoading, setIsImageLoading] = useState(true);
+  const [isImageLoading, setIsImageLoading] = useState(!!pokemon?.imageUrl);
 
   if (isLoading) return <PokemonCardSkeleton />;
   if (!pokemon) return null;
   const { id, name, types, imageUrl, imageExtension } = pokemon;
 
   const renderImage = () => {
-    console.log(imageExtension);
-
     if (imageExtension === 'svg') {
       return isImageLoading ? (
         <>
@@ -86,7 +94,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
           />
         </>
       ) : (
-        <PlaceholderImageIcon themeMode={themeMode} />
+        <PlaceholderImageIcon />
       );
     }
   };
@@ -100,15 +108,17 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
               {name}
             </BackgroundText>
           </BackgroundTextWrapper>
-          <BackgroundGradientsWrapper>
-            {types.map((type: PokemonType) => (
-              <BackgroundGradient
-                pokemonType={type}
-                key={`${id}-${type}`}
-                colors={[]}
-              />
-            ))}
-          </BackgroundGradientsWrapper>
+          {!isImageLoading && (
+            <BackgroundGradientsWrapper>
+              {types.map((type: PokemonType) => (
+                <BackgroundGradient
+                  pokemonType={type}
+                  key={`${id}-${type}`}
+                  colors={[]}
+                />
+              ))}
+            </BackgroundGradientsWrapper>
+          )}
         </BackgroundClip>
         {renderImage()}
       </BackgroundWrapper>
@@ -121,6 +131,10 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
             </TypeBadgeWrapper>
           ))}
         </TypeBadgesWrapper>
+        <PokemonId>#{id}</PokemonId>
+        <AddToFavoritesButtonWrapper>
+          <AddToFavoritesButton pokemonId={id} size={FAVORITES_BUTTON_SIZE} />
+        </AddToFavoritesButtonWrapper>
       </CardFooter>
     </CardWrapper>
   );

@@ -7,7 +7,6 @@ import { PokemonType } from '@store/pokemon/pokemon.types';
 import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen';
 import { TYPE_BADGE_WIDTH } from '../PokemonTypeBadge/PokemonTypeBadge.styles';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
-import { ThemeMode } from '@store/theme/theme.types';
 
 const BACKGROUND_HEIGH = 0.4 * SCREEN_WIDTH;
 const FOOTER_HEIGHT = 85;
@@ -17,6 +16,7 @@ const GRADIENTS_WRAPPER_WIDTH = 1.2 * CARD_WIDTH;
 export const MAX_IMAGE_WIDTH = 0.4 * SCREEN_WIDTH;
 export const MAX_IMAGE_HEIGHT = BACKGROUND_HEIGH;
 export const CARD_HEIGHT = BACKGROUND_HEIGH + FOOTER_HEIGHT;
+export const FAVORITES_BUTTON_SIZE = 20;
 
 export const CardWrapper = styled(Animated.View)`
   border-radius: 5px;
@@ -86,6 +86,7 @@ export const BackgroundText = styled.Text`
   text-transform: uppercase;
   transform: skew(-10deg, -5deg);
   font-size: ${SCREEN_WIDTH / 7}px;
+
   ${({ theme }) => css`
     color: ${theme.color.background.primary};
     font-weight: ${theme.fontWeight.bold};
@@ -103,6 +104,18 @@ export const CardTitle = styled.Text`
     margin-bottom: ${theme.space.md};
     ${theme.shadow.medium
       .md}; // TODO - create text shadows separate from the background shadows
+  `};
+`;
+
+export const PokemonId = styled.Text`
+  position: absolute;
+  left: 10px;
+  bottom: 12px;
+
+  ${({ theme }) => css`
+    color: ${theme.color.text.primary};
+    font-size: ${theme.fontSize.caption};
+    font-weight: ${theme.fontWeight.bold};
   `};
 `;
 
@@ -158,15 +171,27 @@ export const TypeBadgeSkeletonWrapper = styled(TypeBadgeWrapper)`
 export const PlaceholderImageIcon = styled(FontistoIcon).attrs({
   name: 'question',
   size: MAX_IMAGE_WIDTH
-})<{ themeMode?: ThemeMode }>`
+})`
   height: ${MAX_IMAGE_HEIGHT}px;
   width: ${MAX_IMAGE_WIDTH}px;
   text-align: center;
   ${pokemonImageStyles};
-  ${({ theme, themeMode }) => css`
-    color: ${themeMode === ThemeMode.DARK
-      ? theme.color.gray.dark[3]
-      : theme.color.gray.light[1]};
+  ${({ theme }) => css`
+    color: ${theme.color.background.tertiary};
     ${theme.shadow.medium.sm};
   `}
+`;
+
+export const PokemonIdSkeletonWrapper = styled.View`
+  width: 25px;
+  height: ${FAVORITES_BUTTON_SIZE}px;
+`;
+
+export const AddToFavoritesButtonWrapper = styled.View`
+  position: absolute;
+  right: 10px;
+  bottom: 12px;
+  width: ${FAVORITES_BUTTON_SIZE}px;
+  height: ${FAVORITES_BUTTON_SIZE}px;
+  color: ${({ theme }) => theme.color.text.primary};
 `;
