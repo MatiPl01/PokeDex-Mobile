@@ -1,4 +1,3 @@
-import { SinglePokemonState } from './pokemon.reducer';
 import { createSelector } from 'reselect';
 import { RootState } from '@store';
 import { idToIdx } from './pokemon.utils';
@@ -15,9 +14,24 @@ export const selectDisplayedPokemonList = createSelector(
   ({ displayedPokemonList }) => displayedPokemonList
 );
 
-export const selectSinglePokemonState = createSelector(
+export const selectSinglePokemonStateById = createSelector(
   [selectAllPokemonList, (state: RootState, id: string) => id],
-  (pokemonList, id): SinglePokemonState | undefined => pokemonList[idToIdx(id)]
+  (pokemonList, id) => pokemonList[idToIdx(id)]
+);
+
+export const selectPokemonStateListByIds = createSelector(
+  [
+    selectAllPokemonList,
+    (state: RootState, ids: string[], allowEmpty = false) => ({
+      ids,
+      allowEmpty
+    })
+  ],
+  (pokemonList, { ids, allowEmpty }) => {
+    const pokemonStates = ids.map(id => pokemonList[idToIdx(id)]);
+    if (allowEmpty) return pokemonStates;
+    return pokemonStates.filter(Boolean);
+  }
 );
 
 export const selectPokemonReachedEnd = createSelector(

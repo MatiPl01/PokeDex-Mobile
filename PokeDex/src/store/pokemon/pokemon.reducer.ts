@@ -172,6 +172,44 @@ const handleFetchBatchFailure = (
   isLoading: false
 });
 
+const handleFetchSingleStart = (
+  state: PokemonState,
+  { id, updateDisplayed }: { id: string; updateDisplayed: boolean }
+): PokemonState => ({
+  ...handleFetchBatchStart(state, { ids: [id], updateDisplayed }),
+  isLoading: state.isLoading
+});
+
+const handleFetchSingleSuccess = (
+  state: PokemonState,
+  {
+    id,
+    pokemon,
+    updateDisplayed
+  }: { id: string; pokemon: Pokemon; updateDisplayed: boolean }
+): PokemonState => ({
+  ...handleFetchBatchSuccess(state, {
+    pokemonMap: { [id]: pokemon },
+    updateIdsOrder: [id],
+    updateDisplayed
+  })
+});
+
+const handleFetchSingleFailure = (
+  state: PokemonState,
+  {
+    id,
+    error,
+    updateDisplayed
+  }: { id: string; error: Error; updateDisplayed: boolean }
+): PokemonState => ({
+  ...handleFetchBatchFailure(state, {
+    errorsMap: { [id]: error },
+    updateIdsOrder: [id],
+    updateDisplayed
+  })
+});
+
 const handleFetchNextPokemonUrlsStart = (
   state: PokemonState
 ): PokemonState => ({ ...state, isLoading: true });
@@ -227,6 +265,15 @@ const pokemonReducer = (
     case PokemonActionType.FETCH_BATCH_FAILURE:
       console.log('FETCH_BATCH_FAILURE');
       return handleFetchBatchFailure(state, action.payload);
+    case PokemonActionType.FETCH_SINGLE_START:
+      console.log('FETCH_SINGLE_START');
+      return handleFetchSingleStart(state, action.payload);
+    case PokemonActionType.FETCH_SINGLE_SUCCESS:
+      console.log('FETCH_SINGLE_SUCCESS');
+      return handleFetchSingleSuccess(state, action.payload);
+    case PokemonActionType.FETCH_SINGLE_FAILURE:
+      console.log('FETCH_SINGLE_FAILURE');
+      return handleFetchSingleFailure(state, action.payload);
     case PokemonActionType.FETCH_NEXT_URLS_START:
       console.log('FETCH_NEXT_URLS_START');
       return handleFetchNextPokemonUrlsStart(state);

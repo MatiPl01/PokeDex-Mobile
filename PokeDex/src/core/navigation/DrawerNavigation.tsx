@@ -9,7 +9,10 @@ import {
   useDrawerProgress
 } from '@react-navigation/drawer';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  CardStyleInterpolators,
+  createStackNavigator
+} from '@react-navigation/stack';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import SplashScreen from '@core/splash-screen/SplashScreen';
@@ -71,11 +74,12 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
               },
               presentation: 'card',
               gestureEnabled: false,
-              headerLeft: () => null
+              headerLeft: () => null,
+              cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
             }}
           >
-            <Stack.Screen name="Pokemon" component={PokemonScreen} />
             <Stack.Screen name="Favorites" component={FavoritesScreen} />
+            <Stack.Screen name="Pokemon" component={PokemonScreen} />
             <Stack.Screen name="Map" component={MapScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
           </Stack.Navigator>
@@ -130,7 +134,7 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
 const DrawerNavigation: React.FC = () => (
   <DrawerWrapper>
     <Drawer.Navigator
-      initialRouteName="Pokemon"
+      initialRouteName="Favorites" // TODO - change to Pokemon
       screenOptions={{
         headerShown: false,
         drawerType: 'slide',

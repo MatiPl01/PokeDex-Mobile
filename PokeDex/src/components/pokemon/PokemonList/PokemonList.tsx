@@ -84,7 +84,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const [scrollTopButtonVisible, setScrollTopButtonVisible] = useState(false);
 
   useEffect(() => {
-    if (areAllDisplayed) loadMorePokemon();
+    if (areAllDisplayed && !pokemonList.length) loadMorePokemon();
   }, []);
 
   useEffect(() => {

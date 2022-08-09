@@ -8,7 +8,7 @@ import {
 } from 'react-native-reanimated';
 import { createAnimatedStyle } from '@utils/reanimated';
 import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen';
-import { AnimatedGradient, GradientWrapper } from './SkeletonPlaceholder.style';
+import { AnimatedGradient, GradientWrapper } from './SkeletonPlaceholder.styles';
 
 const DEFAULT_ANIMATION_DURATION = 1000;
 

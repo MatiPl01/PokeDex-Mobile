@@ -41,6 +41,32 @@ type FetchPokemonBatchFailure = ActionWithPayload<
   }
 >;
 
+type FetchSingleStart = ActionWithPayload<
+  PokemonActionType.FETCH_SINGLE_START,
+  {
+    id: string;
+    updateDisplayed: boolean;
+  }
+>;
+
+type FetchSingleSuccess = ActionWithPayload<
+  PokemonActionType.FETCH_SINGLE_SUCCESS,
+  {
+    id: string;
+    pokemon: Pokemon;
+    updateDisplayed: boolean;
+  }
+>;
+
+type FetchSingleFailure = ActionWithPayload<
+  PokemonActionType.FETCH_SINGLE_FAILURE,
+  {
+    id: string;
+    error: Error;
+    updateDisplayed: boolean;
+  }
+>;
+
 type FetchNextPokemonUrlsStart =
   Action<PokemonActionType.FETCH_NEXT_URLS_START>;
 
@@ -67,6 +93,9 @@ export type PokemonAction =
   | FetchPokemonBatchStart
   | FetchPokemonBatchSuccess
   | FetchPokemonBatchFailure
+  | FetchSingleSuccess
+  | FetchSingleStart
+  | FetchSingleFailure
   | FetchNextPokemonUrlsStart
   | FetchNextPokemonUrlsSuccess
   | FetchNextPokemonUrlsFailure
@@ -102,6 +131,34 @@ const fetchPokemonBatchFailure = (
   createAction(PokemonActionType.FETCH_BATCH_FAILURE, {
     errorsMap,
     updateIdsOrder,
+    updateDisplayed
+  });
+
+const fetchSinglePokemonStart = (
+  id: string,
+  updateDisplayed: boolean
+): FetchSingleStart =>
+  createAction(PokemonActionType.FETCH_SINGLE_START, { id, updateDisplayed });
+
+const fetchSinglePokemonSuccess = (
+  id: string,
+  pokemon: Pokemon,
+  updateDisplayed: boolean
+): FetchSingleSuccess =>
+  createAction(PokemonActionType.FETCH_SINGLE_SUCCESS, {
+    id,
+    pokemon,
+    updateDisplayed
+  });
+
+const fetchSinglePokemonFailure = (
+  id: string,
+  error: Error,
+  updateDisplayed: boolean
+): FetchSingleFailure =>
+  createAction(PokemonActionType.FETCH_SINGLE_FAILURE, {
+    id,
+    error,
     updateDisplayed
   });
 
@@ -221,16 +278,23 @@ export const fetchNextPokemonBatchAsync: ActionCreator<
     dispatch(fetchPokemonBatchByIdsAsync(pokemonIds));
   };
 
-export const fetchPokemonByIdAsync: ActionCreator<
+export const fetchSinglePokemonByIdAsync: ActionCreator<
   ThunkAction<Promise<void>, PokemonState, void, PokemonAction>
 > =
-  (id: string) =>
-  async (
-    dispatch: Dispatch<
-      ThunkAction<Promise<void>, PokemonState, void, PokemonAction>
-    >
-  ): Promise<void> => {
-    dispatch(fetchPokemonBatchByIdsAsync([id]));
+  (id: string, updateDisplayed = true) =>
+  async (dispatch: Dispatch<PokemonAction>): Promise<void> => {
+    // Don't fetch if there is already Pokemon with the specific id in the store
+    const allPokemonList = store.getState().pokemon.allPokemonList;
+    if (allPokemonList[idToIdx(id)]) return;
+
+    dispatch(fetchSinglePokemonStart(id, updateDisplayed));
+    try {
+      const pokemon = await fetchSinglePokemonDataById(id);
+      dispatch(fetchSinglePokemonSuccess(id, pokemon, updateDisplayed));
+    } catch (err) {
+      console.error(err);
+      dispatch(fetchSinglePokemonFailure(id, err as Error, updateDisplayed));
+    }
   };
 
 export const refetchPokemonList: ActionCreator<
