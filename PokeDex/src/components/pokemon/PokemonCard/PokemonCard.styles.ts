@@ -1,12 +1,10 @@
 import styled, { css } from 'styled-components/native';
 import { Animated } from 'react-native';
-import { SvgUri } from 'react-native-svg';
 import LinearGradient from 'react-native-linear-gradient';
 import { flexCenter } from '@styles/shared';
 import { PokemonType } from '@store/pokemon/pokemon.types';
 import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen';
 import { TYPE_BADGE_WIDTH } from '../PokemonTypeBadge/PokemonTypeBadge.styles';
-import FontistoIcon from 'react-native-vector-icons/Fontisto';
 
 const BACKGROUND_HEIGH = 0.4 * SCREEN_WIDTH;
 const FOOTER_HEIGHT = 85;
@@ -38,30 +36,6 @@ export const CardFooter = styled.View`
   justify-content: center;
   height: ${FOOTER_HEIGHT}px;
   background-color: ${({ theme }) => theme.color.background.primary};
-`;
-
-const pokemonImageStyles = css`
-  position: absolute;
-  z-index: 1;
-  left: 50%;
-  transform: translateX(-${MAX_IMAGE_WIDTH / 2}px);
-  ${({ theme }) => css`
-    bottom: ${theme.space.lg};
-    ${theme.shadow.medium.md};
-  `};
-`;
-
-export const PokemonSvg = styled(SvgUri).attrs({
-  height: MAX_IMAGE_HEIGHT,
-  width: MAX_IMAGE_WIDTH
-})`
-  ${pokemonImageStyles};
-`;
-
-export const PokemonImage = styled.Image`
-  height: ${MAX_IMAGE_HEIGHT}px;
-  width: ${MAX_IMAGE_WIDTH}px;
-  ${pokemonImageStyles};
 `;
 
 export const BackgroundClip = styled.View`
@@ -166,20 +140,6 @@ export const CardTitleSkeletonWrapper = styled.View`
 export const TypeBadgeSkeletonWrapper = styled(TypeBadgeWrapper)`
   width: ${TYPE_BADGE_WIDTH}px;
   height: ${({ theme }) => `${parseInt(theme.fontSize.caption) + 10}px`};
-`;
-
-export const PlaceholderImageIcon = styled(FontistoIcon).attrs({
-  name: 'question',
-  size: MAX_IMAGE_WIDTH
-})`
-  height: ${MAX_IMAGE_HEIGHT}px;
-  width: ${MAX_IMAGE_WIDTH}px;
-  text-align: center;
-  ${pokemonImageStyles};
-  ${({ theme }) => css`
-    color: ${theme.color.background.tertiary};
-    ${theme.shadow.medium.sm};
-  `}
 `;
 
 export const PokemonIdSkeletonWrapper = styled.View`

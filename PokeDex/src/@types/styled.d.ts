@@ -90,7 +90,7 @@ declare module 'styled-components/native' {
 
   export type ThemeLineHeights = {
     title: string;
-    copy: string;
+    body: string;
   };
 
   export type ThemeSpaces = {

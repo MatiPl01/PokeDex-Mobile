@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Svg from 'react-native-remote-svg';
 import { Pokemon, PokemonType } from '@store/pokemon/pokemon.types';
 import SkeletonPlaceholder from '@components/shared/SkeletonPlaceholder/SkeletonPlaceholder';
 import PokemonTypeBadge from '../PokemonTypeBadge/PokemonTypeBadge';
@@ -9,8 +8,6 @@ import {
   BackgroundGradient,
   BackgroundGradientsWrapper,
   CardFooter,
-  PokemonSvg,
-  PokemonImage,
   BackgroundClip,
   BackgroundTextWrapper,
   BackgroundText,
@@ -20,12 +17,14 @@ import {
   TypeBadgeWrapper,
   CardTitleSkeletonWrapper,
   TypeBadgeSkeletonWrapper,
-  PlaceholderImageIcon,
   PokemonIdSkeletonWrapper,
   AddToFavoritesButtonWrapper,
-  FAVORITES_BUTTON_SIZE
+  FAVORITES_BUTTON_SIZE,
+  MAX_IMAGE_WIDTH,
+  MAX_IMAGE_HEIGHT
 } from './PokemonCard.styles';
 import AddToFavoritesButton from '@components/shared/AddToFavoritesButton/AddToFavoritesButton';
+import { PokemonCardImage } from '../PokemonCardImage/PokemonCardImage';
 
 const PokemonCardSkeleton: React.FC = () => (
   <CardWrapper>
@@ -64,40 +63,11 @@ type PokemonCardProps = {
 };
 
 const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
-  const [isImageLoading, setIsImageLoading] = useState(!!pokemon?.imageUrl);
+  const [isImageLoading, setIsImageLoading] = useState(true);
 
   if (isLoading) return <PokemonCardSkeleton />;
   if (!pokemon) return null;
   const { id, name, types, imageUrl, imageExtension } = pokemon;
-
-  const renderImage = () => {
-    if (imageExtension === 'svg') {
-      return isImageLoading ? (
-        <>
-          {/* The Svg component below is used to determine if the Svg image was fetched from the server and finished loading. Using this Svg component to display the image results in showing cropped image. Therefore, another library is used for displaying the actual image */}
-          <Svg
-            source={{ uri: pokemon.imageUrl }}
-            onLoadEnd={() => setIsImageLoading(false)}
-          />
-          <SkeletonPlaceholder />
-        </>
-      ) : (
-        <PokemonSvg uri={imageUrl} />
-      );
-    } else {
-      return imageUrl ? (
-        <>
-          {isImageLoading && <SkeletonPlaceholder />}
-          <PokemonImage
-            source={{ uri: imageUrl }}
-            onLoadEnd={() => setIsImageLoading(false)}
-          />
-        </>
-      ) : (
-        <PlaceholderImageIcon />
-      );
-    }
-  };
 
   return (
     <CardWrapper>
@@ -120,7 +90,13 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
             </BackgroundGradientsWrapper>
           )}
         </BackgroundClip>
-        {renderImage()}
+        <PokemonCardImage
+          width={MAX_IMAGE_WIDTH}
+          height={MAX_IMAGE_HEIGHT}
+          extension={imageExtension}
+          imageUrl={imageUrl}
+          onLoadEnd={() => setIsImageLoading(false)}
+        />
       </BackgroundWrapper>
       <CardFooter>
         <CardTitle>{name}</CardTitle>

@@ -1,6 +1,6 @@
 export const lineHeight = {
   title: '32px',
-  copy: '20px'
+  body: '16px'
 };
 
 export const space = {
