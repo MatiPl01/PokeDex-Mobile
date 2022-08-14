@@ -73,11 +73,6 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
     <CardWrapper>
       <BackgroundWrapper>
         <BackgroundClip>
-          <BackgroundTextWrapper>
-            <BackgroundText numberOfLines={1} ellipsizeMode="clip">
-              {name}
-            </BackgroundText>
-          </BackgroundTextWrapper>
           {!isImageLoading && (
             <BackgroundGradientsWrapper>
               {types.map((type: PokemonType) => (
@@ -89,6 +84,11 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
               ))}
             </BackgroundGradientsWrapper>
           )}
+          <BackgroundTextWrapper>
+            <BackgroundText numberOfLines={1} ellipsizeMode="clip">
+              {name}
+            </BackgroundText>
+          </BackgroundTextWrapper>
         </BackgroundClip>
         <PokemonCardImage
           width={MAX_IMAGE_WIDTH}

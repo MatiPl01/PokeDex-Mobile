@@ -28,7 +28,6 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
   width
 }) => {
   const [isImageLoading, setIsImageLoading] = useState(true);
-
   if (isLoading) return <FavoritePokemonCardSkeleton />;
   if (!pokemon) return null;
   const { id, name, types, imageUrl, imageExtension } = pokemon;

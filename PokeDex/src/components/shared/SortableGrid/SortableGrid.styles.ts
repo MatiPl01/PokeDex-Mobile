@@ -1,20 +1,15 @@
 import styled, { css } from 'styled-components/native';
-import { GridPosition } from './sortableGrid.utils';
 
-export const GridScrollView = styled.ScrollView`
-  position: relative;
-`;
-
-export const GridItemWrapper = styled.View<{
-  size: number;
-  position: GridPosition;
+export const GridFlatList = styled.FlatList<{
+  paddingX: number;
+  paddingY: number;
 }>`
-  position: absolute;
+  position: relative;
 
-  ${({ size, position }) => css`
-    width: ${size}px;
-    height: ${size}px;
-    left: ${position.x}px;
-    top: ${position.y}px;
-  `}
+  ${({ paddingX, paddingY }) =>
+    paddingX &&
+    paddingY &&
+    css`
+      padding: ${paddingX}px ${paddingY}px;
+    `};
 `;
