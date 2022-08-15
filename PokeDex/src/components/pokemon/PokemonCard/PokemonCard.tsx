@@ -24,7 +24,7 @@ import {
   MAX_IMAGE_HEIGHT
 } from './PokemonCard.styles';
 import AddToFavoritesButton from '@components/shared/AddToFavoritesButton/AddToFavoritesButton';
-import { PokemonCardImage } from '../PokemonCardImage/PokemonCardImage';
+import PokemonCardImage from '../PokemonCardImage/PokemonCardImage';
 
 const PokemonCardSkeleton: React.FC = () => (
   <CardWrapper>

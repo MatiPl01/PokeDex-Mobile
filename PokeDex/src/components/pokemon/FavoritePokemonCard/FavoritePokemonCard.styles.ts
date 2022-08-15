@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components/native';
-import { flexCenter } from '@styles/shared';
+import { flexCenter, absoluteOverlay } from '@styles/shared';
 import {
   CardFooter as PokemonCardFooter,
   CardTitle as PokemonCardTitle
@@ -35,4 +35,13 @@ export const CardTitle = styled(PokemonCardTitle)`
 
 export const PokemonImageWrapper = styled.View`
   ${({ theme }) => theme.shadow.medium.md};
+  ${absoluteOverlay};
+`;
+
+export const CardTitleSkeletonWrapper = styled.View<{ width: number }>`
+  ${({ theme, width }) => css`
+    height: ${`${parseInt(theme.lineHeight.body)}px`};
+    width: ${width}px;
+    margin: 2px;
+  `};
 `;

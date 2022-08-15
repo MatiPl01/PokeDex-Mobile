@@ -1,5 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 import { StyleSheet } from 'react-native';
+import { createAnimatedStyle } from '@utils/reanimated';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent
@@ -10,7 +11,8 @@ import Animated, {
   useAnimatedGestureHandler,
   withTiming,
   useAnimatedReaction,
-  SharedValue
+  SharedValue,
+  interpolate
 } from 'react-native-reanimated';
 import {
   GridConfig,
@@ -20,6 +22,7 @@ import {
 } from './sortableGrid.utils';
 import {
   GridItemWrapper,
+  ItemDropIndicator,
   AnimatedItemWrapper
 } from './SortableGridItem.styles';
 
@@ -28,9 +31,15 @@ const MOVE_ANIMATION_DURATION = 250;
 
 type DragContext = {
   startTranslation: Translation;
+  dropTranslation: Translation;
   startOrder: number;
   currOrder: number;
   dropOrder: number;
+};
+
+type AnimatedTranslation = {
+  x: SharedValue<number>;
+  y: SharedValue<number>;
 };
 
 type SortableGridItemProps = PropsWithChildren<{
@@ -56,29 +65,49 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
   children
 }) => {
   if (itemsOrder.value[itemKey] === undefined) return null;
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const isDragging = useSharedValue(false);
   const renderOrder = useSharedValue(itemsOrder.value[itemKey]);
+  const isDragging = useSharedValue(false);
+  const itemAnimationProgress = useSharedValue(0);
+  const itemTranslation: AnimatedTranslation = {
+    x: useSharedValue(0),
+    y: useSharedValue(0)
+  };
+  const dropIndicatorTranslation: AnimatedTranslation = {
+    x: useSharedValue(0),
+    y: useSharedValue(0)
+  };
 
-  const animatedItemWrapperStyle = useAnimatedStyle(() => ({
+  const animatedItemStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: isDragging.value ? 1.1 : 1 }
+      { translateX: itemTranslation.x.value },
+      { translateY: itemTranslation.y.value },
+      { scale: interpolate(itemAnimationProgress.value, [0, 1], [1, 1.1]) }
+    ],
+    opacity: interpolate(itemAnimationProgress.value, [0, 1], [1, 0.5])
+  }));
+  const animatedDropAreaStyle = useAnimatedStyle(() => ({
+    opacity: +isDragging.value,
+    transform: [
+      { translateX: dropIndicatorTranslation.x.value },
+      { translateY: dropIndicatorTranslation.y.value }
     ]
   }));
 
   const translateWithTiming = (
-    translation: Translation,
+    translationValue: AnimatedTranslation,
+    targetTranslation: Translation,
     { duration, callback }: { duration?: number; callback?: () => void } = {}
   ) => {
     'worklet';
     const animationConfig = {
       duration: duration || 1000
     };
-    translateX.value = withTiming(translation.x, animationConfig);
-    translateY.value = withTiming(translation.y, animationConfig, callback);
+    translationValue.x.value = withTiming(targetTranslation.x, animationConfig);
+    translationValue.y.value = withTiming(
+      targetTranslation.y,
+      animationConfig,
+      callback
+    );
   };
 
   useAnimatedReaction(
@@ -89,7 +118,7 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
         newOrder,
         gridConfig
       );
-      translateWithTiming(translation, {
+      translateWithTiming(itemTranslation, translation, {
         duration: MOVE_ANIMATION_DURATION
       });
     }
@@ -100,9 +129,8 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
     DragContext
   >({
     onStart: (_, ctx) => {
-      console.log('start', itemKey); // TODO - fix inability to start dragging (happens only for some cards quite randomly)
       ctx.dropOrder = ctx.startOrder = itemsOrder.value[itemKey];
-      ctx.startTranslation = getDistanceBetweenItems(
+      ctx.dropTranslation = ctx.startTranslation = getDistanceBetweenItems(
         renderOrder.value,
         ctx.startOrder,
         gridConfig
@@ -110,9 +138,14 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
       onDragStart(itemKey);
     },
     onActive: ({ translationX, translationY }, ctx) => {
-      isDragging.value = true;
-      translateX.value = ctx.startTranslation.x + translationX;
-      translateY.value = ctx.startTranslation.y + translationY;
+      if (!isDragging.value) {
+        isDragging.value = true;
+        itemAnimationProgress.value = withTiming(1, {
+          duration: MOVE_ANIMATION_DURATION
+        });
+      }
+      itemTranslation.x.value = ctx.startTranslation.x + translationX;
+      itemTranslation.y.value = ctx.startTranslation.y + translationY;
       ctx.currOrder = itemsOrder.value[itemKey];
       ctx.dropOrder = getItemDropOrder(
         ctx.startOrder,
@@ -120,16 +153,22 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
         gridConfig
       );
       if (ctx.currOrder !== ctx.dropOrder) {
+        ctx.dropTranslation = getDistanceBetweenItems(
+          renderOrder.value,
+          ctx.dropOrder,
+          gridConfig
+        );
+        translateWithTiming(dropIndicatorTranslation, ctx.dropTranslation, {
+          duration: MOVE_ANIMATION_DURATION
+        });
         onOrderChange(itemKey, ctx.dropOrder);
       }
     },
     onEnd: (_, ctx) => {
-      const translation = getDistanceBetweenItems(
-        renderOrder.value,
-        ctx.dropOrder,
-        gridConfig
-      );
-      translateWithTiming(translation, {
+      itemAnimationProgress.value = withTiming(0, {
+        duration: MOVE_ANIMATION_DURATION
+      });
+      translateWithTiming(itemTranslation, ctx.dropTranslation, {
         duration: DROP_ANIMATION_DURATION,
         callback: () => {
           ctx.startOrder = ctx.dropOrder;
@@ -142,7 +181,8 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
 
   return (
     <GridItemWrapper size={size} gap={gap}>
-      <AnimatedItemWrapper style={animatedItemWrapperStyle}>
+      <ItemDropIndicator style={animatedDropAreaStyle} />
+      <AnimatedItemWrapper style={animatedItemStyle}>
         <PanGestureHandler onGestureEvent={handleItemDrag}>
           <Animated.View style={StyleSheet.absoluteFill}>
             {children}

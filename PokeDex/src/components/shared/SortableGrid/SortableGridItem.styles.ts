@@ -1,7 +1,9 @@
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
+import { absoluteOverlay } from '@styles/shared';
+import { hexToRGBAlphaCSS } from '@utils/colors';
 
-export const GridItemWrapper = styled(Animated.View)<{
+export const GridItemWrapper = styled.View<{
   size: number;
   gap: number;
 }>`
@@ -13,6 +15,16 @@ export const GridItemWrapper = styled(Animated.View)<{
     margin-right: ${gap}px;
     margin-bottom: ${gap}px;
   `};
+`;
+
+export const ItemDropIndicator = styled(Animated.View)`
+  border-radius: 5px;
+  ${absoluteOverlay};
+
+  ${({ theme }) => css`
+    background-color: ${hexToRGBAlphaCSS(theme.color.background.tertiary, 0.5)};
+    border: 3px dashed ${theme.color.text.tertiary};
+  `}
 `;
 
 export const AnimatedItemWrapper = styled(Animated.View)`

@@ -115,7 +115,7 @@ export const getItemDropOrder = (
   const rowsCount = Math.ceil(itemsCount / columnCount);
   const newRowIdx = Math.min(Math.max(0, currRow + deltaRow), rowsCount - 1);
   const newColIdx = Math.min(Math.max(0, currCol + deltaCol), columnCount - 1);
-  return newRowIdx * columnCount + newColIdx;
+  return Math.min(newRowIdx * columnCount + newColIdx, itemsCount - 1);
 };
 
 export const getDistanceBetweenItems = (

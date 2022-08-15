@@ -1,6 +1,6 @@
 import React, { ComponentType, useEffect } from 'react';
-import { FlatListProps, ListRenderItem } from 'react-native';
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import { FlatListProps, ListRenderItem, View } from 'react-native';
+import { runOnJS, useSharedValue } from 'react-native-reanimated';
 import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen'; // TODO - move this constant to some other file than SplashScreen
 import { GridConfig, GridPadding } from './sortableGrid.utils';
 import { GridFlatList } from './SortableGrid.styles';
@@ -14,17 +14,19 @@ type SortableGridProps<T> = {
   padding?: Partial<GridPadding>;
   gap?: number;
   onDragEnd?: (data: T[]) => void;
+  onEndReached?: () => void;
 };
 
-export default function SortableGrid<T extends object>({
+const SortableGrid = <T extends object>({
   data,
   keyExtractor,
   renderItem,
   onDragEnd,
+  onEndReached,
   columnCount = 1,
   gap = 0,
   padding: desiredPadding = {}
-}: SortableGridProps<T>) {
+}: SortableGridProps<T>) => {
   const padding = { x: 0, y: 0, ...desiredPadding };
   const itemSize =
     (SCREEN_WIDTH - (columnCount - 1) * gap - 2 * padding.x) / columnCount;
@@ -45,7 +47,6 @@ export default function SortableGrid<T extends object>({
   }, [data]);
 
   const getNewOrderData = () => {
-    'worklet';
     const newData: T[] = [];
     data.forEach((item: T, index: number) => {
       newData[itemsOrder.value[keyExtractor(item, index)]] = item;
@@ -70,9 +71,13 @@ export default function SortableGrid<T extends object>({
     itemsOrder.value = newItemsOrder.value;
   };
 
+  const callOnDragEnd = () => {
+    if (onDragEnd) onDragEnd(getNewOrderData());
+  };
+
   const handleItemDragEnd = () => {
     'worklet';
-    if (onDragEnd) onDragEnd(getNewOrderData());
+    runOnJS(callOnDragEnd)();
   };
 
   const renderGridItem: ListRenderItem<T> = ({
@@ -96,6 +101,10 @@ export default function SortableGrid<T extends object>({
     </SortableGridItem>
   );
 
+  const renderPaddingComponent = () => (
+    <View style={{ height: padding.y }}></View>
+  );
+
   return (
     <GridFlatList<ComponentType<FlatListProps<T>>>
       data={data}
@@ -106,8 +115,12 @@ export default function SortableGrid<T extends object>({
       // component because it results in NSMutableDictionary error (that's
       // why I decided to specify paddingX and paddingY separately)
       paddingX={padding.x}
-      paddingY={padding.y}
-      CellRendererComponent={({ children }) => children}
+      ListHeaderComponent={renderPaddingComponent}
+      ListFooterComponent={renderPaddingComponent}
+      maxToRenderPerBatch={12}
+      onEndReached={onEndReached}
     />
   );
-}
+};
+
+export default SortableGrid;

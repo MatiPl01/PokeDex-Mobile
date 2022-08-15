@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Pokemon, PokemonType } from '@store/pokemon/pokemon.types';
-import { PokemonCardImage } from '../PokemonCardImage/PokemonCardImage';
+import PokemonCardImage from '../PokemonCardImage/PokemonCardImage';
 import {
   BackgroundClip,
   BackgroundGradient,
@@ -11,10 +11,31 @@ import {
   CardFooter,
   CardWrapper,
   CardTitle,
-  PokemonImageWrapper
+  PokemonImageWrapper,
+  CardTitleSkeletonWrapper
 } from './FavoritePokemonCard.styles';
+import SkeletonPlaceholder from '@components/shared/SkeletonPlaceholder/SkeletonPlaceholder';
 
-const FavoritePokemonCardSkeleton: React.FC = () => null;
+type FavoritePokemonCardSkeletonProps = {
+  width: number;
+};
+
+const FavoritePokemonCardSkeleton: React.FC<
+  FavoritePokemonCardSkeletonProps
+> = ({ width }) => (
+  <CardWrapper>
+    <BackgroundWrapper>
+      <BackgroundClip>
+        <SkeletonPlaceholder />
+      </BackgroundClip>
+    </BackgroundWrapper>
+    <CardFooter>
+      <CardTitleSkeletonWrapper width={0.5 * width}>
+        <SkeletonPlaceholder />
+      </CardTitleSkeletonWrapper>
+    </CardFooter>
+  </CardWrapper>
+);
 
 type FavoritePokemonCardProps = {
   pokemon: Pokemon | null;
@@ -27,47 +48,37 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
   isLoading,
   width
 }) => {
-  const [isImageLoading, setIsImageLoading] = useState(true);
-  if (isLoading) return <FavoritePokemonCardSkeleton />;
+  if (isLoading) return <FavoritePokemonCardSkeleton width={width} />;
   if (!pokemon) return null;
   const { id, name, types, imageUrl, imageExtension } = pokemon;
 
   return (
-    <>
-      {isLoading ? (
-        <FavoritePokemonCardSkeleton />
-      ) : (
-        <CardWrapper>
-          <BackgroundWrapper>
-            <BackgroundClip>
-              {!isImageLoading && (
-                <BackgroundGradientsWrapper>
-                  {types.map((type: PokemonType) => (
-                    <BackgroundGradient
-                      pokemonType={type}
-                      key={`${id}-${type}`}
-                      colors={[]}
-                    />
-                  ))}
-                </BackgroundGradientsWrapper>
-              )}
-            </BackgroundClip>
-            <PokemonImageWrapper>
-              <PokemonCardImage
-                width={0.75 * width}
-                height={0.65 * width}
-                extension={imageExtension}
-                imageUrl={imageUrl}
-                onLoadEnd={() => setIsImageLoading(false)}
+    <CardWrapper>
+      <BackgroundWrapper>
+        <BackgroundClip>
+          <BackgroundGradientsWrapper>
+            {types.map((type: PokemonType) => (
+              <BackgroundGradient
+                pokemonType={type}
+                key={`${id}-${type}`}
+                colors={[]}
               />
-            </PokemonImageWrapper>
-          </BackgroundWrapper>
-          <CardFooter>
-            <CardTitle>{name}</CardTitle>
-          </CardFooter>
-        </CardWrapper>
-      )}
-    </>
+            ))}
+          </BackgroundGradientsWrapper>
+          <PokemonImageWrapper>
+            <PokemonCardImage
+              width={0.75 * width}
+              height={0.65 * width}
+              extension={imageExtension}
+              imageUrl={imageUrl}
+            />
+          </PokemonImageWrapper>
+        </BackgroundClip>
+      </BackgroundWrapper>
+      <CardFooter>
+        <CardTitle>{name}</CardTitle>
+      </CardFooter>
+    </CardWrapper>
   );
 };
 

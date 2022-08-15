@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Svg from 'react-native-remote-svg';
 import SkeletonPlaceholder from '@components/shared/SkeletonPlaceholder/SkeletonPlaceholder';
 import { ImageExtension } from '@utils/files';
@@ -17,7 +17,7 @@ type PokemonCardImageProps = {
   className?: string;
 };
 
-export const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
+const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
   extension,
   imageUrl,
   width,
@@ -53,7 +53,9 @@ export const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
         />
       </>
     ) : (
-      <PlaceholderImageIcon name='question' size={height} />
+      <PlaceholderImageIcon name="question" size={height} />
     );
   }
 };
+
+export default React.memo(PokemonCardImage);
