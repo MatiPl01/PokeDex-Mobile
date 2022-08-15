@@ -1,19 +1,12 @@
+import { Padding, Vector2D } from '@types';
+
 export type GridConfig = {
   columnCount: number;
   itemsCount: number;
   itemSize: number;
   gap: number;
-  padding: GridPadding;
+  padding: Padding;
 };
-
-type ValueXY = {
-  x: number;
-  y: number;
-};
-
-export type GridPadding = ValueXY;
-export type GridPosition = ValueXY;
-export type Translation = ValueXY;
 
 export const getItemPosition = (
   order: number,
@@ -22,14 +15,14 @@ export const getItemPosition = (
   'worklet';
   const mul = gap + itemSize;
   return {
-    x: padding.x + (order % columnCount) * mul,
-    y: padding.y + Math.floor(order / columnCount) * mul
+    x: (padding.left || 0) + (order % columnCount) * mul,
+    y: (padding.top || 0) + Math.floor(order / columnCount) * mul
   };
 };
 
 export const getItemDragPosition = (
   order: number,
-  translate: Translation,
+  translate: Vector2D,
   gridConfig: GridConfig
 ) => {
   'worklet';
@@ -41,19 +34,23 @@ export const getItemDragPosition = (
 };
 
 export const getItemOrder = (
-  { x, y }: GridPosition,
+  { x, y }: Vector2D,
   { columnCount, padding, itemSize, gap }: GridConfig
 ) => {
   'worklet';
   const div = gap + itemSize;
-  const colIdx = Math.floor((x - padding.x + (itemSize + gap) / 2) / div);
-  const rowIdx = Math.floor((y - padding.y + (itemSize + gap) / 2) / div);
+  const colIdx = Math.floor(
+    (x - (padding.left || 0) + (itemSize + gap) / 2) / div
+  );
+  const rowIdx = Math.floor(
+    (y - (padding.top || 0) + (itemSize + gap) / 2) / div
+  );
   return rowIdx * columnCount + colIdx;
 };
 
 export const getItemTargetOrder = (
   order: number,
-  translate: Translation,
+  translate: Vector2D,
   gridConfig: GridConfig
 ) => {
   'worklet';
@@ -65,7 +62,7 @@ export const getItemTargetOrder = (
 
 export const getItemTargetPosition = (
   order: number,
-  translate: Translation,
+  translate: Vector2D,
   gridConfig: GridConfig
 ) => {
   'worklet';
@@ -76,9 +73,9 @@ export const getItemTargetPosition = (
 };
 
 export const getTranslation = (
-  initialPosition: Translation,
-  targetPosition: Translation
-): Translation => {
+  initialPosition: Vector2D,
+  targetPosition: Vector2D
+) => {
   'worklet';
   return {
     x: targetPosition.x - initialPosition.x,
@@ -88,7 +85,7 @@ export const getTranslation = (
 
 export const getTranslationToTarget = (
   order: number,
-  translate: Translation,
+  translate: Vector2D,
   gridConfig: GridConfig
 ) => {
   'worklet';
@@ -99,16 +96,16 @@ export const getTranslationToTarget = (
 
 export const getItemDropOrder = (
   currentOrder: number,
-  translate: Translation,
+  translate: Vector2D,
   { columnCount, itemsCount, gap, padding, itemSize }: GridConfig
 ) => {
   'worklet';
   const div = gap + itemSize;
   const deltaRow = Math.floor(
-    (translate.y - padding.y + (itemSize + gap) / 2) / div
+    (translate.y - (padding.top || 0) + (itemSize + gap) / 2) / div
   );
   const deltaCol = Math.floor(
-    (translate.x - padding.x + (itemSize + gap) / 2) / div
+    (translate.x - (padding.left || 0) + (itemSize + gap) / 2) / div
   );
   const currRow = Math.floor(currentOrder / 2);
   const currCol = currentOrder % 2;

@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 import { StyleSheet } from 'react-native';
-import { createAnimatedStyle } from '@utils/reanimated';
+import { Vector2D } from '@types';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent
@@ -17,8 +17,7 @@ import Animated, {
 import {
   GridConfig,
   getItemDropOrder,
-  getDistanceBetweenItems,
-  Translation
+  getDistanceBetweenItems
 } from './sortableGrid.utils';
 import {
   GridItemWrapper,
@@ -30,8 +29,8 @@ const DROP_ANIMATION_DURATION = 500;
 const MOVE_ANIMATION_DURATION = 250;
 
 type DragContext = {
-  startTranslation: Translation;
-  dropTranslation: Translation;
+  startTranslation: Vector2D;
+  dropTranslation: Vector2D;
   startOrder: number;
   currOrder: number;
   dropOrder: number;
@@ -48,6 +47,7 @@ type SortableGridItemProps = PropsWithChildren<{
   size: number;
   gap: number;
   gridConfig: GridConfig;
+  draggable: boolean;
   onOrderChange: (itemKey: string, newOrder: number) => void;
   onDragStart: (itemKey: string) => void;
   onDragEnd: (itemKey: string) => void;
@@ -59,6 +59,7 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
   size,
   gap,
   gridConfig,
+  draggable,
   onOrderChange,
   onDragStart,
   onDragEnd,
@@ -95,7 +96,7 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
 
   const translateWithTiming = (
     translationValue: AnimatedTranslation,
-    targetTranslation: Translation,
+    targetTranslation: Vector2D,
     { duration, callback }: { duration?: number; callback?: () => void } = {}
   ) => {
     'worklet';
@@ -183,7 +184,7 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
     <GridItemWrapper size={size} gap={gap}>
       <ItemDropIndicator style={animatedDropAreaStyle} />
       <AnimatedItemWrapper style={animatedItemStyle}>
-        <PanGestureHandler onGestureEvent={handleItemDrag}>
+        <PanGestureHandler onGestureEvent={handleItemDrag} enabled={draggable}>
           <Animated.View style={StyleSheet.absoluteFill}>
             {children}
           </Animated.View>

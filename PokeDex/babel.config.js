@@ -24,7 +24,8 @@ module.exports = {
           '@styles': './src/styles',
           '@themes': './src/themes',
           '@utils': './src/utils',
-          '@config': './src/config.ts'
+          '@types': './src/types/index.ts',
+          '@config': './src/config.ts',
         }
       }
     ]

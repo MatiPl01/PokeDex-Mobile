@@ -1,20 +1,30 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSharedValue, withTiming, Easing } from 'react-native-reanimated';
+import { createAnimatedStyle } from '@utils/reanimated';
 import { Pokemon, PokemonType } from '@store/pokemon/pokemon.types';
-import PokemonCardImage from '../PokemonCardImage/PokemonCardImage';
+import { TouchableWrapper } from '@components/shared';
+import SkeletonPlaceholder from '@components/shared/SkeletonPlaceholder/SkeletonPlaceholder';
+import PokemonCardImage from '@components/pokemon/PokemonCardImage/PokemonCardImage';
 import {
   BackgroundClip,
   BackgroundGradient,
   BackgroundGradientsWrapper
-} from '../PokemonCard/PokemonCard.styles';
+} from '@components/pokemon/PokemonCard/PokemonCard.styles';
 import {
   BackgroundWrapper,
   CardFooter,
   CardWrapper,
   CardTitle,
   PokemonImageWrapper,
-  CardTitleSkeletonWrapper
+  CardTitleSkeletonWrapper,
+  DeleteButtonWrapper,
+  DeleteButtonIcon
 } from './FavoritePokemonCard.styles';
-import SkeletonPlaceholder from '@components/shared/SkeletonPlaceholder/SkeletonPlaceholder';
+
+const useAnimatedDeleteButtonStyle = createAnimatedStyle({
+  opacity: [0, 1],
+  transform: [{ scale: [0, 1] }]
+});
 
 type FavoritePokemonCardSkeletonProps = {
   width: number;
@@ -41,16 +51,33 @@ type FavoritePokemonCardProps = {
   pokemon: Pokemon | null;
   isLoading: boolean;
   width: number;
+  deletable?: boolean;
+  onDelete?: (id: string) => void;
 };
 
 const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
   pokemon,
   isLoading,
-  width
+  width,
+  onDelete,
+  deletable = false
 }) => {
   if (isLoading) return <FavoritePokemonCardSkeleton width={width} />;
   if (!pokemon) return null;
+
   const { id, name, types, imageUrl, imageExtension } = pokemon;
+
+  const deleteButtonAnimationProgress = useSharedValue(0);
+  const animatedDeleteButtonStyle = useAnimatedDeleteButtonStyle(
+    deleteButtonAnimationProgress
+  );
+
+  useEffect(() => {
+    deleteButtonAnimationProgress.value = withTiming(+deletable, {
+      duration: 300,
+      easing: Easing.bezier(0.4, 0, 0.9, 0.65)
+    });
+  }, [deletable]);
 
   return (
     <CardWrapper>
@@ -78,6 +105,12 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
       <CardFooter>
         <CardTitle>{name}</CardTitle>
       </CardFooter>
+
+      <DeleteButtonWrapper style={animatedDeleteButtonStyle}>
+        <TouchableWrapper onPress={onDelete && (() => onDelete(id))}>
+          <DeleteButtonIcon />
+        </TouchableWrapper>
+      </DeleteButtonWrapper>
     </CardWrapper>
   );
 };

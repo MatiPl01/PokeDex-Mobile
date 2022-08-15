@@ -39,9 +39,12 @@
       "@utils/*": [
         "src/utils/*"
       ],
+      "@types": [
+        "src/types/index.ts"
+      ],
       "@config": [
         "src/config.ts"
-      ]
+      ],
     },
     "typeRoots": ["src/@types", "node_modules/@types"],
     "plugins": [

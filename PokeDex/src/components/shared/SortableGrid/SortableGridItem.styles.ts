@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
-import { absoluteOverlay } from '@styles/shared';
+import { absoluteFill } from '@styles/shared';
 import { hexToRGBAlphaCSS } from '@utils/colors';
 
 export const GridItemWrapper = styled.View<{
@@ -19,7 +19,7 @@ export const GridItemWrapper = styled.View<{
 
 export const ItemDropIndicator = styled(Animated.View)`
   border-radius: 5px;
-  ${absoluteOverlay};
+  ${absoluteFill};
 
   ${({ theme }) => css`
     background-color: ${hexToRGBAlphaCSS(theme.color.background.tertiary, 0.5)};

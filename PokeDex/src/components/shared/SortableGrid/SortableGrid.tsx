@@ -1,8 +1,10 @@
 import React, { ComponentType, useEffect } from 'react';
-import { FlatListProps, ListRenderItem, View } from 'react-native';
+import { FlatListProps, ListRenderItem } from 'react-native';
 import { runOnJS, useSharedValue } from 'react-native-reanimated';
 import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen'; // TODO - move this constant to some other file than SplashScreen
-import { GridConfig, GridPadding } from './sortableGrid.utils';
+import { Separator } from '@components/shared';
+import { Padding } from '@types';
+import { GridConfig } from './sortableGrid.utils';
 import { GridFlatList } from './SortableGrid.styles';
 import SortableGridItem from './SortableGridItem';
 
@@ -11,8 +13,11 @@ type SortableGridProps<T> = {
   keyExtractor: (item: T, index: number) => string;
   renderItem: ({ item, size }: { item: T; size: number }) => JSX.Element;
   columnCount?: number;
-  padding?: Partial<GridPadding>;
+  padding?: Padding;
   gap?: number;
+  editable?: boolean;
+  GridHeaderComponent?: React.ReactNode;
+  GridFooterComponent?: React.ReactNode;
   onDragEnd?: (data: T[]) => void;
   onEndReached?: () => void;
 };
@@ -23,13 +28,17 @@ const SortableGrid = <T extends object>({
   renderItem,
   onDragEnd,
   onEndReached,
+  GridHeaderComponent,
+  GridFooterComponent,
+  editable = false,
   columnCount = 1,
   gap = 0,
   padding: desiredPadding = {}
 }: SortableGridProps<T>) => {
-  const padding = { x: 0, y: 0, ...desiredPadding };
+  const padding = { top: 0, right: 0, left: 0, bottom: 0, ...desiredPadding };
   const itemSize =
-    (SCREEN_WIDTH - (columnCount - 1) * gap - 2 * padding.x) / columnCount;
+    (SCREEN_WIDTH - (columnCount - 1) * gap - padding.left - padding.right) /
+    columnCount;
   const config: GridConfig = {
     padding,
     itemSize,
@@ -96,13 +105,10 @@ const SortableGrid = <T extends object>({
       onDragStart={handleItemDragStart}
       onDragEnd={handleItemDragEnd}
       onOrderChange={handleOrderChange}
+      draggable={editable}
     >
       {renderItem({ item, size: itemSize })}
     </SortableGridItem>
-  );
-
-  const renderPaddingComponent = () => (
-    <View style={{ height: padding.y }}></View>
   );
 
   return (
@@ -114,11 +120,21 @@ const SortableGrid = <T extends object>({
       // Padding object cannot be passed as a property of the styled
       // component because it results in NSMutableDictionary error (that's
       // why I decided to specify paddingX and paddingY separately)
-      paddingX={padding.x}
-      ListHeaderComponent={renderPaddingComponent}
-      ListFooterComponent={renderPaddingComponent}
       maxToRenderPerBatch={12}
       onEndReached={onEndReached}
+      ListHeaderComponent={
+        <>
+          <Separator height={padding.top} />
+          {GridHeaderComponent}
+        </>
+      }
+      ListFooterComponent={
+        <>
+          {GridFooterComponent}
+          <Separator height={padding.bottom} />
+        </>
+      }
+      style={{ paddingLeft: padding.left, paddingRight: padding.right }}
     />
   );
 };

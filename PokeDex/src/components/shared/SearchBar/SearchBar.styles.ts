@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 import Animated from 'react-native-reanimated';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { flexCenter } from '@styles/shared';
+import { flexCenter, absoluteFill } from '@styles/shared';
 import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen';
 
 export const SEARCH_ICON_SIZE = 65;
@@ -28,11 +28,9 @@ export const SearchButton = styled(TouchableWithoutFeedback)`
 `;
 
 export const IconWrapper = styled(Animated.View)`
-  position: absolute;
-  height: 100%;
-  width: 100%;
   opacity: 0;
   transform: scale(0.5);
+  ${absoluteFill};
   ${flexCenter};
 `;
 

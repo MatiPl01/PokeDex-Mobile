@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { TouchableWrapper as SharedTouchableWrapper } from '@components/shared';
 
 export const AnimatedButton = styled(Animated.View)`
   position: absolute;
@@ -8,7 +8,7 @@ export const AnimatedButton = styled(Animated.View)`
   height: 100%;
 `;
 
-export const TouchableWrapper = styled(TouchableWithoutFeedback)`
+export const TouchableWrapper = styled(SharedTouchableWrapper)`
   position: relative;
   width: 100%;
   height: 100%;

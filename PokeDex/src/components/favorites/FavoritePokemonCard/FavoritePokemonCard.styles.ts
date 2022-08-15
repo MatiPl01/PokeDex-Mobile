@@ -1,9 +1,14 @@
 import styled, { css } from 'styled-components/native';
-import { flexCenter, absoluteOverlay } from '@styles/shared';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { flexCenter, absoluteFill } from '@styles/shared';
 import {
   CardFooter as PokemonCardFooter,
   CardTitle as PokemonCardTitle
-} from '../PokemonCard/PokemonCard.styles';
+} from '@components/pokemon/PokemonCard/PokemonCard.styles';
+import { SearchButtonWrapper } from '@components/shared/SearchBar/SearchBar.styles';
+
+const DELETE_BUTTON_SIZE = 40;
+const DELETE_ICON_SIZE = 25;
 
 export const CardWrapper = styled.View`
   height: 100%;
@@ -35,7 +40,7 @@ export const CardTitle = styled(PokemonCardTitle)`
 
 export const PokemonImageWrapper = styled.View`
   ${({ theme }) => theme.shadow.medium.md};
-  ${absoluteOverlay};
+  ${absoluteFill};
 `;
 
 export const CardTitleSkeletonWrapper = styled.View<{ width: number }>`
@@ -43,5 +48,25 @@ export const CardTitleSkeletonWrapper = styled.View<{ width: number }>`
     height: ${`${parseInt(theme.lineHeight.body)}px`};
     width: ${width}px;
     margin: 2px;
+  `};
+`;
+
+export const DeleteButtonWrapper = styled(SearchButtonWrapper).attrs({
+  displayShadow: true
+})`
+  top: ${-DELETE_BUTTON_SIZE / 4}px;
+  right: ${-DELETE_BUTTON_SIZE / 4}px;
+  width: ${DELETE_BUTTON_SIZE}px;
+  height: ${DELETE_BUTTON_SIZE}px;
+  ${flexCenter};
+`;
+
+export const DeleteButtonIcon = styled(MaterialIcon).attrs({
+  size: DELETE_ICON_SIZE,
+  name: 'delete'
+})`
+  ${({ theme }) => css`
+    color: ${theme.color.white};
+    ${theme.shadow.strong.sm};
   `};
 `;
