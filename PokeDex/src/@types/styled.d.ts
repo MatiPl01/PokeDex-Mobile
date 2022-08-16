@@ -34,6 +34,10 @@ declare module 'styled-components/native' {
       light: string[];
       dark: string[];
     };
+    red: {
+      light: string;
+      dark: string;
+    };
     pokemonType: {
       normal: PokemonTypeColor;
       fighting: PokemonTypeColor;
@@ -63,15 +67,15 @@ declare module 'styled-components/native' {
   };
 
   export type ThemeFontSizes = {
-    caption: string;
-    button: string;
-    body: string;
-    title: string;
-    h5: string;
-    h4: string;
-    h3: string;
-    h2: string;
-    h1: string;
+    caption: number;
+    button: number;
+    body: number;
+    title: number;
+    h5: number;
+    h4: number;
+    h3: number;
+    h2: number;
+    h1: number;
   };
 
   export type ThemeShadows = {
@@ -81,27 +85,27 @@ declare module 'styled-components/native' {
   };
 
   export type ThemeSizes = {
-    xs: string;
-    sm: string;
-    md: string;
-    lg: string;
-    xl: string;
+    xs: number;
+    sm: number;
+    md: number;
+    lg: number;
+    xl: number;
   };
 
   export type ThemeLineHeights = {
-    title: string;
-    body: string;
+    title: number;
+    body: number;
   };
 
   export type ThemeSpaces = {
-    xs: string;
-    sm: string;
-    md: string;
-    lg: string;
-    xl: string;
-    xxl: string;
+    xs: number;
+    sm: number;
+    md: number;
+    lg: number;
+    xl: number;
+    xxl: number;
   };
-  
+
   export interface DefaultTheme {
     color: ThemeColors;
     fontWeight: ThemeFontWeights;

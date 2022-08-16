@@ -1,17 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Easing, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useTheme } from 'styled-components/native';
 import { createAnimatedStyle } from '@utils/reanimated';
-import {
-  ButtonWrapper,
-  ButtonTouchable,
-  ButtonIcon,
-  BUTTON_DISTANCE,
-  BUTTON_SIZE
-} from './ScrollTopButton.styles';
-
-const useAnimatedShowButtonStyle = createAnimatedStyle({
-  right: [-BUTTON_SIZE, BUTTON_DISTANCE]
-});
+import { ButtonWrapper, ButtonIcon } from './ScrollTopButton.styles';
+import { TouchableWrapper } from '@components/shared/styled/buttons';
 
 type ScrollTopButtonProps = {
   isVisible: boolean;
@@ -22,9 +14,17 @@ const ScrollTopButton: React.FC<ScrollTopButtonProps> = ({
   isVisible,
   onScrollTop
 }) => {
+  const theme = useTheme();
+  const BUTTON_SIZE = theme.size.lg;
+  const BUTTON_DISTANCE = theme.space.lg;
+
   const showButtonAnimationProgress = useSharedValue(0);
-  const animatedShowButtonStyle = useAnimatedShowButtonStyle(
-    showButtonAnimationProgress
+  const animatedShowButtonStyle = useMemo(
+    () =>
+      createAnimatedStyle({
+        right: [-BUTTON_SIZE, BUTTON_DISTANCE]
+      })(showButtonAnimationProgress),
+    []
   );
 
   useEffect(() => {
@@ -36,9 +36,9 @@ const ScrollTopButton: React.FC<ScrollTopButtonProps> = ({
 
   return (
     <ButtonWrapper style={animatedShowButtonStyle}>
-      <ButtonTouchable onPress={onScrollTop}>
+      <TouchableWrapper onPress={onScrollTop}>
         <ButtonIcon name="chevron-up" />
-      </ButtonTouchable>
+      </TouchableWrapper>
     </ButtonWrapper>
   );
 };

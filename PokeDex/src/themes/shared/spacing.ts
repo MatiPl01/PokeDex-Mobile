@@ -1,13 +1,13 @@
 export const lineHeight = {
-  title: '32px',
-  body: '16px'
+  title: 32,
+  body: 16
 };
 
 export const space = {
-  xs: '2px',
-  sm: '4px',
-  md: '8px',
-  lg: '16px',
-  xl: '32px',
-  xxl: '64px'
+  xs: 2,
+  sm: 4,
+  md: 8,
+  lg: 16,
+  xl: 32,
+  xxl: 64
 };

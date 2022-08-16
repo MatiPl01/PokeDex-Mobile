@@ -1,5 +1,5 @@
-import { FETCH_BATCH_POKEMON_COUNT, API_URL } from '@config';
-import { Pokemon, PokemonActionType } from '@store/pokemon/pokemon.types';
+import { API } from '@constants';
+import { Pokemon, PokemonActionType } from './pokemon.types';
 import { PokemonAction } from './pokemon.actions';
 import { idToIdx } from './pokemon.utils';
 
@@ -30,7 +30,7 @@ const INITIAL_STATE: PokemonState = {
   allPokemonList: [],
   displayedPokemonList: [],
   error: null,
-  nextUrl: `${API_URL}/pokemon?offset=0&limit=${FETCH_BATCH_POKEMON_COUNT}`,
+  nextUrl: `${API.URL}/pokemon?offset=0&limit=${API.FETCH_POKEMON_PER_BATCH}`,
   isLoading: false,
   areAllDisplayed: true
 };

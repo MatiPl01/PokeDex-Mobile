@@ -7,6 +7,11 @@ export default {
     dark: ['#111', '#222', '#333', '#575757']
   },
 
+  red: {
+    light: '#FF4944',
+    dark: '#A70400'
+  },
+
   pokemonType: {
     normal: {
       primary: '#c998a7',

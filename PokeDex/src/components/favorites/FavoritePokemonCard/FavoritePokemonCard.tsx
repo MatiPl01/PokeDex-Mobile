@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import { useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import { createAnimatedStyle } from '@utils/reanimated';
 import { Pokemon, PokemonType } from '@store/pokemon/pokemon.types';
-import { TouchableWrapper } from '@components/shared';
-import SkeletonPlaceholder from '@components/shared/SkeletonPlaceholder/SkeletonPlaceholder';
+import { TouchableWrapper } from '@components/shared/styled/buttons';
+import SkeletonPlaceholder from '@components/shared/react/SkeletonPlaceholder/SkeletonPlaceholder';
 import PokemonCardImage from '@components/pokemon/PokemonCardImage/PokemonCardImage';
+import { RoundedBackgroundClip } from '@components/shared/styled/backgrounds';
 import {
-  BackgroundClip,
   BackgroundGradient,
   BackgroundGradientsWrapper
 } from '@components/pokemon/PokemonCard/PokemonCard.styles';
@@ -35,9 +35,9 @@ const FavoritePokemonCardSkeleton: React.FC<
 > = ({ width }) => (
   <CardWrapper>
     <BackgroundWrapper>
-      <BackgroundClip>
+      <RoundedBackgroundClip>
         <SkeletonPlaceholder />
-      </BackgroundClip>
+      </RoundedBackgroundClip>
     </BackgroundWrapper>
     <CardFooter>
       <CardTitleSkeletonWrapper width={0.5 * width}>
@@ -82,7 +82,7 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
   return (
     <CardWrapper>
       <BackgroundWrapper>
-        <BackgroundClip>
+        <RoundedBackgroundClip>
           <BackgroundGradientsWrapper>
             {types.map((type: PokemonType) => (
               <BackgroundGradient
@@ -100,7 +100,7 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
               imageUrl={imageUrl}
             />
           </PokemonImageWrapper>
-        </BackgroundClip>
+        </RoundedBackgroundClip>
       </BackgroundWrapper>
       <CardFooter>
         <CardTitle>{name}</CardTitle>

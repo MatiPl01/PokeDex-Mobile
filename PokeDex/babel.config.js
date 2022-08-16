@@ -17,6 +17,7 @@ module.exports = {
           // This needs to be mirrored in tsconfig.json
           '@assets': './assets',
           '@components': './src/components',
+          "@constants": './src/constants/index.ts',
           '@core': './src/core',
           '@screens': './src/screens',
           '@services': './src/services',
@@ -24,8 +25,7 @@ module.exports = {
           '@styles': './src/styles',
           '@themes': './src/themes',
           '@utils': './src/utils',
-          '@types': './src/types/index.ts',
-          '@config': './src/config.ts',
+          '@types': './src/types/index.ts'
         }
       }
     ]

@@ -1,17 +1,17 @@
-import { idToIdx } from './pokemon.utils';
 import { Dispatch } from 'react';
 import { ActionCreator } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import { API } from '@constants';
 import {
   getPokemonIdFromUrl,
   fetchPokemonList,
   fetchSinglePokemonDataById
 } from '@services/pokemon.service';
-import { FETCH_BATCH_POKEMON_COUNT, BATCH_FETCH_INTERVAL } from '@config';
-import { Pokemon } from '@store/pokemon/pokemon.types';
-import { Action, ActionWithPayload, createAction } from '@store/utils';
 import { sleep } from '@utils/time';
 import store from '@store';
+import { Pokemon } from '@store/pokemon/pokemon.types';
+import { Action, ActionWithPayload, createAction } from '@store/utils';
+import { idToIdx } from './pokemon.utils';
 import { PokemonState } from './pokemon.reducer';
 import { PokemonActionType } from './pokemon.types';
 
@@ -221,11 +221,11 @@ export const fetchPokemonBatchByIdsAsync: ActionCreator<
     for (
       let i = 0;
       i < pokemonToFetchIds.length;
-      i += FETCH_BATCH_POKEMON_COUNT
+      i += API.FETCH_POKEMON_PER_BATCH
     ) {
       const fetchPortionIds = pokemonToFetchIds.slice(
         i,
-        i + FETCH_BATCH_POKEMON_COUNT
+        i + API.FETCH_POKEMON_PER_BATCH
       );
 
       for (const id of fetchPortionIds) {
@@ -243,7 +243,7 @@ export const fetchPokemonBatchByIdsAsync: ActionCreator<
         dispatch(fetchPokemonBatchSuccess(pokemonMap, ids, updateDisplayed));
       }
 
-      await sleep(BATCH_FETCH_INTERVAL);
+      await sleep(API.BATCH_FETCH_INTERVAL);
     }
   };
 

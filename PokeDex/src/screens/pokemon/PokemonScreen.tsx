@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SearchItem } from '@utils/search';
-import SearchBar from '@components/shared/SearchBar/SearchBar';
+import SearchBar from '@components/shared/react/SearchBar/SearchBar';
 import PokemonList from '@components/pokemon/PokemonList/PokemonList';
 import { selectSearchItemsList } from '@store/search/search.selector';
 import { fetchSearchItemsAsync } from '@store/search/search.actions';

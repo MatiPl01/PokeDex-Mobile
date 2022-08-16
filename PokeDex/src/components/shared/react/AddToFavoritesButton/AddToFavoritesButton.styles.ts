@@ -20,8 +20,7 @@ export const HeartIconOutline = styled(AntDesignIcon).attrs({
   name: 'hearto'
 })`
   position: absolute;
-  color: ${({ theme }) =>
-    theme.color.accent.primary}; // TODO - replace with some red shade color
+  color: ${({ theme }) => theme.color.red.dark};
 `;
 
 export const HeartIconFilled = styled(
@@ -29,8 +28,7 @@ export const HeartIconFilled = styled(
 ).attrs({
   name: 'heart'
 })`
-  color: ${({ theme }) =>
-    theme.color.accent.primary}; // TODO - replace with some red shade color
+  color: ${({ theme }) => theme.color.red.dark};
 `;
 
 export const HeartIconEffect = styled(
@@ -41,6 +39,5 @@ export const HeartIconEffect = styled(
   position: absolute;
   top: 0;
 
-  color: ${({ theme }) =>
-    theme.color.accent.primary}; // TODO - replace with some red shade color
+  color: ${({ theme }) => theme.color.red.light};
 `;

@@ -9,46 +9,32 @@ import Animated, {
 } from 'react-native-reanimated';
 // TODO - debug this app on an actual device and calculate the number of suggestions based on the available space after the keyboard is displayed
 // import { useKeyboard } from '@react-native-community/hooks';
+import { SCREEN } from '@constants';
 import { createAnimatedStyle, createAnimatedStyles } from '@utils/reanimated';
 import { SearchItem, SearchSuggestionItem } from '@utils/search';
 import {
+  // todo - MOVE THESE CONSTANTS TO @CONSTANTS
   MENU_TOGGLE_ANIMATION_DURATION,
-  MENU_TOGGLE_ANIMATION_DELAY,
-  SCREEN_WIDTH
+  MENU_TOGGLE_ANIMATION_DELAY
 } from '@core/splash-screen/SplashScreen';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
-import IonIcon from 'react-native-vector-icons/Ionicons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import {
   OuterWrapper,
   InputWrapper,
   SearchButtonWrapper,
-  SearchButton,
   IconWrapper,
-  SearchInput,
-  SEARCH_ICON_SIZE,
-  SEARCH_BAR_HEIGHT,
-  FOCUSED_SEARCH_BAR_HEIGHT,
-  SEARCH_BAR_PADDING_TOP,
-  SEARCH_BAR_HORIZONTAL_PADDING,
-  SEARCH_WRAPPER_WIDTH
+  SearchInput
 } from './SearchBar.styles';
 import SearchSuggestions from './SearchSuggestions';
+import { useMemo } from 'react';
 
 const SEARCH_BUTTON_ANIMATION_DELAY = MENU_TOGGLE_ANIMATION_DELAY + 250;
 const AnimatedIonIcon = Animated.createAnimatedComponent(IonIcon);
 
 const useAnimatedSlideStyle = createAnimatedStyle({
   transform: [{ translateX: [-100, 0] }]
-});
-
-const useAnimatedToggleStyles = createAnimatedStyles({
-  wrapper: {
-    width: [0, SEARCH_WRAPPER_WIDTH]
-  },
-  button: {
-    right: [-SEARCH_ICON_SIZE / 2, 0]
-  }
 });
 
 const useAnimatedToggleIconStyles = createAnimatedStyles({
@@ -59,22 +45,6 @@ const useAnimatedToggleIconStyles = createAnimatedStyles({
   close: {
     transform: [{ scale: [0.5, 1] }],
     opacity: [0, 1]
-  }
-});
-
-const useAnimatedFocusStyles = createAnimatedStyles({
-  wrapper: {
-    width: [SEARCH_WRAPPER_WIDTH, SCREEN_WIDTH],
-    left: [SEARCH_BAR_HORIZONTAL_PADDING, 0],
-    top: [SEARCH_BAR_PADDING_TOP, 0],
-    paddingTop: [(SEARCH_ICON_SIZE - SEARCH_BAR_HEIGHT) / 2, 0],
-    paddingRight: [SEARCH_ICON_SIZE / 2, 0]
-  },
-  inputWrapper: {
-    height: [SEARCH_BAR_HEIGHT, FOCUSED_SEARCH_BAR_HEIGHT]
-  },
-  input: {
-    borderRadius: [5, 0]
   }
 });
 
@@ -111,7 +81,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onSearchFetchRequest
 }) => {
   const theme = useTheme();
-  const iconColor = theme.color.white;
+  const ICON_COLOR = theme.color.white;
+  const SEARCH_BAR_HEIGHT = theme.size.md;
+  const FOCUSED_SEARCH_BAR_HEIGHT = theme.size.lg;
+  const SEARCH_BUTTON_SIZE = theme.size.lg;
+  const SEARCH_BAR_PADDING_X = theme.space.lg;
+  const SEARCH_BAR_PADDING_TOP = theme.space.lg;
+  const SEARCH_WRAPPER_WIDTH = SCREEN.WIDTH - 2 * SEARCH_BAR_PADDING_X;
   // Component state
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -131,19 +107,55 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const inputIconProgress = useSharedValue(0);
   // Animated styles
   const animatedSlideStyle = useAnimatedSlideStyle(slideProgress);
-  const animatedToggleStyles = useAnimatedToggleStyles(toggleProgress);
   const animatedToggleIconStyles =
     useAnimatedToggleIconStyles(toggleIconProgress);
-  const animatedFocusStyles = useAnimatedFocusStyles(focusProgress);
   const animatedFocusIconStyles = useAnimatedInputIconStyles(inputIconProgress);
-  const animatedFocusButtonStyles = createAnimatedStyles({
-    button: {
-      backgroundColor: [theme.color.accent.primary, 'transparent']
-    },
-    icon: {
-      color: [iconColor, theme.color.text.primary]
-    }
-  })(focusProgress);
+
+  const animatedFocusStyles = useMemo(
+    () =>
+      createAnimatedStyles({
+        wrapper: {
+          width: [SEARCH_WRAPPER_WIDTH, SCREEN.WIDTH],
+          left: [SEARCH_BAR_PADDING_X, 0],
+          top: [SEARCH_BAR_PADDING_TOP, 0],
+          paddingTop: [(SEARCH_BUTTON_SIZE - SEARCH_BAR_HEIGHT) / 2, 0],
+          paddingRight: [SEARCH_BUTTON_SIZE / 2, 0]
+        },
+        inputWrapper: {
+          height: [SEARCH_BAR_HEIGHT, FOCUSED_SEARCH_BAR_HEIGHT]
+        },
+        input: {
+          borderRadius: [5, 0]
+        }
+      })(focusProgress),
+    []
+  );
+
+  const animatedToggleStyles = useMemo(
+    () =>
+      createAnimatedStyles({
+        wrapper: {
+          width: [0, SEARCH_WRAPPER_WIDTH]
+        },
+        button: {
+          right: [-SEARCH_BUTTON_SIZE / 2, 0]
+        }
+      })(toggleProgress),
+    []
+  );
+
+  const animatedFocusButtonStyles = useMemo(
+    () =>
+      createAnimatedStyles({
+        button: {
+          backgroundColor: [theme.color.accent.primary, 'transparent']
+        },
+        icon: {
+          color: [ICON_COLOR, theme.color.text.primary]
+        }
+      })(focusProgress),
+    []
+  );
 
   useEffect(() => {
     slideProgress.value = withDelay(
@@ -209,7 +221,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       if (onSearchBarOpen) onSearchBarOpen();
     }
     setIsOpen(!isOpen);
-  }
+  };
 
   const handleInputChange = (value: string) => {
     setSearchValue(value);
@@ -242,36 +254,31 @@ const SearchBar: React.FC<SearchBarProps> = ({
           animatedToggleStyles.button,
           focusStylesEnabled && animatedFocusButtonStyles.button
         ]}
-        displayShadow={!isFocused}
+        shadowed={!isFocused}
+        onPress={handleButtonClick}
       >
-        <SearchButton onPress={handleButtonClick}>
-          <IconWrapper style={animatedToggleIconStyles.search}>
-            <FontistoIcon name="search" size={25} color={iconColor} />
-          </IconWrapper>
-          <IconWrapper
-            style={[
-              animatedToggleIconStyles.close,
-              focusStylesEnabled && animatedFocusIconStyles.close
-            ]}
-          >
-            <AnimatedIonIcon
-              name="close"
-              size={35}
-              color={theme.color.text.primary}
-              style={focusStylesEnabled && animatedFocusButtonStyles.icon}
-            />
-          </IconWrapper>
+        <IconWrapper style={animatedToggleIconStyles.search}>
+          <FontistoIcon name="search" size={25} color={ICON_COLOR} />
+        </IconWrapper>
+        <IconWrapper
+          style={[
+            animatedToggleIconStyles.close,
+            focusStylesEnabled && animatedFocusIconStyles.close
+          ]}
+        >
+          <AnimatedIonIcon
+            name="close"
+            size={35}
+            color={theme.color.text.primary}
+            style={focusStylesEnabled && animatedFocusButtonStyles.icon}
+          />
+        </IconWrapper>
 
-          <IconWrapper
-            style={focusStylesEnabled && animatedFocusIconStyles.erase}
-          >
-            <EntypoIcon
-              name="erase"
-              size={30}
-              color={theme.color.text.primary}
-            />
-          </IconWrapper>
-        </SearchButton>
+        <IconWrapper
+          style={focusStylesEnabled && animatedFocusIconStyles.erase}
+        >
+          <EntypoIcon name="erase" size={30} color={theme.color.text.primary} />
+        </IconWrapper>
       </SearchButtonWrapper>
       <InputWrapper
         style={focusStylesEnabled && animatedFocusStyles.inputWrapper}

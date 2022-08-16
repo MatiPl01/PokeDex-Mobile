@@ -1,5 +1,5 @@
-import LoadingSpinner from '@components/shared/LoadingSpinner/LoadingSpinner';
 import React from 'react';
+import LoadingSpinner from '@components/shared/react/LoadingSpinner/LoadingSpinner';
 import {
   FooterWrapper,
   FooterLoaderWrapper,

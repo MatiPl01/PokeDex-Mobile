@@ -1,9 +1,9 @@
 import React, { ComponentType, useEffect } from 'react';
 import { FlatListProps, ListRenderItem } from 'react-native';
 import { runOnJS, useSharedValue } from 'react-native-reanimated';
-import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen'; // TODO - move this constant to some other file than SplashScreen
-import { Separator } from '@components/shared';
+import { SCREEN } from '@constants';
 import { Padding } from '@types';
+import { Separator } from '@components/shared/styled/layout';
 import { GridConfig } from './sortableGrid.utils';
 import { GridFlatList } from './SortableGrid.styles';
 import SortableGridItem from './SortableGridItem';
@@ -37,7 +37,7 @@ const SortableGrid = <T extends object>({
 }: SortableGridProps<T>) => {
   const padding = { top: 0, right: 0, left: 0, bottom: 0, ...desiredPadding };
   const itemSize =
-    (SCREEN_WIDTH - (columnCount - 1) * gap - padding.left - padding.right) /
+    (SCREEN.WIDTH - (columnCount - 1) * gap - padding.left - padding.right) /
     columnCount;
   const config: GridConfig = {
     padding,
