@@ -12,11 +12,11 @@ export const CardTitle = styled.Text`
   text-transform: capitalize;
 
   ${({ theme }) => css`
-    line-height: ${theme.lineHeight.title};
-    font-size: ${theme.fontSize.title};
+    line-height: ${theme.lineHeight.title}px;
+    font-size: ${theme.fontSize.title}px;
     font-weight: ${theme.fontWeight.bold};
     color: ${theme.color.text.primary};
-    margin-bottom: ${theme.space.md};
+    margin-bottom: ${theme.space.md}px;
     ${theme.shadow.medium
       .md}; // TODO - create text shadows separate from the background shadows
   `};

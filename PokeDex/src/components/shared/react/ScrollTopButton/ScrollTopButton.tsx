@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
 import { createAnimatedStyle } from '@utils/reanimated';
@@ -19,13 +19,9 @@ const ScrollTopButton: React.FC<ScrollTopButtonProps> = ({
   const BUTTON_DISTANCE = theme.space.lg;
 
   const showButtonAnimationProgress = useSharedValue(0);
-  const animatedShowButtonStyle = useMemo(
-    () =>
-      createAnimatedStyle({
-        right: [-BUTTON_SIZE, BUTTON_DISTANCE]
-      })(showButtonAnimationProgress),
-    []
-  );
+  const animatedShowButtonStyle = createAnimatedStyle({
+    right: [-BUTTON_SIZE, BUTTON_DISTANCE]
+  })(showButtonAnimationProgress);
 
   useEffect(() => {
     showButtonAnimationProgress.value = withTiming(+isVisible, {

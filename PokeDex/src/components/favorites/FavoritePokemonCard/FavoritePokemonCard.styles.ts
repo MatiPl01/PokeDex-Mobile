@@ -31,8 +31,8 @@ export const CardFooter = styled(DefaultCardFooter)`
 
 export const CardTitle = styled(DefaultCardTitle)`
   ${({ theme }) => css`
-    font-size: ${theme.fontSize.body};
-    line-height: ${theme.lineHeight.body};
+    font-size: ${theme.fontSize.body}px;
+    line-height: ${theme.lineHeight.body}px;
     margin-bottom: 0;
   `}
 `;

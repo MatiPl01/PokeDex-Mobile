@@ -20,10 +20,6 @@ import {
 } from '@utils/search';
 import { createAnimatedStyle, createAnimatedStyles } from '@utils/reanimated';
 import {
-  SEARCH_BAR_HEIGHT,
-  FOCUSED_SEARCH_BAR_HEIGHT
-} from './SearchBar.styles';
-import {
   OuterWrapper,
   SuggestionList,
   SuggestionItem,
@@ -33,22 +29,8 @@ import {
   Footer,
   FooterText,
   ScrollTopButton,
-  ScrollTopIcon,
-  SUGGESTION_ITEM_HEIGHT,
-  SUGGESTIONS_FOOTER_HEIGHT
+  ScrollTopIcon
 } from './SearchSuggestions.styles';
-
-const useAnimatedRevealStyles = createAnimatedStyles({
-  wrapper: {
-    top: [SEARCH_BAR_HEIGHT, FOCUSED_SEARCH_BAR_HEIGHT],
-    opacity: [0, 1]
-  }
-});
-
-const useAnimatedShowMoreFooterStyle = createAnimatedStyle({
-  height: [0, SUGGESTIONS_FOOTER_HEIGHT],
-  opacity: [0, 1]
-});
 
 const useAnimatedScrollTopButtonStyle = createAnimatedStyle({
   transform: [{ scale: [0.5, 1] }],
@@ -93,14 +75,22 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   const scrollTopButtonProgress = useSharedValue(0);
   const scrollTopIconProgress = useSharedValue(0);
   // Animated styles
-  const animatedRevealStyles = useAnimatedRevealStyles(revealProgress);
-  const animatedShowMoreFooterStyle =
-    useAnimatedShowMoreFooterStyle(showMoreProgress);
+  const animatedRevealStyles = createAnimatedStyles({
+    wrapper: {
+      top: [theme.size.md, theme.size.lg],
+      opacity: [0, 1]
+    }
+  })(revealProgress);
+
+  const animatedShowMoreFooterStyle = createAnimatedStyle({
+    height: [0, theme.size.md],
+    opacity: [0, 1]
+  })(showMoreProgress);
+
   const animatedShowMoreWrapperStyle = createAnimatedStyle({
     maxHeight: [
-      limit * SUGGESTION_ITEM_HEIGHT,
-      limit * SUGGESTION_ITEM_HEIGHT +
-        (+loadMoreOnScroll && SUGGESTIONS_FOOTER_HEIGHT)
+      limit * theme.size.md,
+      limit * theme.size.md + (+loadMoreOnScroll && theme.size.md)
     ]
   })(showMoreProgress);
   const animatedScrollTopButtonStyle = useAnimatedScrollTopButtonStyle(

@@ -8,7 +8,7 @@ const pokemonImageStyles = css`
   left: 50%;
 
   ${({ theme }) => css`
-    bottom: ${theme.space.lg};
+    bottom: ${theme.space.lg}px;
     ${theme.shadow.medium.md};
   `};
 `;

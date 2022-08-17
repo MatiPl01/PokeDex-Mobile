@@ -6,7 +6,7 @@ import { calculateTextColor, mixColorsHex } from '@utils/colors';
 
 export const BadgeText = styled.Text<{ pokemonType: PokemonType }>`
   ${({ theme, pokemonType }) => css`
-    font-size: ${theme.fontSize.caption};
+    font-size: ${theme.fontSize.caption}px;
     font-weight: ${theme.fontWeight.bold};
     color: ${calculateTextColor(
       mixColorsHex(

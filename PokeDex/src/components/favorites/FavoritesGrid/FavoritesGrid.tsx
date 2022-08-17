@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
@@ -37,23 +37,16 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   );
   const gridHeaderAnimationProgress = useSharedValue(0);
 
-  const padding = useMemo<Padding>(
-    () => ({
-      top: PADDING,
-      left: PADDING,
-      right: PADDING,
-      bottom: PADDING
-    }),
-    []
-  );
+  const padding: Padding = {
+    top: PADDING,
+    left: PADDING,
+    right: PADDING,
+    bottom: PADDING
+  };
 
-  const animatedGridHeaderStyle = useMemo(
-    () =>
-      createAnimatedStyle({
-        height: [0, EDIT_BUTTON_OFFSET_TOP + EDIT_BUTTON_SIZE]
-      })(gridHeaderAnimationProgress),
-    []
-  );
+  const animatedGridHeaderStyle = createAnimatedStyle({
+    height: [0, EDIT_BUTTON_OFFSET_TOP + EDIT_BUTTON_SIZE]
+  })(gridHeaderAnimationProgress);
 
   useEffect(() => {
     // TODO - make this useEffect run after refreshing Pokemon list (pull to refresh)

@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useMemo
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   ListRenderItem,
@@ -64,13 +58,9 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const scrollY = useRef(new Animated.Value(0)).current;
   const cardListHeaderAnimationProgress = useSharedValue(0);
   // Animated styles
-  const animatedCardListHeaderStyle = useMemo(
-    () =>
-      createAnimatedStyle({
-        paddingTop: [0, POKEMON_LIST_PADDING_TOP]
-      })(cardListHeaderAnimationProgress),
-    []
-  );
+  const animatedCardListHeaderStyle = createAnimatedStyle({
+    paddingTop: [0, POKEMON_LIST_PADDING_TOP]
+  })(cardListHeaderAnimationProgress);
   // Interpolation input range
   const inputRange = [
     -LIST_ITEM_HEIGHT,

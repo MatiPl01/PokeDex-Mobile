@@ -78,8 +78,8 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
               cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
             }}
           >
-            <Stack.Screen name="Favorites" component={FavoritesScreen} />
             <Stack.Screen name="Pokemon" component={PokemonScreen} />
+            <Stack.Screen name="Favorites" component={FavoritesScreen} />
             <Stack.Screen name="Map" component={MapScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
           </Stack.Navigator>
@@ -134,7 +134,7 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
 const DrawerNavigation: React.FC = () => (
   <DrawerWrapper>
     <Drawer.Navigator
-      initialRouteName="Favorites" // TODO - change to Pokemon
+      initialRouteName="Pokemon" // TODO - change to Pokemon
       screenOptions={{
         headerShown: false,
         drawerType: 'slide',

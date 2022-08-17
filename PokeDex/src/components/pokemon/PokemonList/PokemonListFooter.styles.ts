@@ -1,9 +1,9 @@
 import styled, { css } from 'styled-components/native';
 import { flexCenter } from '@styles/shared';
-import { SCREEN_HEIGHT } from '@core/splash-screen/SplashScreen';
+import { SCREEN } from '@constants';
 
 export const FooterWrapper = styled.View`
-  height: ${SCREEN_HEIGHT / 2}px;
+  height: ${SCREEN.WIDTH / 2}px;
   ${flexCenter};
 `;
 
@@ -19,9 +19,9 @@ export const FooterText = styled.Text`
   text-align: center;
 
   ${({ theme }) => css`
-    font-size: ${theme.fontSize.title};
+    font-size: ${theme.fontSize.title}px;
     font-weight: ${theme.fontWeight.medium};
     color: ${theme.color.text.primary};
-    line-height: ${theme.lineHeight.title};
+    line-height: ${theme.lineHeight.title}px;
   `};
 `;

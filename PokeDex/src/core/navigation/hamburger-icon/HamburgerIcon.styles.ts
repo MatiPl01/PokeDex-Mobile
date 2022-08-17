@@ -10,6 +10,11 @@ export const AnimatedButton = styled(Animated.View)`
 export const TouchableWrapper = styled(DefaultTouchableWrapper)`
   padding: 20%;
   justify-content: space-evenly;
+
+  ${({ theme }) => css`
+    width: ${theme.size.md}px;
+    height: ${theme.size.md}px;
+  `};
 `;
 
 export const AnimatedBar = styled(Animated.View)`

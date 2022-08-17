@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useTheme } from 'styled-components';
 import { useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import { createAnimatedStyle, createAnimatedStyles } from '@utils/reanimated';
@@ -25,39 +25,37 @@ const FavoritesEditButton: React.FC<FavoritesEditButtonProps> = ({
   const iconAnimationProgress = useSharedValue(0);
   const buttonAnimationProgress = useSharedValue(0);
 
-  const animatedButtonStyle = useMemo(
-    () =>
-      createAnimatedStyle({
-        width: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
-        height: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
-        paddingTop: [CLOSED_BUTTON_SIZE * 0.35, 0],
-        paddingRight: [CLOSED_BUTTON_SIZE * 0.35, 0],
-        transform: [
-          {
-            translateX: [CLOSED_BUTTON_SIZE / 2 + BUTTON_OFFSET_TOP, 0]
-          },
-          {
-            translateY: [-(CLOSED_BUTTON_SIZE / 2 + BUTTON_OFFSET_RIGHT), 0]
-          }
+  const animatedButtonStyle = createAnimatedStyle({
+    width: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
+    height: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
+    paddingTop: [CLOSED_BUTTON_SIZE * 0.35, 0],
+    paddingRight: [CLOSED_BUTTON_SIZE * 0.35, 0],
+    transform: [
+      {
+        translateX: [
+          CLOSED_BUTTON_SIZE / 2 + BUTTON_OFFSET_RIGHT,
+          BUTTON_OFFSET_RIGHT
         ]
-      })(buttonAnimationProgress),
-    []
-  );
+      },
+      {
+        translateY: [
+          -(CLOSED_BUTTON_SIZE / 2 + BUTTON_OFFSET_TOP),
+          BUTTON_OFFSET_TOP
+        ]
+      }
+    ]
+  })(buttonAnimationProgress);
 
-  const animatedIconStyles = useMemo(
-    () =>
-      createAnimatedStyles({
-        edit: {
-          transform: [{ scale: [1, 0.25] }],
-          opacity: [1, 0]
-        },
-        editOff: {
-          transform: [{ scale: [0.25, 1] }],
-          opacity: [0, 1]
-        }
-      })(iconAnimationProgress),
-    []
-  );
+  const animatedIconStyles = createAnimatedStyles({
+    edit: {
+      transform: [{ scale: [1, 0.25] }],
+      opacity: [1, 0]
+    },
+    editOff: {
+      transform: [{ scale: [0.25, 1] }],
+      opacity: [0, 1]
+    }
+  })(iconAnimationProgress);
 
   const handleButtonPress = () => {
     const newIsEditing = !isEditing;

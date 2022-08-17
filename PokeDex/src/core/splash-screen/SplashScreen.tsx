@@ -1,4 +1,4 @@
-import React, { useEffect, PropsWithChildren, useMemo } from 'react';
+import React, { useEffect, PropsWithChildren } from 'react';
 import { useTheme } from 'styled-components';
 import { useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,6 +12,7 @@ import {
   AbsoluteView,
   ContentContainer
 } from './SplashScreen.styles';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const SPLASH_SCREEN_ANIMATION_DELAY = 500;
 const MENU_TOGGLE_ANIMATION_DURATION = 500;
@@ -40,62 +41,54 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
   const splashScreenAnimationProgress = useSharedValue(0);
   const menuToggleAnimationProgress = useSharedValue(0);
 
-  const animatedSplashScreenStyles = useMemo(
-    () =>
-      createAnimatedStyles({
-        overlay: {
-          transform: [
-            { translateY: [0, -SCREEN.HEIGHT + LOGO_BAR_HEIGHT - edges.top] }
+  const animatedSplashScreenStyles = createAnimatedStyles({
+    overlay: {
+      transform: [
+        { translateY: [0, -SCREEN.HEIGHT + LOGO_BAR_HEIGHT + edges.top] }
+      ]
+    },
+    content: {
+      transform: [
+        { translateY: [SCREEN.HEIGHT - LOGO_BAR_HEIGHT - edges.top, 0] }
+      ]
+    },
+    pokeBall: {
+      transform: [
+        {
+          translateX: [
+            0,
+            SCREEN.WIDTH / 2 - FINAL_POKE_BALL_SIZE / 2 - LOGO_BAR_PADDING_X
           ]
         },
-        content: {
-          transform: [
-            { translateY: [SCREEN.HEIGHT - LOGO_BAR_HEIGHT - edges.top, 0] }
+        {
+          translateY: [
+            -POKE_BALL_SIZE / 2,
+            SCREEN.HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
           ]
         },
-        pokeBall: {
-          transform: [
-            {
-              translateX: [
-                0,
-                SCREEN.WIDTH / 2 - FINAL_POKE_BALL_SIZE / 2 - LOGO_BAR_PADDING_X
-              ]
-            },
-            {
-              translateY: [
-                -POKE_BALL_SIZE / 2,
-                SCREEN.HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
-              ]
-            },
-            {
-              scale: [1, FINAL_POKE_BALL_SIZE / POKE_BALL_SIZE]
-            }
-          ]
-        },
-        logo: {
-          transform: [
-            {
-              translateY: [
-                LOGO_HEIGHT / 2,
-                SCREEN.HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
-              ]
-            },
-            {
-              scale: [1, FINAL_LOGO_HEIGHT / LOGO_HEIGHT]
-            }
-          ]
+        {
+          scale: [1, FINAL_POKE_BALL_SIZE / POKE_BALL_SIZE]
         }
-      })(splashScreenAnimationProgress),
-    [theme, edges]
-  );
+      ]
+    },
+    logo: {
+      transform: [
+        {
+          translateY: [
+            LOGO_HEIGHT / 2,
+            SCREEN.HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
+          ]
+        },
+        {
+          scale: [1, FINAL_LOGO_HEIGHT / LOGO_HEIGHT]
+        }
+      ]
+    }
+  })(splashScreenAnimationProgress);
 
-  const animatedMenuToggleStyle = useMemo(
-    () =>
-      createAnimatedStyle({
-        transform: [{ translateX: [-MENU_TOGGLE_SIZE, LOGO_BAR_PADDING_X] }]
-      })(menuToggleAnimationProgress),
-    []
-  );
+  const animatedMenuToggleStyle = createAnimatedStyle({
+    transform: [{ translateX: [-MENU_TOGGLE_SIZE, LOGO_BAR_PADDING_X] }]
+  })(menuToggleAnimationProgress);
 
   useEffect(() => {
     splashScreenAnimationProgress.value = withDelay(

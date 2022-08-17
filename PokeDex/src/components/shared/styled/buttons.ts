@@ -1,11 +1,13 @@
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native';
 import { flexCenter, relativeFill } from '@styles/shared';
 
 export const RoundButtonWrapper = styled(
-  Animated.createAnimatedComponent(TouchableWithoutFeedback)
-)<{
+  Animated.createAnimatedComponent(TouchableOpacity)
+).attrs({
+  activeOpacity: 1
+})<{
   size: number;
   type?: 'primary'; // TODO - maybe add some secondary button type
   shadowed?: boolean;
@@ -15,7 +17,7 @@ export const RoundButtonWrapper = styled(
     width: ${size}px;
     height: ${size}px;
     border-radius: ${size}px;
-    background-color: ${type === 'primary' && theme.color.accent.primary};
+    background-color: ${theme.color.accent.primary};
     ${shadowed && theme.shadow.medium.md};
   `};
 `;
@@ -30,7 +32,9 @@ export const AbsoluteRoundButtonWrapper = styled(RoundButtonWrapper).attrs(
   z-index: 1;
 `;
 
-export const TouchableWrapper = styled(TouchableWithoutFeedback)`
+export const TouchableWrapper = styled(TouchableOpacity).attrs({
+  activeOpacity: 1
+})`
   ${relativeFill}
   ${flexCenter};
 `;

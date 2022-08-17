@@ -6,7 +6,6 @@ import { flexCenter } from '@styles/shared';
 import { PokemonType } from '@store/pokemon/pokemon.types';
 import { CardFooter as DefaultCardFooter } from '@components/shared/styled/cards';
 import { BackgroundGradientsWrapper as DefaultBackgroundGradientsWrapper } from '@components/shared/styled/backgrounds';
-import { TYPE_BADGE_WIDTH } from '../PokemonTypeBadge/PokemonTypeBadge.styles';
 
 const BACKGROUND_HEIGH = 0.4 * SCREEN.WIDTH;
 const FOOTER_HEIGHT = 85;
@@ -58,12 +57,12 @@ export const BackgroundText = styled.Text`
 
 export const PokemonId = styled.Text`
   position: absolute;
-  left: 10px;
-  bottom: 12px;
 
   ${({ theme }) => css`
+    left: ${theme.space.lg}px;
+    bottom: ${theme.space.lg}px;
     color: ${theme.color.text.primary};
-    font-size: ${theme.fontSize.caption};
+    font-size: ${theme.fontSize.caption}px;
     font-weight: ${theme.fontWeight.bold};
   `};
 `;
@@ -75,7 +74,7 @@ export const TypeBadgesWrapper = styled.View`
 `;
 
 export const TypeBadgeWrapper = styled.View`
-  margin: ${({ theme }) => theme.space.sm};
+  margin: ${({ theme }) => theme.space.sm}px;
 `;
 
 export const BackgroundGradientsWrapper = styled(
@@ -107,20 +106,25 @@ export const CardTitleSkeletonWrapper = styled.View`
 `;
 
 export const TypeBadgeSkeletonWrapper = styled(TypeBadgeWrapper)`
-  width: ${TYPE_BADGE_WIDTH}px;
-  height: ${({ theme }) => theme.fontSize.caption + 10}px;
+  ${({ theme }) => css`
+    width: ${theme.size.lg}px;
+    height: ${theme.fontSize.caption + 10}px;
+  `};
 `;
 
 export const PokemonIdSkeletonWrapper = styled.View`
   height: ${FAVORITES_BUTTON_SIZE}px;
-  width: ${({ theme }) => theme.size.sm};
+  width: ${({ theme }) => theme.size.sm}px;
 `;
 
 export const AddToFavoritesButtonWrapper = styled.View`
   position: absolute;
-  right: 10px;
-  bottom: 12px;
   width: ${FAVORITES_BUTTON_SIZE}px;
   height: ${FAVORITES_BUTTON_SIZE}px;
-  color: ${({ theme }) => theme.color.text.primary};
+
+  ${({ theme }) => css`
+    right: ${theme.space.lg}px;
+    bottom: ${theme.space.lg}px;
+    color: ${theme.color.text.primary}px;
+  `};
 `;
