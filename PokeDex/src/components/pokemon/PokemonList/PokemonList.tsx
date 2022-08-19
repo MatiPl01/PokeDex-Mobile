@@ -11,7 +11,7 @@ import { useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SCREEN } from '@constants';
-import { createAnimatedStyle } from '@utils/reanimated';
+import { createAnimatedThemedStyle } from '@utils/reanimated';
 import {
   fetchNextPokemonBatchAsync,
   refetchPokemonList
@@ -33,6 +33,10 @@ import {
   EmptyListFooter
 } from './PokemonList.styles';
 
+const useAnimatedCardListHeaderStyle = createAnimatedThemedStyle(theme => ({
+  paddingTop: [0, theme.size.md + theme.space.lg]
+}));
+
 type PokemonListProps = {
   isSearchBarOpen?: boolean;
 };
@@ -45,9 +49,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const edges = useSafeAreaInsets();
   const cardListRef = useRef<FlatList | null>(null);
   const LOGO_BAR_HEIGHT = theme.size.lg;
-  const SEARCH_BAR_HEIGHT = theme.size.md;
   const LIST_CONTAINER_HEIGHT = SCREEN.HEIGHT - LOGO_BAR_HEIGHT;
-  const POKEMON_LIST_PADDING_TOP = SEARCH_BAR_HEIGHT + theme.space.lg;
   const LIST_SEPARATOR_HEIGHT = theme.space.lg;
   const LIST_ITEM_HEIGHT = CARD_HEIGHT + LIST_SEPARATOR_HEIGHT;
   // Data
@@ -58,9 +60,9 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const scrollY = useRef(new Animated.Value(0)).current;
   const cardListHeaderAnimationProgress = useSharedValue(0);
   // Animated styles
-  const animatedCardListHeaderStyle = createAnimatedStyle({
-    paddingTop: [0, POKEMON_LIST_PADDING_TOP]
-  })(cardListHeaderAnimationProgress);
+  const animatedCardListHeaderStyle = useAnimatedCardListHeaderStyle(theme)(
+    cardListHeaderAnimationProgress
+  );
   // Interpolation input range
   const inputRange = [
     -LIST_ITEM_HEIGHT,

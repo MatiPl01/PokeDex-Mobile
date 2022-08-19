@@ -15,7 +15,6 @@ const GRADIENTS_WRAPPER_WIDTH = 1.2 * CARD_WIDTH;
 export const MAX_IMAGE_WIDTH = 0.4 * SCREEN.WIDTH;
 export const MAX_IMAGE_HEIGHT = BACKGROUND_HEIGH;
 export const CARD_HEIGHT = BACKGROUND_HEIGH + FOOTER_HEIGHT;
-export const FAVORITES_BUTTON_SIZE = 20;
 
 export const CardWrapper = styled(Animated.View)`
   border-radius: 5px;
@@ -100,8 +99,8 @@ export const BackgroundGradient = styled(LinearGradient).attrs<{
 export const CardTitleSkeletonWrapper = styled.View`
   ${({ theme }) => css`
     height: ${theme.lineHeight.title - 4}px;
-    margin: 2px;
-    width: 100px;
+    margin: ${theme.space.xs}px;
+    width: ${theme.size.xl}px;
   `};
 `;
 
@@ -113,18 +112,19 @@ export const TypeBadgeSkeletonWrapper = styled(TypeBadgeWrapper)`
 `;
 
 export const PokemonIdSkeletonWrapper = styled.View`
-  height: ${FAVORITES_BUTTON_SIZE}px;
-  width: ${({ theme }) => theme.size.sm}px;
+  ${({ theme }) => css`
+    width: ${theme.size.sm}px;
+    height: ${theme.fontSize.caption + 6}px;
+  `};
 `;
 
 export const AddToFavoritesButtonWrapper = styled.View`
   position: absolute;
-  width: ${FAVORITES_BUTTON_SIZE}px;
-  height: ${FAVORITES_BUTTON_SIZE}px;
 
   ${({ theme }) => css`
+    width: ${theme.size.xs}px;
+    height: ${theme.size.xs}px;
     right: ${theme.space.lg}px;
     bottom: ${theme.space.lg}px;
-    color: ${theme.color.text.primary}px;
   `};
 `;

@@ -1,15 +1,11 @@
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
-import { flexCenter } from '@styles/shared';
+import { TouchableWrapper as DefaultTouchableWrapper } from '@components/shared/styled/buttons';
 
-export const TouchableWrapper = styled(TouchableWithoutFeedback)<{
+export const TouchableWrapper = styled(DefaultTouchableWrapper)<{
   size: number;
 }>`
-  position: relative;
-  ${flexCenter};
-
   ${({ size }) => css`
     height: ${size}px;
     width: ${size}px;

@@ -18,7 +18,10 @@ import {
   SearchItem as SearchItemType,
   SearchSuggestionItem
 } from '@utils/search';
-import { createAnimatedStyle, createAnimatedStyles } from '@utils/reanimated';
+import {
+  createAnimatedStyle,
+  createAnimatedThemedStyle
+} from '@utils/reanimated';
 import {
   OuterWrapper,
   SuggestionList,
@@ -31,6 +34,7 @@ import {
   ScrollTopButton,
   ScrollTopIcon
 } from './SearchSuggestions.styles';
+import { TouchableWrapper } from '@components/shared/styled/buttons';
 
 const useAnimatedScrollTopButtonStyle = createAnimatedStyle({
   transform: [{ scale: [0.5, 1] }],
@@ -41,6 +45,16 @@ const useAnimatedScrollTopIconStyle = createAnimatedStyle({
   transform: [{ scale: [0.5, 1] }],
   opacity: [0, 1]
 });
+
+const useAnimatedWrapperRevealStyle = createAnimatedThemedStyle(theme => ({
+  top: [theme.size.md, theme.size.lg],
+  opacity: [0, 1]
+}));
+
+const useAnimatedShowMoreFooterStyle = createAnimatedThemedStyle(theme => ({
+  height: [0, theme.size.md],
+  opacity: [0, 1]
+}));
 
 type SearchSuggestionsProps = {
   data: SearchItemType[];
@@ -75,30 +89,22 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   const scrollTopButtonProgress = useSharedValue(0);
   const scrollTopIconProgress = useSharedValue(0);
   // Animated styles
-  const animatedRevealStyles = createAnimatedStyles({
-    wrapper: {
-      top: [theme.size.md, theme.size.lg],
-      opacity: [0, 1]
-    }
-  })(revealProgress);
-
-  const animatedShowMoreFooterStyle = createAnimatedStyle({
-    height: [0, theme.size.md],
-    opacity: [0, 1]
-  })(showMoreProgress);
-
-  const animatedShowMoreWrapperStyle = createAnimatedStyle({
-    maxHeight: [
-      limit * theme.size.md,
-      limit * theme.size.md + (+loadMoreOnScroll && theme.size.md)
-    ]
-  })(showMoreProgress);
+  const animatedWrapperRevealStyle =
+    useAnimatedWrapperRevealStyle(theme)(revealProgress);
+  const animatedShowMoreFooterStyle =
+    useAnimatedShowMoreFooterStyle(theme)(showMoreProgress);
   const animatedScrollTopButtonStyle = useAnimatedScrollTopButtonStyle(
     scrollTopButtonProgress
   );
   const animatedScrollTopIconStyle = useAnimatedScrollTopIconStyle(
     scrollTopIconProgress
   );
+  const animatedShowMoreWrapperStyle = createAnimatedStyle({
+    maxHeight: [
+      limit * theme.size.md,
+      limit * theme.size.md + (+loadMoreOnScroll && theme.size.md)
+    ]
+  })(showMoreProgress);
 
   useEffect(() => {
     const newSuggestions = getSearchSuggestions(searchValue, data);
@@ -127,11 +133,12 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       duration: 250
     });
     scrollTopIconProgress.value = withDelay(
-      100,
+      75,
       withTiming(+showScrollTopButton, {
         duration: 200
       })
     );
+    console.log({ showScrollTopButton });
   }, [lastVisibleItemIdx]);
 
   useEffect(() => {
@@ -183,7 +190,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
 
   return (
     <OuterWrapper
-      style={[animatedRevealStyles.wrapper, animatedShowMoreWrapperStyle]}
+      style={[animatedWrapperRevealStyle, animatedShowMoreWrapperStyle]}
       itemCount={Math.min(suggestions.length, limit)}
     >
       <SuggestionList
@@ -216,13 +223,13 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
             </TouchableOpacity>
           </Footer>
           <ScrollTopButton style={animatedScrollTopButtonStyle}>
-            <TouchableOpacity onPress={scrollToTop}>
+            <TouchableWrapper onPress={scrollToTop}>
               <ScrollTopIcon
                 name="chevron-up"
                 size={30}
                 style={animatedScrollTopIconStyle}
               />
-            </TouchableOpacity>
+            </TouchableWrapper>
           </ScrollTopButton>
         </>
       )}

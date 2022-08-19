@@ -66,6 +66,7 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
   if (!pokemon) return null;
 
   const { id, name, types, imageUrl, imageExtension } = pokemon;
+  console.log({ id, deletable });
 
   const deleteButtonAnimationProgress = useSharedValue(0);
   const animatedDeleteButtonStyle = useAnimatedDeleteButtonStyle(

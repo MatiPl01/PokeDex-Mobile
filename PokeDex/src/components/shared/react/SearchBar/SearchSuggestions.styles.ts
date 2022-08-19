@@ -1,9 +1,9 @@
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 import { FlatList, FlatListProps, TouchableOpacity } from 'react-native';
 import { SearchSuggestionItem } from '@utils/search';
 import { flexCenter } from '@styles/shared';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
 
 export const OuterWrapper = styled(Animated.View)<{ itemCount: number }>`
   position: absolute;
@@ -75,6 +75,7 @@ export const ScrollTopButton = styled(Animated.View)`
   ${({ theme }) => css`
     bottom: ${theme.space.md}px;
     right: ${theme.space.md}px;
+    
     width: ${theme.size.md - 2 * theme.space.md}px;
     height: ${theme.size.md - 2 * theme.space.md}px;
     border-radius: ${theme.size.md - 2 * theme.space.md}px;

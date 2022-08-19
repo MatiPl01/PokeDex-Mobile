@@ -78,8 +78,8 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
               cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
             }}
           >
-            <Stack.Screen name="Pokemon" component={PokemonScreen} />
             <Stack.Screen name="Favorites" component={FavoritesScreen} />
+            <Stack.Screen name="Pokemon" component={PokemonScreen} />
             <Stack.Screen name="Map" component={MapScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
           </Stack.Navigator>

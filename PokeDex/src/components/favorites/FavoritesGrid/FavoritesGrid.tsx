@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
-import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
-import { createAnimatedStyle } from '@utils/reanimated';
+import { createAnimatedThemedStyle } from '@utils/reanimated';
 import { selectFavoritePokemonIdsList } from '@store/favorites/favorites.selector';
 import { fetchPokemonBatchByIdsAsync } from '@store/pokemon/pokemon.actions';
 import { selectPokemonStateListByIds } from '@store/pokemon/pokemon.selector';
@@ -16,6 +16,10 @@ import { RootState } from '@store';
 import FavoritePokemonCard from '@components/favorites/FavoritePokemonCard/FavoritePokemonCard';
 import SortableGrid from '@components/shared/react/SortableGrid/SortableGrid';
 
+const useAnimatedGridHeaderStyle = createAnimatedThemedStyle(theme => ({
+  height: [0, theme.space.lg + theme.size.lg]
+}));
+
 type FavoritesGridProps = {
   editable?: boolean;
 };
@@ -25,8 +29,6 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   const dispatch = useDispatch();
   const PADDING = theme.space.lg;
   const GRID_GAP = theme.space.lg;
-  const EDIT_BUTTON_SIZE = theme.size.lg;
-  const EDIT_BUTTON_OFFSET_TOP = theme.space.lg;
 
   const [favoritesStates, setFavoritesStates] = useState<SinglePokemonState[]>(
     []
@@ -44,9 +46,9 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
     bottom: PADDING
   };
 
-  const animatedGridHeaderStyle = createAnimatedStyle({
-    height: [0, EDIT_BUTTON_OFFSET_TOP + EDIT_BUTTON_SIZE]
-  })(gridHeaderAnimationProgress);
+  const animatedGridHeaderStyle = useAnimatedGridHeaderStyle(theme)(
+    gridHeaderAnimationProgress
+  );
 
   useEffect(() => {
     // TODO - make this useEffect run after refreshing Pokemon list (pull to refresh)

@@ -31,11 +31,11 @@ export const BadgeWrapper = styled(LinearGradient).attrs<{
 })<{
   pokemonType: PokemonType;
 }>`
-  padding: 5px;
   border-radius: 5px;
   ${flexCenter};
 
   ${({ theme }) => css`
+    padding: ${theme.space.sm}px;
     width: ${theme.size.lg}px;
     ${theme.shadow.strong.lg};
   `};

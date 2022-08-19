@@ -10,7 +10,11 @@ import Animated, {
 // TODO - debug this app on an actual device and calculate the number of suggestions based on the available space after the keyboard is displayed
 // import { useKeyboard } from '@react-native-community/hooks';
 import { SCREEN, ANIMATION } from '@constants';
-import { createAnimatedStyle, createAnimatedStyles } from '@utils/reanimated';
+import {
+  createAnimatedStyle,
+  createAnimatedStyles,
+  createAnimatedThemedStyles
+} from '@utils/reanimated';
 import { SearchItem, SearchSuggestionItem } from '@utils/search';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
@@ -23,7 +27,6 @@ import {
   SearchInput
 } from './SearchBar.styles';
 import SearchSuggestions from './SearchSuggestions';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const SEARCH_BUTTON_ANIMATION_DELAY = ANIMATION.DELAY.MENU_TOGGLE + 250;
 const AnimatedIonIcon = Animated.createAnimatedComponent(IonIcon);
@@ -54,6 +57,40 @@ const useAnimatedInputIconStyles = createAnimatedStyles({
   }
 });
 
+const useAnimatedFocusStyles = createAnimatedThemedStyles(theme => ({
+  wrapper: {
+    width: [SCREEN.WIDTH - 2 * theme.space.lg, SCREEN.WIDTH],
+    left: [theme.space.lg, 0],
+    top: [theme.space.lg, 0],
+    paddingTop: [(theme.size.lg - theme.size.md) / 2, 0],
+    paddingRight: [theme.size.lg / 2, 0]
+  },
+  inputWrapper: {
+    height: [theme.size.md, theme.size.lg]
+  },
+  input: {
+    borderRadius: [5, 0]
+  }
+}));
+
+const useToggleStyles = createAnimatedThemedStyles(theme => ({
+  wrapper: {
+    width: [0, SCREEN.WIDTH - 2 * theme.space.lg]
+  },
+  button: {
+    right: [-theme.size.lg / 2, 0]
+  }
+}));
+
+const useFocusButtonStyles = createAnimatedThemedStyles(theme => ({
+  button: {
+    backgroundColor: [theme.color.accent.primary, 'transparent']
+  },
+  icon: {
+    color: [theme.color.white, theme.color.text.primary]
+  }
+}));
+
 type SearchBarProps = {
   data: SearchItem[];
   onSearchSubmit: (items: SearchItem[]) => void;
@@ -77,12 +114,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   const theme = useTheme();
   const ICON_COLOR = theme.color.white;
-  const SEARCH_BAR_HEIGHT = theme.size.md;
-  const FOCUSED_SEARCH_BAR_HEIGHT = theme.size.lg;
-  const SEARCH_BUTTON_SIZE = theme.size.lg;
-  const SEARCH_BAR_PADDING_X = theme.space.lg;
-  const SEARCH_BAR_PADDING_TOP = theme.space.lg;
-  const SEARCH_WRAPPER_WIDTH = SCREEN.WIDTH - 2 * SEARCH_BAR_PADDING_X;
   // Component state
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -106,39 +137,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
     useAnimatedToggleIconStyles(toggleIconProgress);
   const animatedFocusIconStyles = useAnimatedInputIconStyles(inputIconProgress);
 
-  const animatedFocusStyles = createAnimatedStyles({
-    wrapper: {
-      width: [SEARCH_WRAPPER_WIDTH, SCREEN.WIDTH],
-      left: [SEARCH_BAR_PADDING_X, 0],
-      top: [SEARCH_BAR_PADDING_TOP, 0],
-      paddingTop: [(SEARCH_BUTTON_SIZE - SEARCH_BAR_HEIGHT) / 2, 0],
-      paddingRight: [SEARCH_BUTTON_SIZE / 2, 0]
-    },
-    inputWrapper: {
-      height: [SEARCH_BAR_HEIGHT, FOCUSED_SEARCH_BAR_HEIGHT]
-    },
-    input: {
-      borderRadius: [5, 0]
-    }
-  })(focusProgress);
-
-  const animatedToggleStyles = createAnimatedStyles({
-    wrapper: {
-      width: [0, SEARCH_WRAPPER_WIDTH]
-    },
-    button: {
-      right: [-SEARCH_BUTTON_SIZE / 2, 0]
-    }
-  })(toggleProgress);
-
-  const animatedFocusButtonStyles = createAnimatedStyles({
-    button: {
-      backgroundColor: [theme.color.accent.primary, 'transparent']
-    },
-    icon: {
-      color: [ICON_COLOR, theme.color.text.primary]
-    }
-  })(focusProgress);
+  const animatedFocusStyles = useAnimatedFocusStyles(theme)(focusProgress);
+  const animatedToggleStyles = useToggleStyles(theme)(toggleProgress);
+  const animatedFocusButtonStyles = useFocusButtonStyles(theme)(focusProgress);
 
   useEffect(() => {
     slideProgress.value = withDelay(

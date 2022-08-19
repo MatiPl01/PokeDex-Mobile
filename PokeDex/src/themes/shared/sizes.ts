@@ -1,6 +1,6 @@
 export default {
-  xxs: 8,
-  xs: 16,
+  xss: 16,
+  xs: 24,
   sm: 32,
   md: 48,
   lg: 64,

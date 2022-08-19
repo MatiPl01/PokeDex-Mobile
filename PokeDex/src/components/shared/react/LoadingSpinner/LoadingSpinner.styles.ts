@@ -1,8 +1,8 @@
 import styled, { css } from 'styled-components/native';
-import Animated from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
-import { flexCenter, absoluteFill } from '@styles/shared';
+import Animated from 'react-native-reanimated';
 import { hexToRGBAlphaCSS } from '@utils/colors';
+import { flexCenter, absoluteFill } from '@styles/shared';
 
 const SPINNER_DIAMETER = 65;
 const STROKE_WIDTH = 5;

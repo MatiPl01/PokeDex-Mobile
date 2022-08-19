@@ -16,5 +16,5 @@ export const CardList = styled(
 `;
 
 export const EmptyListFooter = styled.View`
-  height: ${({ theme }) => theme.size.xl};
+  height: ${({ theme }) => theme.size.xl}px;
 `;

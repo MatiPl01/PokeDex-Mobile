@@ -2,18 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSharedValue, withTiming } from 'react-native-reanimated';
 import { createAnimatedStyles } from '@utils/reanimated';
+import { RootState } from '@store';
+import {
+  addPokemonToFavorites,
+  removePokemonFromFavorites
+} from '@store/favorites/favorites.actions';
+import { selectPokemonIsFavourite } from '@store/favorites/favorites.selector';
 import {
   TouchableWrapper,
   HeartIconOutline,
   HeartIconFilled,
   HeartIconEffect
 } from './AddToFavoritesButton.styles';
-import {
-  addPokemonToFavorites,
-  removePokemonFromFavorites
-} from '@store/favorites/favorites.actions';
-import { selectPokemonIsFavourite } from '@store/favorites/favorites.selector';
-import { RootState } from '@store';
 
 const useAnimatedIconStyles = createAnimatedStyles({
   iconFilled: {

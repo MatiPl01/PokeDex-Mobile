@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components/native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import { flexCenter, absoluteFill } from '@styles/shared';
-import { SearchButtonWrapper } from '@components/shared/react/SearchBar/SearchBar.styles';
+import { absoluteFill } from '@styles/shared';
+import { AbsoluteRoundButtonWrapper } from '@components/shared/styled/buttons';
 import {
   CardTitle as DefaultCardTitle,
   CardFooter as DefaultCardFooter
@@ -44,20 +44,19 @@ export const PokemonImageWrapper = styled.View`
 
 export const CardTitleSkeletonWrapper = styled.View<{ width: number }>`
   ${({ theme, width }) => css`
-    height: ${theme.lineHeight.body}px;
+    height: ${theme.lineHeight.body + 10}px;
     width: ${width}px;
     margin: 2px;
   `};
 `;
 
-export const DeleteButtonWrapper = styled(SearchButtonWrapper).attrs({
-  displayShadow: true
+export const DeleteButtonWrapper = styled(AbsoluteRoundButtonWrapper).attrs({
+  shadowed: true
 })`
   top: ${-DELETE_BUTTON_SIZE / 4}px;
   right: ${-DELETE_BUTTON_SIZE / 4}px;
   width: ${DELETE_BUTTON_SIZE}px;
   height: ${DELETE_BUTTON_SIZE}px;
-  ${flexCenter};
 `;
 
 export const DeleteButtonIcon = styled(MaterialIcon).attrs({

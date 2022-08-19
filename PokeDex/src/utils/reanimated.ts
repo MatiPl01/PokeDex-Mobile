@@ -1,3 +1,4 @@
+import { DefaultTheme } from 'styled-components/native';
 import {
   interpolate,
   Extrapolate,
@@ -5,6 +6,7 @@ import {
   useAnimatedStyle,
   interpolateColor
 } from 'react-native-reanimated';
+import memoizeOne from 'memoize-one';
 
 // TODO - maybe improve types, maybe improve isInterpolatedValuesList function
 type InterpolationNumbers = readonly number[];
@@ -220,7 +222,8 @@ function interpolateValue(
  * Create animated style hook based on the config object
  *
  * @param config - config specifying animated properties and their value ranges
- * @returns - a hook that creates animated style when called with the progress variable
+ * @returns      - a hook that creates animated style when called with the progress
+ *                 variable
  */
 export const createAnimatedStyle =
   (config: AnimatedStyleConfig) => (progress: Readonly<SharedValue<number>>) =>
@@ -238,7 +241,7 @@ export const createAnimatedStyle =
  * Create multiple animated styles for multiple properties in the config object
  *
  * @param config - an object containing style names and AnimatedStyleConfig objects
- * @returns - an object containing animated styles
+ * @returns      - an object containing animated styles
  */
 export const createAnimatedStyles =
   (config: AnimatedStylesConfig) =>
@@ -250,3 +253,29 @@ export const createAnimatedStyles =
       })
     );
   };
+
+/**
+ * Create animated style hook based on the themed config object
+ *
+ * @param themedConfig - config specifying animated properties and their value ranges
+ *                       calculated based on the current config values
+ * @returns            - a hook that creates animated style when called with the theme
+ *                       object and the animation progress value
+ */
+export const createAnimatedThemedStyle = (
+  themedConfig: (theme: DefaultTheme) => AnimatedStyleConfig
+) =>
+  memoizeOne((theme: DefaultTheme) => createAnimatedStyle(themedConfig(theme)));
+
+/**
+ * Create multiple animated styles for multiple properties in the themed config object
+ *
+ * @param themedConfig - an object containing style names and themed config objects
+ * @returns            - an object containing animated styles
+ */
+export const createAnimatedThemedStyles = (
+  themedConfig: (theme: DefaultTheme) => AnimatedStylesConfig
+) =>
+  memoizeOne((theme: DefaultTheme) =>
+    createAnimatedStyles(themedConfig(theme))
+  );

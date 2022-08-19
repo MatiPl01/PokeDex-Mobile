@@ -15,7 +15,7 @@ const PokemonListFooter: React.FC<PokemonListFooter> = ({ reachedEnd }) => {
     <FooterWrapper>
       {!reachedEnd ? (
         <FooterLoaderWrapper>
-          <FooterText>Fetching next Pokemon...</FooterText>
+          <FooterText>Fetching Pokemon data...</FooterText>
           <LoadingSpinner />
         </FooterLoaderWrapper>
       ) : (
