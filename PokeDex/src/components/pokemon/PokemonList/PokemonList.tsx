@@ -6,8 +6,8 @@ import {
   FlatList,
   RefreshControl
 } from 'react-native';
+import ReAnimated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SCREEN } from '@constants';
@@ -142,7 +142,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
   };
 
   const renderHeader = () => (
-    <Animated.View style={animatedCardListHeaderStyle} />
+    <ReAnimated.View style={animatedCardListHeaderStyle} />
   );
 
   const renderFooter = () =>

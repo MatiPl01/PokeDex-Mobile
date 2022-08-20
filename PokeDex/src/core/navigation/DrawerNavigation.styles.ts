@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import Animated from 'react-native-reanimated';
 import { SCREEN } from '@constants';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 
@@ -14,6 +15,10 @@ const StyledDrawerContentScrollView = styled(DrawerContentScrollView)`
 export const DrawerWrapper = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.color.background.secondary};
+`;
+
+export const ScreensWrapper = styled(Animated.View)`
+  background-color: ${({ theme }) => theme.color.background.primary};
 `;
 
 export { StyledDrawerContentScrollView as DrawerContentScrollView };

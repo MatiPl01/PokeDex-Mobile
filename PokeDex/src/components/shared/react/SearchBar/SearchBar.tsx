@@ -27,6 +27,7 @@ import {
   SearchInput
 } from './SearchBar.styles';
 import SearchSuggestions from './SearchSuggestions';
+import { TouchableWrapper } from '@components/shared/styled/buttons';
 
 const SEARCH_BUTTON_ANIMATION_DELAY = ANIMATION.DELAY.MENU_TOGGLE + 250;
 const AnimatedIonIcon = Animated.createAnimatedComponent(IonIcon);
@@ -189,7 +190,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     });
   };
 
-  const handleButtonClick = () => {
+  const handleButtonPress = () => {
     if (searchValue) {
       setSearchValue('');
       if (!isFocused) toggleSearchBar();
@@ -239,30 +240,35 @@ const SearchBar: React.FC<SearchBarProps> = ({
           focusStylesEnabled && animatedFocusButtonStyles.button
         ]}
         shadowed={!isFocused}
-        onPress={handleButtonClick}
       >
-        <IconWrapper style={animatedToggleIconStyles.search}>
-          <FontistoIcon name="search" size={25} color={ICON_COLOR} />
-        </IconWrapper>
-        <IconWrapper
-          style={[
-            animatedToggleIconStyles.close,
-            focusStylesEnabled && animatedFocusIconStyles.close
-          ]}
-        >
-          <AnimatedIonIcon
-            name="close"
-            size={35}
-            color={theme.color.text.primary}
-            style={focusStylesEnabled && animatedFocusButtonStyles.icon}
-          />
-        </IconWrapper>
+        <TouchableWrapper onPress={handleButtonPress}>
+          <IconWrapper style={animatedToggleIconStyles.search}>
+            <FontistoIcon name="search" size={25} color={ICON_COLOR} />
+          </IconWrapper>
+          <IconWrapper
+            style={[
+              animatedToggleIconStyles.close,
+              focusStylesEnabled && animatedFocusIconStyles.close
+            ]}
+          >
+            <AnimatedIonIcon
+              name="close"
+              size={35}
+              color={theme.color.text.primary}
+              style={focusStylesEnabled && animatedFocusButtonStyles.icon}
+            />
+          </IconWrapper>
 
-        <IconWrapper
-          style={focusStylesEnabled && animatedFocusIconStyles.erase}
-        >
-          <EntypoIcon name="erase" size={30} color={theme.color.text.primary} />
-        </IconWrapper>
+          <IconWrapper
+            style={focusStylesEnabled && animatedFocusIconStyles.erase}
+          >
+            <EntypoIcon
+              name="erase"
+              size={30}
+              color={theme.color.text.primary}
+            />
+          </IconWrapper>
+        </TouchableWrapper>
       </SearchButtonWrapper>
       <InputWrapper
         style={focusStylesEnabled && animatedFocusStyles.inputWrapper}

@@ -43,8 +43,8 @@ const StyledTextInput = styled.TextInput`
 
 export const SearchInput = Animated.createAnimatedComponent(StyledTextInput);
 
-export const SearchButtonWrapper = styled(
-  Animated.createAnimatedComponent(AbsoluteRoundButtonWrapper)
-).attrs(({ theme }) => ({
-  size: theme.size.lg
-}))``;
+export const SearchButtonWrapper = styled(AbsoluteRoundButtonWrapper).attrs(
+  ({ theme }) => ({
+    size: theme.size.lg
+  })
+)``;

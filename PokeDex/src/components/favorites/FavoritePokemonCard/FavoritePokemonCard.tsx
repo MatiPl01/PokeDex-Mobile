@@ -22,7 +22,7 @@ import {
 } from './FavoritePokemonCard.styles';
 
 const useAnimatedDeleteButtonStyle = createAnimatedStyle({
-  opacity: [0, 1],
+  // opacity: [0, 1]
   transform: [{ scale: [0, 1] }]
 });
 
@@ -66,7 +66,6 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
   if (!pokemon) return null;
 
   const { id, name, types, imageUrl, imageExtension } = pokemon;
-  console.log({ id, deletable });
 
   const deleteButtonAnimationProgress = useSharedValue(0);
   const animatedDeleteButtonStyle = useAnimatedDeleteButtonStyle(
@@ -78,6 +77,7 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
       duration: 300,
       easing: Easing.bezier(0.4, 0, 0.9, 0.65)
     });
+    console.log({ id, deletable, deleteButtonAnimationProgress });
   }, [deletable]);
 
   return (

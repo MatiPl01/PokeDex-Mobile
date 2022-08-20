@@ -7,13 +7,13 @@ import {
   createAnimatedThemedStyle
 } from '@utils/reanimated';
 import { AnimatedIconWrapper } from '@components/shared/styled/icons';
-import {
-  Icon,
-  ButtonWrapper,
-  IconsWrapper
-} from './FavoritesEditButton.styles';
+import { TouchableWrapper } from '@components/shared/styled/buttons';
+import { Icon, ButtonWrapper } from './FavoritesEditButton.styles';
 
-const ANIMATION_EASING = Easing.bezier(0.4, 0, 0.9, 0.65);
+const ANIMATION_CONFIG = {
+  duration: 500,
+  easing: Easing.bezier(0.4, 0, 0.9, 0.65)
+};
 
 const useAnimatedButtonStyle = createAnimatedThemedStyle(theme => {
   const BUTTON_SIZE = theme.size.lg;
@@ -26,14 +26,8 @@ const useAnimatedButtonStyle = createAnimatedThemedStyle(theme => {
     height: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
     paddingTop: [CLOSED_BUTTON_SIZE * 0.35, 0],
     paddingRight: [CLOSED_BUTTON_SIZE * 0.35, 0],
-    transform: [
-      {
-        translateX: [CLOSED_BUTTON_SIZE / 2 + BUTTON_OFFSET_RIGHT, 0]
-      },
-      {
-        translateY: [-(CLOSED_BUTTON_SIZE / 2 + BUTTON_OFFSET_TOP), 0]
-      }
-    ]
+    top: [-CLOSED_BUTTON_SIZE / 2, BUTTON_OFFSET_TOP],
+    right: [-CLOSED_BUTTON_SIZE / 2, BUTTON_OFFSET_RIGHT]
   };
   return config;
 });
@@ -50,13 +44,12 @@ const useAnimatedIconStyles = createAnimatedStyles({
 });
 
 type FavoritesEditButtonProps = {
-  onPress?: (isEditing: boolean) => void;
+  onPress: (isEditing: boolean) => void;
 };
 
 const FavoritesEditButton: React.FC<FavoritesEditButtonProps> = ({
   onPress
 }) => {
-  console.log('render');
   const theme = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const iconAnimationProgress = useSharedValue(0);
@@ -69,34 +62,24 @@ const FavoritesEditButton: React.FC<FavoritesEditButtonProps> = ({
 
   const handleButtonPress = () => {
     const newIsEditing = !isEditing;
-    iconAnimationProgress.value = withTiming(+newIsEditing, {
-      duration: 1000,
-      easing: ANIMATION_EASING
-    });
-    buttonAnimationProgress.value = withTiming(+newIsEditing, {
-      duration: 1000,
-      easing: ANIMATION_EASING
-    });
+    iconAnimationProgress.value = withTiming(+newIsEditing, ANIMATION_CONFIG);
+    buttonAnimationProgress.value = withTiming(+newIsEditing, ANIMATION_CONFIG);
     if (onPress) onPress(newIsEditing);
     setIsEditing(newIsEditing);
   };
 
   return (
-    <ButtonWrapper
-      style={animatedButtonStyle}
-      onPress={handleButtonPress}
-      shadowed
-    >
-      <IconsWrapper>
+    <ButtonWrapper style={animatedButtonStyle} shadowed>
+      <TouchableWrapper onPress={handleButtonPress}>
         <AnimatedIconWrapper style={animatedIconStyles.edit}>
           <Icon name="edit" />
         </AnimatedIconWrapper>
         <AnimatedIconWrapper style={animatedIconStyles.editOff}>
           <Icon name="edit-off" />
         </AnimatedIconWrapper>
-      </IconsWrapper>
+      </TouchableWrapper>
     </ButtonWrapper>
   );
 };
 
-export default FavoritesEditButton;
+export default React.memo(FavoritesEditButton);

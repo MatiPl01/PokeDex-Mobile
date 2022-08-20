@@ -3,9 +3,7 @@ import Animated from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native';
 import { flexCenter, relativeFill } from '@styles/shared';
 
-export const RoundButtonWrapper = styled(
-  Animated.createAnimatedComponent(TouchableOpacity)
-).attrs({
+export const RoundButtonWrapper = styled(Animated.View).attrs({
   activeOpacity: 1
 })<{
   size: number;
