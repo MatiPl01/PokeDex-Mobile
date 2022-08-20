@@ -1,51 +1,77 @@
-import React, { ComponentType, useEffect } from 'react';
-import { FlatListProps, ListRenderItem } from 'react-native';
+import React, { useEffect } from 'react';
+import { ScrollView } from 'react-native';
 import { runOnJS, useSharedValue } from 'react-native-reanimated';
 import { SCREEN } from '@constants';
 import { Padding } from '@types';
-import { Separator } from '@components/shared/styled/layout';
-import { GridConfig } from './sortableGrid.utils';
-import { GridFlatList } from './SortableGrid.styles';
+import { GridConfig, calcRowHeight } from './sortableGrid.utils';
 import SortableGridItem from './SortableGridItem';
+import { GridItemsWrapper } from './SortableGrid.styles';
 
 type SortableGridProps<T> = {
   data: T[];
+  renderItem: (data: { item: T; width: number; height: number }) => JSX.Element;
   keyExtractor: (item: T, index: number) => string;
-  renderItem: ({ item, size }: { item: T; size: number }) => JSX.Element;
   columnCount?: number;
   padding?: Padding;
-  gap?: number;
+  rowGap?: number;
+  columnGap?: number;
   editable?: boolean;
-  GridHeaderComponent?: React.ReactNode;
-  GridFooterComponent?: React.ReactNode;
+  GridHeaderComponent?:
+    | React.ComponentType<any>
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | null;
+  GridFooterComponent?:
+    | React.ComponentType<any>
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | null;
   onDragEnd?: (data: T[]) => void;
   onEndReached?: () => void;
-};
+} & ({ itemHeight?: number } | { itemRatio?: number });
 
 const SortableGrid = <T extends object>({
   data,
   keyExtractor,
   renderItem,
   onDragEnd,
-  onEndReached,
+  onEndReached, // TODO
   GridHeaderComponent,
   GridFooterComponent,
   editable = false,
   columnCount = 1,
-  gap = 0,
-  padding: desiredPadding = {}
+  rowGap = 0,
+  columnGap = 0,
+  padding: desiredPadding = {},
+  ...restProps
 }: SortableGridProps<T>) => {
   const padding = { top: 0, right: 0, left: 0, bottom: 0, ...desiredPadding };
-  const itemSize =
-    (SCREEN.WIDTH - (columnCount - 1) * gap - padding.left - padding.right) /
+  const itemWidth =
+    (SCREEN.WIDTH -
+      (columnCount - 1) * columnGap -
+      padding.left -
+      padding.right) /
     columnCount;
+  const rowCount = Math.ceil(data.length / columnCount);
+  const rowHeight = calcRowHeight(itemWidth, restProps);
+  const contentHeight =
+    rowCount * rowHeight +
+    (rowCount - 1) * rowGap +
+    padding.top +
+    padding.bottom;
   const config: GridConfig = {
-    padding,
-    itemSize,
-    gap,
+    itemHeight: rowHeight,
+    itemWidth,
+    rowGap,
+    columnGap,
     columnCount,
+    rowCount,
     itemsCount: data.length
   };
+  const scrollViewStyle = Object.fromEntries(
+    Object.entries(padding).map(([prop, val]) => [
+      `padding${prop[0].toUpperCase()}${prop.slice(1)}`,
+      val
+    ])
+  );
 
   const itemsOrder = useSharedValue<{ [key: string]: number }>({});
 
@@ -89,53 +115,47 @@ const SortableGrid = <T extends object>({
     runOnJS(callOnDragEnd)();
   };
 
-  const renderGridItem: ListRenderItem<T> = ({
-    item,
-    index
-  }: {
-    item: T;
-    index: number;
-  }) => (
-    <SortableGridItem
-      itemKey={keyExtractor(item, index)}
-      itemsOrder={itemsOrder}
-      size={itemSize}
-      gap={gap}
-      gridConfig={config}
-      onDragStart={handleItemDragStart}
-      onDragEnd={handleItemDragEnd}
-      onOrderChange={handleOrderChange}
-      draggable={editable}
-    >
-      {renderItem({ item, size: itemSize })}
-    </SortableGridItem>
-  );
+  const renderGridHeader = () =>
+    GridHeaderComponent instanceof Function ? (
+      <GridHeaderComponent />
+    ) : (
+      GridHeaderComponent
+    );
+
+  const renderGridFooter = () =>
+    GridFooterComponent instanceof Function ? (
+      <GridFooterComponent />
+    ) : (
+      GridFooterComponent
+    );
+
+  const renderGridItem = (item: T, index: number) => {
+    const key = keyExtractor(item, index);
+
+    return (
+      <SortableGridItem
+        key={key}
+        itemKey={key}
+        itemsOrder={itemsOrder}
+        gridConfig={config}
+        onDragStart={handleItemDragStart}
+        onDragEnd={handleItemDragEnd}
+        onOrderChange={handleOrderChange}
+        draggable={editable}
+      >
+        {renderItem({ item, width: itemWidth, height: rowHeight })}
+      </SortableGridItem>
+    );
+  };
 
   return (
-    <GridFlatList<ComponentType<FlatListProps<T>>>
-      data={data}
-      keyExtractor={(item: T, idx: number) => keyExtractor(item, idx)}
-      renderItem={renderGridItem}
-      numColumns={columnCount}
-      // Padding object cannot be passed as a property of the styled
-      // component because it results in NSMutableDictionary error (that's
-      // why I decided to specify paddingX and paddingY separately)
-      maxToRenderPerBatch={12}
-      onEndReached={onEndReached}
-      ListHeaderComponent={
-        <>
-          <Separator height={padding.top} />
-          {GridHeaderComponent}
-        </>
-      }
-      ListFooterComponent={
-        <>
-          {GridFooterComponent}
-          <Separator height={padding.bottom} />
-        </>
-      }
-      style={{ paddingLeft: padding.left, paddingRight: padding.right }}
-    />
+    <ScrollView contentContainerStyle={scrollViewStyle}>
+      {renderGridHeader()}
+      <GridItemsWrapper height={contentHeight}>
+        {data.map((item, idx) => renderGridItem(item, idx))}
+      </GridItemsWrapper>
+      {renderGridFooter()}
+    </ScrollView>
   );
 };
 
