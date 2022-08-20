@@ -1,32 +1,35 @@
 import React, { useState } from 'react';
+import { useTheme } from 'styled-components';
 import { useSharedValue, withTiming, Easing } from 'react-native-reanimated';
-import { createAnimatedStyle, createAnimatedStyles } from '@utils/reanimated';
 import {
-  Icon,
-  ButtonWrapper,
-  IconWrapper,
-  BUTTON_SIZE,
-  BUTTON_OFFSET_TOP,
-  BUTTON_OFFSET_RIGHT
-} from './FavoritesEditButton.styles';
-import { TouchableWrapper } from '@components/shared';
+  AnimatedStyleConfig,
+  createAnimatedStyles,
+  createAnimatedThemedStyle
+} from '@utils/reanimated';
+import { AnimatedIconWrapper } from '@components/shared/styled/icons';
+import { TouchableWrapper } from '@components/shared/styled/buttons';
+import { Icon, ButtonWrapper } from './FavoritesEditButton.styles';
 
-const CLOSED_BUTTON_SCALE = 2;
-const CLOSED_BUTTON_SIZE = CLOSED_BUTTON_SCALE * BUTTON_SIZE;
+const ANIMATION_CONFIG = {
+  duration: 500,
+  easing: Easing.bezier(0.4, 0, 0.9, 0.65)
+};
 
-const useAnimatedButtonStyle = createAnimatedStyle({
-  width: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
-  height: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
-  paddingTop: [CLOSED_BUTTON_SIZE * 0.35, 0],
-  paddingRight: [CLOSED_BUTTON_SIZE * 0.35, 0],
-  transform: [
-    {
-      translateX: [CLOSED_BUTTON_SIZE / 2 + BUTTON_OFFSET_TOP, 0]
-    },
-    {
-      translateY: [-(CLOSED_BUTTON_SIZE / 2 + BUTTON_OFFSET_RIGHT), 0]
-    }
-  ]
+const useAnimatedButtonStyle = createAnimatedThemedStyle(theme => {
+  const BUTTON_SIZE = theme.size.lg;
+  const CLOSED_BUTTON_SIZE = 2 * BUTTON_SIZE;
+  const BUTTON_OFFSET_TOP = theme.space.lg;
+  const BUTTON_OFFSET_RIGHT = theme.space.lg;
+
+  const config: AnimatedStyleConfig = {
+    width: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
+    height: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
+    paddingTop: [CLOSED_BUTTON_SIZE * 0.35, 0],
+    paddingRight: [CLOSED_BUTTON_SIZE * 0.35, 0],
+    top: [-CLOSED_BUTTON_SIZE / 2, BUTTON_OFFSET_TOP],
+    right: [-CLOSED_BUTTON_SIZE / 2, BUTTON_OFFSET_RIGHT]
+  };
+  return config;
 });
 
 const useAnimatedIconStyles = createAnimatedStyles({
@@ -41,44 +44,42 @@ const useAnimatedIconStyles = createAnimatedStyles({
 });
 
 type FavoritesEditButtonProps = {
-  onPress?: (isEditing: boolean) => void;
+  onPress: (isEditing: boolean) => void;
 };
 
 const FavoritesEditButton: React.FC<FavoritesEditButtonProps> = ({
   onPress
 }) => {
+  const theme = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const iconAnimationProgress = useSharedValue(0);
   const buttonAnimationProgress = useSharedValue(0);
-  const animatedButtonStyle = useAnimatedButtonStyle(buttonAnimationProgress);
+
+  const animatedButtonStyle = useAnimatedButtonStyle(theme)(
+    buttonAnimationProgress
+  );
   const animatedIconStyles = useAnimatedIconStyles(iconAnimationProgress);
 
   const handleButtonPress = () => {
     const newIsEditing = !isEditing;
-    iconAnimationProgress.value = withTiming(+newIsEditing, {
-      duration: 250,
-      easing: Easing.bezier(0.4, 0, 0.9, 0.65)
-    });
-    buttonAnimationProgress.value = withTiming(+newIsEditing, {
-      duration: 250,
-      easing: Easing.bezier(0.4, 0, 0.9, 0.65)
-    });
+    iconAnimationProgress.value = withTiming(+newIsEditing, ANIMATION_CONFIG);
+    buttonAnimationProgress.value = withTiming(+newIsEditing, ANIMATION_CONFIG);
     if (onPress) onPress(newIsEditing);
     setIsEditing(newIsEditing);
   };
 
   return (
-    <ButtonWrapper style={animatedButtonStyle}>
+    <ButtonWrapper style={animatedButtonStyle} shadowed>
       <TouchableWrapper onPress={handleButtonPress}>
-        <IconWrapper style={animatedIconStyles.edit}>
+        <AnimatedIconWrapper style={animatedIconStyles.edit}>
           <Icon name="edit" />
-        </IconWrapper>
-        <IconWrapper style={animatedIconStyles.editOff}>
+        </AnimatedIconWrapper>
+        <AnimatedIconWrapper style={animatedIconStyles.editOff}>
           <Icon name="edit-off" />
-        </IconWrapper>
+        </AnimatedIconWrapper>
       </TouchableWrapper>
     </ButtonWrapper>
   );
 };
 
-export default FavoritesEditButton;
+export default React.memo(FavoritesEditButton);

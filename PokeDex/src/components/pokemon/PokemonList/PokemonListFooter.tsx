@@ -1,5 +1,5 @@
-import LoadingSpinner from '@components/shared/LoadingSpinner/LoadingSpinner';
 import React from 'react';
+import LoadingSpinner from '@components/shared/react/LoadingSpinner/LoadingSpinner';
 import {
   FooterWrapper,
   FooterLoaderWrapper,
@@ -15,7 +15,7 @@ const PokemonListFooter: React.FC<PokemonListFooter> = ({ reachedEnd }) => {
     <FooterWrapper>
       {!reachedEnd ? (
         <FooterLoaderWrapper>
-          <FooterText>Fetching next Pokemon...</FooterText>
+          <FooterText>Fetching Pokemon data...</FooterText>
           <LoadingSpinner />
         </FooterLoaderWrapper>
       ) : (

@@ -6,8 +6,8 @@ import {
   withRepeat,
   withTiming
 } from 'react-native-reanimated';
+import { SCREEN } from '@constants';
 import { createAnimatedStyle } from '@utils/reanimated';
-import { SCREEN_WIDTH } from '@core/splash-screen/SplashScreen';
 import {
   AnimatedGradient,
   GradientWrapper
@@ -22,7 +22,7 @@ type SkeletonPlaceholderProps = {
 const SkeletonPlaceholder: React.FC<SkeletonPlaceholderProps> = ({
   animationDuration = DEFAULT_ANIMATION_DURATION
 }) => {
-  const [width, setWidth] = useState(SCREEN_WIDTH);
+  const [width, setWidth] = useState(SCREEN.WIDTH);
   const animationProgress = useSharedValue(0);
   const animatedGradientStyle = createAnimatedStyle({
     transform: [

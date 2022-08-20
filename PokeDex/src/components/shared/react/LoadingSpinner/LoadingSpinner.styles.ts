@@ -1,20 +1,16 @@
 import styled, { css } from 'styled-components/native';
-import Animated from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
-import { flexCenter } from '@styles/shared';
+import Animated from 'react-native-reanimated';
 import { hexToRGBAlphaCSS } from '@utils/colors';
+import { flexCenter, absoluteFill } from '@styles/shared';
 
 const SPINNER_DIAMETER = 65;
 const STROKE_WIDTH = 5;
 export const SPINNER_CIRCUMFERENCE = Math.PI * SPINNER_DIAMETER;
 
 export const SpinnerWrapper = styled.View<{ showOverlay?: boolean }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   z-index: 1000;
+  ${absoluteFill};
   ${flexCenter};
 
   background-color: ${({ showOverlay, theme }) =>

@@ -27,17 +27,12 @@ import HamburgerIcon from './hamburger-icon/HamburgerIcon';
 import {
   FINAL_SCREEN_SCALE,
   DrawerContentScrollView,
-  DrawerWrapper
+  DrawerWrapper,
+  ScreensWrapper
 } from './DrawerNavigation.styles';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
-
-// This component must be declared in this file in order to work
-// (styles aren't applied when component is imported from the styles file)
-const OuterWrapper = Animated.createAnimatedComponent(styled.View`
-  ${({ theme }) => theme.shadow.medium.lg};
-`);
 
 const useAnimatedScreensStyles = createAnimatedStyles({
   outerWrapper: {
@@ -59,7 +54,7 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
   const animatedStyles = useAnimatedScreensStyles(progress);
 
   return (
-    <OuterWrapper style={animatedStyles.outerWrapper}>
+    <ScreensWrapper style={animatedStyles.outerWrapper}>
       <Animated.View
         style={[{ overflow: 'hidden' }, animatedStyles.innerWrapper]}
       >
@@ -85,7 +80,7 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
           </Stack.Navigator>
         </SplashScreen>
       </Animated.View>
-    </OuterWrapper>
+    </ScreensWrapper>
   );
 };
 
@@ -134,7 +129,7 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
 const DrawerNavigation: React.FC = () => (
   <DrawerWrapper>
     <Drawer.Navigator
-      initialRouteName="Favorites" // TODO - change to Pokemon
+      initialRouteName="Pokemon"
       screenOptions={{
         headerShown: false,
         drawerType: 'slide',

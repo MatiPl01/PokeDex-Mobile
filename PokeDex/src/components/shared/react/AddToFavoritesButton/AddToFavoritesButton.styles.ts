@@ -1,15 +1,11 @@
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
-import { flexCenter } from '@styles/shared';
+import { TouchableWrapper as DefaultTouchableWrapper } from '@components/shared/styled/buttons';
 
-export const TouchableWrapper = styled(TouchableWithoutFeedback)<{
+export const TouchableWrapper = styled(DefaultTouchableWrapper)<{
   size: number;
 }>`
-  position: relative;
-  ${flexCenter};
-
   ${({ size }) => css`
     height: ${size}px;
     width: ${size}px;
@@ -20,8 +16,7 @@ export const HeartIconOutline = styled(AntDesignIcon).attrs({
   name: 'hearto'
 })`
   position: absolute;
-  color: ${({ theme }) =>
-    theme.color.accent.primary}; // TODO - replace with some red shade color
+  color: ${({ theme }) => theme.color.red.dark};
 `;
 
 export const HeartIconFilled = styled(
@@ -29,8 +24,7 @@ export const HeartIconFilled = styled(
 ).attrs({
   name: 'heart'
 })`
-  color: ${({ theme }) =>
-    theme.color.accent.primary}; // TODO - replace with some red shade color
+  color: ${({ theme }) => theme.color.red.dark};
 `;
 
 export const HeartIconEffect = styled(
@@ -41,6 +35,5 @@ export const HeartIconEffect = styled(
   position: absolute;
   top: 0;
 
-  color: ${({ theme }) =>
-    theme.color.accent.primary}; // TODO - replace with some red shade color
+  color: ${({ theme }) => theme.color.red.light};
 `;

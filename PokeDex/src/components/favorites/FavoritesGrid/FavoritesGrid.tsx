@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
-import { createAnimatedStyle } from '@utils/reanimated';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTheme } from 'styled-components';
+import { createAnimatedThemedStyle } from '@utils/reanimated';
 import { selectFavoritePokemonIdsList } from '@store/favorites/favorites.selector';
 import { fetchPokemonBatchByIdsAsync } from '@store/pokemon/pokemon.actions';
 import { selectPokemonStateListByIds } from '@store/pokemon/pokemon.selector';
@@ -12,33 +13,23 @@ import {
 import { SinglePokemonState } from '@store/pokemon/pokemon.reducer';
 import { Padding } from '@types';
 import { RootState } from '@store';
-import { POKEMON_LIST_PADDING_HORIZONTAL as GRID_PADDING_HORIZONTAL } from '@components/pokemon/PokemonList/PokemonList.styles';
-import {
-  SEARCH_ICON_SIZE as EDIT_BUTTON_SIZE,
-  SEARCH_BAR_PADDING_TOP as EDIT_BUTTON_OFFSET_TOP
-} from '@components/shared/SearchBar/SearchBar.styles';
 import FavoritePokemonCard from '@components/favorites/FavoritePokemonCard/FavoritePokemonCard';
-import SortableGrid from '@components/shared/SortableGrid/SortableGrid';
+import SortableGrid from '@components/shared/react/SortableGrid/SortableGrid';
 
-const GRID_GAP = GRID_PADDING_HORIZONTAL;
-
-const padding: Padding = {
-  top: EDIT_BUTTON_OFFSET_TOP,
-  left: GRID_PADDING_HORIZONTAL,
-  right: GRID_PADDING_HORIZONTAL,
-  bottom: EDIT_BUTTON_OFFSET_TOP
-};
-
-const useAnimatedGridHeaderStyle = createAnimatedStyle({
-  height: [0, EDIT_BUTTON_OFFSET_TOP + EDIT_BUTTON_SIZE]
-});
+const useAnimatedGridHeaderStyle = createAnimatedThemedStyle(theme => ({
+  height: [0, theme.space.lg + theme.size.lg]
+}));
 
 type FavoritesGridProps = {
   editable?: boolean;
 };
 
 const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
+  const theme = useTheme();
   const dispatch = useDispatch();
+  const PADDING = theme.space.lg;
+  const GRID_GAP = theme.space.lg;
+
   const [favoritesStates, setFavoritesStates] = useState<SinglePokemonState[]>(
     []
   );
@@ -46,9 +37,16 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   const selectedFavoritesStates = useSelector((rootState: RootState) =>
     selectPokemonStateListByIds(rootState, favoritesIds)
   );
-
   const gridHeaderAnimationProgress = useSharedValue(0);
-  const animatedGridHeaderStyle = useAnimatedGridHeaderStyle(
+
+  const padding: Padding = {
+    top: PADDING,
+    left: PADDING,
+    right: PADDING,
+    bottom: PADDING
+  };
+
+  const animatedGridHeaderStyle = useAnimatedGridHeaderStyle(theme)(
     gridHeaderAnimationProgress
   );
 

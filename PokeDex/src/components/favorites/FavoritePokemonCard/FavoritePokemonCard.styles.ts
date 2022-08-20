@@ -1,11 +1,11 @@
 import styled, { css } from 'styled-components/native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import { flexCenter, absoluteFill } from '@styles/shared';
+import { absoluteFill } from '@styles/shared';
+import { AbsoluteRoundButtonWrapper } from '@components/shared/styled/buttons';
 import {
-  CardFooter as PokemonCardFooter,
-  CardTitle as PokemonCardTitle
-} from '@components/pokemon/PokemonCard/PokemonCard.styles';
-import { SearchButtonWrapper } from '@components/shared/SearchBar/SearchBar.styles';
+  CardTitle as DefaultCardTitle,
+  CardFooter as DefaultCardFooter
+} from '@components/shared/styled/cards';
 
 const DELETE_BUTTON_SIZE = 40;
 const DELETE_ICON_SIZE = 25;
@@ -25,15 +25,14 @@ export const BackgroundWrapper = styled.View`
   position: relative;
 `;
 
-export const CardFooter = styled(PokemonCardFooter)`
+export const CardFooter = styled(DefaultCardFooter)`
   height: 25%;
-  ${flexCenter};
 `;
 
-export const CardTitle = styled(PokemonCardTitle)`
+export const CardTitle = styled(DefaultCardTitle)`
   ${({ theme }) => css`
-    font-size: ${theme.fontSize.body};
-    line-height: ${theme.lineHeight.body};
+    font-size: ${theme.fontSize.body}px;
+    line-height: ${theme.lineHeight.body}px;
     margin-bottom: 0;
   `}
 `;
@@ -45,20 +44,19 @@ export const PokemonImageWrapper = styled.View`
 
 export const CardTitleSkeletonWrapper = styled.View<{ width: number }>`
   ${({ theme, width }) => css`
-    height: ${`${parseInt(theme.lineHeight.body)}px`};
+    height: ${theme.lineHeight.body + 10}px;
     width: ${width}px;
     margin: 2px;
   `};
 `;
 
-export const DeleteButtonWrapper = styled(SearchButtonWrapper).attrs({
-  displayShadow: true
+export const DeleteButtonWrapper = styled(AbsoluteRoundButtonWrapper).attrs({
+  shadowed: true
 })`
   top: ${-DELETE_BUTTON_SIZE / 4}px;
   right: ${-DELETE_BUTTON_SIZE / 4}px;
   width: ${DELETE_BUTTON_SIZE}px;
   height: ${DELETE_BUTTON_SIZE}px;
-  ${flexCenter};
 `;
 
 export const DeleteButtonIcon = styled(MaterialIcon).attrs({

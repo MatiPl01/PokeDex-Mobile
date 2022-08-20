@@ -28,7 +28,5 @@ export const ItemDropIndicator = styled(Animated.View)`
 `;
 
 export const AnimatedItemWrapper = styled(Animated.View)`
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  ${absoluteFill};
 `;

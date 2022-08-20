@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
+import { useTheme } from 'styled-components';
 import { Pokemon, PokemonType } from '@store/pokemon/pokemon.types';
-import SkeletonPlaceholder from '@components/shared/SkeletonPlaceholder/SkeletonPlaceholder';
+import SkeletonPlaceholder from '@components/shared/react/SkeletonPlaceholder/SkeletonPlaceholder';
+import AddToFavoritesButton from '@components/shared/react/AddToFavoritesButton/AddToFavoritesButton';
+import { RoundedBackgroundClip } from '@components/shared/styled/backgrounds';
+import { CardTitle } from '@components/shared/styled/cards';
 import PokemonTypeBadge from '../PokemonTypeBadge/PokemonTypeBadge';
+import PokemonCardImage from '../PokemonCardImage/PokemonCardImage';
 import {
   CardWrapper,
   BackgroundWrapper,
   BackgroundGradient,
   BackgroundGradientsWrapper,
   CardFooter,
-  BackgroundClip,
   BackgroundTextWrapper,
   BackgroundText,
-  CardTitle,
   PokemonId,
   TypeBadgesWrapper,
   TypeBadgeWrapper,
@@ -19,19 +22,16 @@ import {
   TypeBadgeSkeletonWrapper,
   PokemonIdSkeletonWrapper,
   AddToFavoritesButtonWrapper,
-  FAVORITES_BUTTON_SIZE,
   MAX_IMAGE_WIDTH,
   MAX_IMAGE_HEIGHT
 } from './PokemonCard.styles';
-import AddToFavoritesButton from '@components/shared/AddToFavoritesButton/AddToFavoritesButton';
-import PokemonCardImage from '../PokemonCardImage/PokemonCardImage';
 
 const PokemonCardSkeleton: React.FC = () => (
   <CardWrapper>
     <BackgroundWrapper>
-      <BackgroundClip>
+      <RoundedBackgroundClip>
         <SkeletonPlaceholder />
-      </BackgroundClip>
+      </RoundedBackgroundClip>
     </BackgroundWrapper>
     <CardFooter>
       <CardTitleSkeletonWrapper>
@@ -63,6 +63,7 @@ type PokemonCardProps = {
 };
 
 const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
+  const theme = useTheme();
   const [isImageLoading, setIsImageLoading] = useState(true);
 
   if (isLoading) return <PokemonCardSkeleton />;
@@ -72,7 +73,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
   return (
     <CardWrapper>
       <BackgroundWrapper>
-        <BackgroundClip>
+        <RoundedBackgroundClip>
           {!isImageLoading && (
             <BackgroundGradientsWrapper>
               {types.map((type: PokemonType) => (
@@ -89,7 +90,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
               {name}
             </BackgroundText>
           </BackgroundTextWrapper>
-        </BackgroundClip>
+        </RoundedBackgroundClip>
         <PokemonCardImage
           width={MAX_IMAGE_WIDTH}
           height={MAX_IMAGE_HEIGHT}
@@ -109,7 +110,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
         </TypeBadgesWrapper>
         <PokemonId>#{id}</PokemonId>
         <AddToFavoritesButtonWrapper>
-          <AddToFavoritesButton pokemonId={id} size={FAVORITES_BUTTON_SIZE} />
+          <AddToFavoritesButton pokemonId={id} size={theme.size.xs} />
         </AddToFavoritesButtonWrapper>
       </CardFooter>
     </CardWrapper>

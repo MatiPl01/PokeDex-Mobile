@@ -4,11 +4,9 @@ import { PokemonType } from '@store/pokemon/pokemon.types';
 import { flexCenter } from '@styles/shared';
 import { calculateTextColor, mixColorsHex } from '@utils/colors';
 
-export const TYPE_BADGE_WIDTH = 60;
-
 export const BadgeText = styled.Text<{ pokemonType: PokemonType }>`
   ${({ theme, pokemonType }) => css`
-    font-size: ${theme.fontSize.caption};
+    font-size: ${theme.fontSize.caption}px;
     font-weight: ${theme.fontWeight.bold};
     color: ${calculateTextColor(
       mixColorsHex(
@@ -33,9 +31,12 @@ export const BadgeWrapper = styled(LinearGradient).attrs<{
 })<{
   pokemonType: PokemonType;
 }>`
-  width: ${TYPE_BADGE_WIDTH}px;
-  padding: 5px;
   border-radius: 5px;
-  ${({ theme }) => theme.shadow.strong.lg};
   ${flexCenter};
+
+  ${({ theme }) => css`
+    padding: ${theme.space.sm}px;
+    width: ${theme.size.lg}px;
+    ${theme.shadow.strong.lg};
+  `};
 `;

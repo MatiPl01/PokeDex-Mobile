@@ -10,6 +10,7 @@ const radius = {
 
 const createShadow = (radius: string, opacity: number, color: string) => {
   return css`
+    // TODO - fiz these TypeScript errors
     shadow-radius: ${radius};
     shadow-opacity: ${opacity};
     shadow-color: ${color};

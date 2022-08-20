@@ -1,6 +1,8 @@
 import axios from 'axios';
+import { API } from '@constants';
 import { SearchItem } from '@utils/search';
-import { API_URL, FETCH_SEARCH_ITEMS_LIMIT } from '@config';
+import { catchThrowAxiosError } from '@utils/errors';
+import { getImageExtensionFromUrl } from '@utils/files';
 import {
   Pokemon,
   PokemonResponse,
@@ -10,11 +12,9 @@ import {
   PokemonSearchItemsResponse,
   PokemonSearchItemResponse
 } from '@store/search/search.types';
-import { catchThrowAxiosError } from '@utils/errors';
-import { getImageExtensionFromUrl } from '@utils/files';
 
 export const getPokemonIdFromUrl = (url: string): string => {
-  return url.replace(`${API_URL}/pokemon`, '').replace(/\//g, '');
+  return url.replace(`${API.URL}/pokemon`, '').replace(/\//g, '');
 };
 
 export const getNextPokemonCountFromUrl = (url: string) => {
@@ -27,7 +27,7 @@ export const fetchPokemonSearchItems = catchThrowAxiosError(
     const results: SearchItem[] = [];
     let url:
       | string
-      | null = `${API_URL}/pokemon?offset=0&limit=${FETCH_SEARCH_ITEMS_LIMIT}`;
+      | null = `${API.URL}/pokemon?offset=0&limit=${API.FETCH_SEARCH_ITEMS_PER_BATCH}`;
 
     do {
       const res: PokemonSearchItemsResponse = (
@@ -63,7 +63,7 @@ export const fetchSinglePokemonDataByUrl = catchThrowAxiosError(
 
 export const fetchSinglePokemonDataById = catchThrowAxiosError(
   async (id: string): Promise<Pokemon> => {
-    const url = `${API_URL}/pokemon/${id}`;
+    const url = `${API.URL}/pokemon/${id}`;
     return await fetchSinglePokemonDataByUrl(url);
   }
 );
