@@ -6,11 +6,14 @@ import {
   FlatList,
   RefreshControl
 } from 'react-native';
-import ReAnimated, { useSharedValue, withTiming } from 'react-native-reanimated';
+import ReAnimated, {
+  useSharedValue,
+  withTiming
+} from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SIZE } from '@constants';
+import { SIZE, API } from '@constants';
 import { createAnimatedThemedStyle } from '@utils/reanimated';
 import {
   fetchNextPokemonBatchAsync,
@@ -50,7 +53,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const cardListRef = useRef<FlatList | null>(null);
   const LOGO_BAR_HEIGHT = theme.size.lg;
   const LIST_CONTAINER_HEIGHT = SIZE.SCREEN.HEIGHT - LOGO_BAR_HEIGHT;
-  const LIST_SEPARATOR_HEIGHT = theme.space.lg;
+  const LIST_SEPARATOR_HEIGHT = theme.space.xl;
   const LIST_ITEM_HEIGHT = CARD_HEIGHT + LIST_SEPARATOR_HEIGHT;
   // Data
   const pokemonList = useSelector(selectDisplayedPokemonList);
@@ -154,6 +157,8 @@ const PokemonList: React.FC<PokemonListProps> = ({
 
   const renderSeparator = () => <Separator height={LIST_SEPARATOR_HEIGHT} />;
 
+  console.log('rerender');
+
   return (
     <CardListWrapper>
       <CardList
@@ -165,8 +170,10 @@ const PokemonList: React.FC<PokemonListProps> = ({
         onViewableItemsChanged={handleVisibleCardsChange}
         onEndReachedThreshold={1}
         scrollEventThrottle={16}
-        updateCellsBatchingPeriod={200}
         maxToRenderPerBatch={8}
+        initialNumToRender={8}
+        updateCellsBatchingPeriod={100}
+        windowSize={41}
         ListFooterComponent={renderFooter}
         ListHeaderComponent={renderHeader}
         ItemSeparatorComponent={renderSeparator}
@@ -192,4 +199,4 @@ const PokemonList: React.FC<PokemonListProps> = ({
   );
 };
 
-export default PokemonList;
+export default React.memo(PokemonList);

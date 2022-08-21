@@ -262,10 +262,12 @@ export const createAnimatedStyles =
  * @returns            - a hook that creates animated style when called with the theme
  *                       object and the animation progress value
  */
-export const createAnimatedThemedStyle = (
-  themedConfig: (theme: DefaultTheme) => AnimatedStyleConfig
+export const createAnimatedThemedStyle = <T = void>(
+  themedConfig: (theme: DefaultTheme, customProp: T) => AnimatedStyleConfig
 ) =>
-  memoizeOne((theme: DefaultTheme) => createAnimatedStyle(themedConfig(theme)));
+  memoizeOne((theme: DefaultTheme, customProps: T) =>
+    createAnimatedStyle(themedConfig(theme, customProps))
+  );
 
 /**
  * Create multiple animated styles for multiple properties in the themed config object
@@ -273,9 +275,9 @@ export const createAnimatedThemedStyle = (
  * @param themedConfig - an object containing style names and themed config objects
  * @returns            - an object containing animated styles
  */
-export const createAnimatedThemedStyles = (
-  themedConfig: (theme: DefaultTheme) => AnimatedStylesConfig
+export const createAnimatedThemedStyles = <T = void>(
+  themedConfig: (theme: DefaultTheme, customProps: T) => AnimatedStylesConfig
 ) =>
-  memoizeOne((theme: DefaultTheme) =>
-    createAnimatedStyles(themedConfig(theme))
+  memoizeOne((theme: DefaultTheme, customProps: T) =>
+    createAnimatedStyles(themedConfig(theme, customProps))
   );

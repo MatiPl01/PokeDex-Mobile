@@ -26,9 +26,7 @@ export const SpinnerSvg = styled(Animated.createAnimatedComponent(Svg)).attrs({
   height: ${SPINNER_DIAMETER}px;
 `;
 
-export const SpinnerCircle = styled(
-  Animated.createAnimatedComponent(Circle)
-).attrs({
+export const SpinnerCircle = styled(Animated.createAnimatedComponent(Circle)).attrs({
   cx: SPINNER_DIAMETER / 2,
   cy: SPINNER_DIAMETER / 2,
   r: (SPINNER_DIAMETER - STROKE_WIDTH) / 2
@@ -38,6 +36,6 @@ export const SpinnerCircle = styled(
 
   ${({ theme }) => css`
     stroke: ${theme.color.accent.primary};
-    ${theme.shadow.medium.md};
+    ${theme.shadow.box.medium.md};
   `}
 `;

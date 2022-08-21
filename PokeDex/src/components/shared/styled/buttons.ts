@@ -16,7 +16,7 @@ export const RoundButtonWrapper = styled(Animated.View).attrs({
     height: ${size}px;
     border-radius: ${size}px;
     background-color: ${theme.color.accent.primary};
-    ${shadowed && theme.shadow.medium.md};
+    ${shadowed && theme.shadow.box.medium.md};
   `};
 `;
 

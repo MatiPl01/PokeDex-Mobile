@@ -15,7 +15,7 @@ export const BadgeText = styled.Text<{ pokemonType: PokemonType }>`
       ),
       150
     )};
-    ${theme.shadow.strong.sm};
+    ${theme.shadow.text.strong.sm};
   `};
 `;
 
@@ -37,6 +37,6 @@ export const BadgeWrapper = styled(LinearGradient).attrs<{
   ${({ theme }) => css`
     padding: ${theme.space.sm}px;
     width: ${theme.size.lg}px;
-    ${theme.shadow.strong.lg};
+    ${theme.shadow.box.strong.lg};
   `};
 `;

@@ -21,6 +21,6 @@ export const ButtonIcon = styled(
 }))`
   ${({ theme }) => css`
     color: ${theme.color.white};
-    ${theme.shadow.strong.md};
+    ${theme.shadow.box.strong.md};
   `};
 `;

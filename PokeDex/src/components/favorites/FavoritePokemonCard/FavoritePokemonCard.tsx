@@ -92,15 +92,17 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
               />
             ))}
           </BackgroundGradientsWrapper>
-          <PokemonImageWrapper>
+        </RoundedBackgroundClip>
+        <PokemonImageWrapper>
+          {!isLoading && (
             <PokemonCardImage
               width={0.75 * width}
               height={0.65 * width}
               extension={imageExtension}
               imageUrl={imageUrl}
             />
-          </PokemonImageWrapper>
-        </RoundedBackgroundClip>
+          )}
+        </PokemonImageWrapper>
       </BackgroundWrapper>
       <CardFooter>
         <CardTitle>{name}</CardTitle>

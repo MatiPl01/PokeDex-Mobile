@@ -37,7 +37,7 @@ const StyledTextInput = styled.TextInput`
     border: 1px solid ${theme.color.text.tertiary};
     background-color: ${theme.color.background.secondary};
     color: ${theme.color.text.primary};
-    ${theme.shadow.soft.sm};
+    ${theme.shadow.text.soft.sm};
   `};
 `;
 

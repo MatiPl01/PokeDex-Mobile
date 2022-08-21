@@ -110,7 +110,10 @@ declare module 'styled-components/native' {
     color: ThemeColors;
     fontWeight: ThemeFontWeights;
     fontSize: ThemeFontSizes;
-    shadow: ThemeShadows;
+    shadow: {
+      box: ThemeShadows;
+      text: ThemeShadows;
+    };
     size: ThemeSizes;
     lineHeight: ThemeLineHeights;
     space: ThemeSpaces;

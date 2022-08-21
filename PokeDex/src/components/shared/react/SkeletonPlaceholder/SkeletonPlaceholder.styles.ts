@@ -6,7 +6,7 @@ import { absoluteFill } from '@styles/shared';
 export const GradientWrapper = styled.View`
   border-radius: 5px;
   overflow: hidden;
-  z-index: 1;
+  z-index: 10;
   ${absoluteFill}
 
   ${({ theme }) => css`
