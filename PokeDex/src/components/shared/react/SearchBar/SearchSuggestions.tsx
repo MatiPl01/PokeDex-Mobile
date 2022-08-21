@@ -138,7 +138,6 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
         duration: 200
       })
     );
-    console.log({ showScrollTopButton });
   }, [lastVisibleItemIdx]);
 
   useEffect(() => {

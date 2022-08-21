@@ -77,7 +77,6 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
       duration: 300,
       easing: Easing.bezier(0.4, 0, 0.9, 0.65)
     });
-    console.log({ id, deletable, deleteButtonAnimationProgress });
   }, [deletable]);
 
   return (

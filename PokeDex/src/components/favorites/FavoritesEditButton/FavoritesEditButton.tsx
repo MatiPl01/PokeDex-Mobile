@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from 'styled-components';
 import { useSharedValue, withTiming, Easing } from 'react-native-reanimated';
+import { ANIMATION } from '@constants';
 import {
   AnimatedStyleConfig,
   createAnimatedStyles,
@@ -11,7 +12,7 @@ import { TouchableWrapper } from '@components/shared/styled/buttons';
 import { Icon, ButtonWrapper } from './FavoritesEditButton.styles';
 
 const ANIMATION_CONFIG = {
-  duration: 500,
+  duration: ANIMATION.DURATION.FAVORITES_EDIT,
   easing: Easing.bezier(0.4, 0, 0.9, 0.65)
 };
 

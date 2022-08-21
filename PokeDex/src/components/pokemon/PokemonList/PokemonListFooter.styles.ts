@@ -1,9 +1,9 @@
 import styled, { css } from 'styled-components/native';
 import { flexCenter } from '@styles/shared';
-import { SCREEN } from '@constants';
+import { SIZE } from '@constants';
 
 export const FooterWrapper = styled.View`
-  height: ${SCREEN.WIDTH / 2}px;
+  height: ${SIZE.SCREEN.WIDTH / 2}px;
   ${flexCenter};
 `;
 

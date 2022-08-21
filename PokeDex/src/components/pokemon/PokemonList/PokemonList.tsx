@@ -10,7 +10,7 @@ import ReAnimated, { useSharedValue, withTiming } from 'react-native-reanimated'
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SCREEN } from '@constants';
+import { SIZE } from '@constants';
 import { createAnimatedThemedStyle } from '@utils/reanimated';
 import {
   fetchNextPokemonBatchAsync,
@@ -49,7 +49,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const edges = useSafeAreaInsets();
   const cardListRef = useRef<FlatList | null>(null);
   const LOGO_BAR_HEIGHT = theme.size.lg;
-  const LIST_CONTAINER_HEIGHT = SCREEN.HEIGHT - LOGO_BAR_HEIGHT;
+  const LIST_CONTAINER_HEIGHT = SIZE.SCREEN.HEIGHT - LOGO_BAR_HEIGHT;
   const LIST_SEPARATOR_HEIGHT = theme.space.lg;
   const LIST_ITEM_HEIGHT = CARD_HEIGHT + LIST_SEPARATOR_HEIGHT;
   // Data

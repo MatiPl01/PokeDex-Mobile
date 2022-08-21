@@ -1,13 +1,14 @@
-import { Vector2D } from '@types';
+import { Vector2D, Padding, Complete } from '@types';
 
 export type GridConfig = {
   columnCount: number;
   rowCount: number;
-  itemsCount: number;
+  itemCount: number;
   itemHeight: number;
   itemWidth: number;
   rowGap: number;
   columnGap: number;
+  padding: Complete<Padding>;
 };
 
 type RowHeightDataType = { itemHeight?: number } | { itemRatio?: number };
@@ -33,12 +34,12 @@ export const calcRowHeight = (itemWidth: number, data: RowHeightDataType) => {
 
 export const getItemPosition = (
   order: number,
-  { columnCount, rowGap, columnGap, itemWidth, itemHeight }: GridConfig
+  { columnCount, rowGap, columnGap, itemWidth, itemHeight, padding }: GridConfig
 ) => {
   'worklet';
   return {
-    x: (order % columnCount) * (itemWidth + columnGap),
-    y: Math.floor(order / columnCount) * (itemHeight + rowGap)
+    x: padding.left + (order % columnCount) * (itemWidth + columnGap),
+    y: padding.top + Math.floor(order / columnCount) * (itemHeight + rowGap)
   };
 };
 
@@ -47,6 +48,7 @@ export const getItemOrder = (
   {
     columnCount,
     rowCount,
+    itemCount,
     rowGap,
     columnGap,
     itemWidth,
@@ -68,7 +70,7 @@ export const getItemOrder = (
       rowCount - 1
     )
   );
-  return rowIdx * columnCount + colIdx;
+  return Math.min(rowIdx * columnCount + colIdx, itemCount - 1);
 };
 
 export const getItemDropPosition = (
