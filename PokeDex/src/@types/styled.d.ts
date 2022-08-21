@@ -58,6 +58,16 @@ declare module 'styled-components/native' {
       dark: PokemonTypeColor;
       fairy: PokemonTypeColor;
     };
+    dayNightSwitch: {
+      day: {
+        primary: string;
+        secondary: string;
+      };
+      night: {
+        primary: string;
+        secondary: string;
+      };
+    };
   };
 
   export type ThemeFontWeights = {

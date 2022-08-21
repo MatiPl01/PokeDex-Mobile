@@ -13,6 +13,7 @@ import {
   Button,
   ButtonText
 } from './SettingsScreen.styles';
+import DayNightSwitch from '@components/settings/DayNightSwitch/DayNightSwitch';
 
 const ThemeTestScreen: React.FC = () => {
   const dispatch = useDispatch();
@@ -27,9 +28,7 @@ const ThemeTestScreen: React.FC = () => {
     await AsyncStorage.setItem('@theme-name', themeName);
   });
 
-  const toggleThemeMode = () => {
-    const newThemeMode =
-      themeMode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK;
+  const switchThemeMode = (newThemeMode: ThemeMode) => {
     dispatch(setThemeMode(newThemeMode));
     saveThemeMode(newThemeMode);
   };
@@ -43,15 +42,16 @@ const ThemeTestScreen: React.FC = () => {
 
   return (
     <Container>
+      <DayNightSwitch onChange={switchThemeMode} />
       <TextContainer>
         <Text>Switching theme with Redux</Text>
       </TextContainer>
 
-      <Button onPress={toggleThemeMode}>
+      {/* <Button onPress={switchThemeMode}>
         <ButtonText>
           Change to {themeMode === ThemeMode.DARK ? 'light' : 'dark'} mode
         </ButtonText>
-      </Button>
+      </Button> */}
 
       <Button onPress={switchTheme}>
         <ButtonText>
