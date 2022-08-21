@@ -1,128 +1,82 @@
-import { Padding, Vector2D } from '@types';
+import { Vector2D, Padding, Complete } from '@types';
 
 export type GridConfig = {
   columnCount: number;
-  itemsCount: number;
-  itemSize: number;
-  gap: number;
-  padding: Padding;
+  rowCount: number;
+  itemCount: number;
+  itemHeight: number;
+  itemWidth: number;
+  rowGap: number;
+  columnGap: number;
+  padding: Complete<Padding>;
+};
+
+type RowHeightDataType = { itemHeight?: number } | { itemRatio?: number };
+
+const isItemHeightSpecified = (
+  data: RowHeightDataType
+): data is { itemHeight?: number } => {
+  return Object.prototype.hasOwnProperty.call(data, 'itemHeight');
+};
+
+const isItemRatioSpecified = (
+  data: RowHeightDataType
+): data is { itemRatio?: number } => {
+  return Object.prototype.hasOwnProperty.call(data, 'itemRatio');
+};
+
+export const calcRowHeight = (itemWidth: number, data: RowHeightDataType) => {
+  if (isItemHeightSpecified(data) && data.itemHeight) return data.itemHeight;
+  if (isItemRatioSpecified(data) && data.itemRatio)
+    return data.itemRatio * itemWidth;
+  return itemWidth;
 };
 
 export const getItemPosition = (
   order: number,
-  { columnCount, gap, padding, itemSize }: GridConfig
+  { columnCount, rowGap, columnGap, itemWidth, itemHeight, padding }: GridConfig
 ) => {
   'worklet';
-  const mul = gap + itemSize;
   return {
-    x: (padding.left || 0) + (order % columnCount) * mul,
-    y: (padding.top || 0) + Math.floor(order / columnCount) * mul
-  };
-};
-
-export const getItemDragPosition = (
-  order: number,
-  translate: Vector2D,
-  gridConfig: GridConfig
-) => {
-  'worklet';
-  const initialPosition = getItemPosition(order, gridConfig);
-  return {
-    x: initialPosition.x + translate.x,
-    y: initialPosition.y + translate.y
+    x: padding.left + (order % columnCount) * (itemWidth + columnGap),
+    y: padding.top + Math.floor(order / columnCount) * (itemHeight + rowGap)
   };
 };
 
 export const getItemOrder = (
   { x, y }: Vector2D,
-  { columnCount, padding, itemSize, gap }: GridConfig
+  {
+    columnCount,
+    rowCount,
+    itemCount,
+    rowGap,
+    columnGap,
+    itemWidth,
+    itemHeight
+  }: GridConfig
 ) => {
   'worklet';
-  const div = gap + itemSize;
-  const colIdx = Math.floor(
-    (x - (padding.left || 0) + (itemSize + gap) / 2) / div
+  const colIdx = Math.max(
+    0,
+    Math.min(
+      Math.floor((x + (itemWidth + columnGap) / 2) / (itemWidth + columnGap)),
+      columnCount - 1
+    )
   );
-  const rowIdx = Math.floor(
-    (y - (padding.top || 0) + (itemSize + gap) / 2) / div
+  const rowIdx = Math.max(
+    0,
+    Math.min(
+      Math.floor((y + (itemHeight + rowGap) / 2) / (itemHeight + rowGap)),
+      rowCount - 1
+    )
   );
-  return rowIdx * columnCount + colIdx;
+  return Math.min(rowIdx * columnCount + colIdx, itemCount - 1);
 };
 
-export const getItemTargetOrder = (
-  order: number,
-  translate: Vector2D,
+export const getItemDropPosition = (
+  dragPosition: Vector2D,
   gridConfig: GridConfig
 ) => {
   'worklet';
-  return getItemOrder(
-    getItemDragPosition(order, translate, gridConfig),
-    gridConfig
-  );
-};
-
-export const getItemTargetPosition = (
-  order: number,
-  translate: Vector2D,
-  gridConfig: GridConfig
-) => {
-  'worklet';
-  return getItemPosition(
-    getItemTargetOrder(order, translate, gridConfig),
-    gridConfig
-  );
-};
-
-export const getTranslation = (
-  initialPosition: Vector2D,
-  targetPosition: Vector2D
-) => {
-  'worklet';
-  return {
-    x: targetPosition.x - initialPosition.x,
-    y: targetPosition.y - initialPosition.y
-  };
-};
-
-export const getTranslationToTarget = (
-  order: number,
-  translate: Vector2D,
-  gridConfig: GridConfig
-) => {
-  'worklet';
-  const initialPosition = getItemPosition(order, gridConfig);
-  const targetPosition = getItemTargetPosition(order, translate, gridConfig);
-  return getTranslation(initialPosition, targetPosition);
-};
-
-export const getItemDropOrder = (
-  currentOrder: number,
-  translate: Vector2D,
-  { columnCount, itemsCount, gap, padding, itemSize }: GridConfig
-) => {
-  'worklet';
-  const div = gap + itemSize;
-  const deltaRow = Math.floor(
-    (translate.y - (padding.top || 0) + (itemSize + gap) / 2) / div
-  );
-  const deltaCol = Math.floor(
-    (translate.x - (padding.left || 0) + (itemSize + gap) / 2) / div
-  );
-  const currRow = Math.floor(currentOrder / 2);
-  const currCol = currentOrder % 2;
-  const rowsCount = Math.ceil(itemsCount / columnCount);
-  const newRowIdx = Math.min(Math.max(0, currRow + deltaRow), rowsCount - 1);
-  const newColIdx = Math.min(Math.max(0, currCol + deltaCol), columnCount - 1);
-  return Math.min(newRowIdx * columnCount + newColIdx, itemsCount - 1);
-};
-
-export const getDistanceBetweenItems = (
-  order1: number,
-  order2: number,
-  gridConfig: GridConfig
-) => {
-  'worklet';
-  return getTranslation(
-    getItemPosition(order1, gridConfig),
-    getItemPosition(order2, gridConfig)
-  );
+  return getItemPosition(getItemOrder(dragPosition, gridConfig), gridConfig);
 };

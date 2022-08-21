@@ -2,7 +2,7 @@ import React, { useEffect, PropsWithChildren } from 'react';
 import { useTheme } from 'styled-components';
 import { useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SCREEN } from '@constants';
+import { SIZE, ANIMATION } from '@constants';
 import { createAnimatedStyle, createAnimatedStyles } from '@utils/reanimated';
 import PokeBall from '@assets/svg/poke-ball.svg';
 import Logo from '@assets/svg/logo.svg';
@@ -12,12 +12,6 @@ import {
   AbsoluteView,
   ContentContainer
 } from './SplashScreen.styles';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-
-const SPLASH_SCREEN_ANIMATION_DELAY = 500;
-const MENU_TOGGLE_ANIMATION_DURATION = 500;
-const SPLASH_SCREEN_ANIMATION_DURATION = 1000;
-const MENU_TOGGLE_ANIMATION_DELAY = SPLASH_SCREEN_ANIMATION_DURATION;
 
 type SplashScreenProps = PropsWithChildren<{
   menuToggle: React.ReactNode;
@@ -33,7 +27,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
   const LOGO_BAR_HEIGHT = theme.size.lg;
   const LOGO_BAR_PADDING_X = theme.space.sm;
   const LOGO_BAR_PADDING_Y = theme.space.sm;
-  const POKE_BALL_SIZE = SCREEN.WIDTH / 2;
+  const POKE_BALL_SIZE = SIZE.SCREEN.WIDTH / 2;
   const FINAL_POKE_BALL_SIZE = LOGO_BAR_HEIGHT - 2 * LOGO_BAR_PADDING_Y;
   const FINAL_LOGO_HEIGHT = FINAL_POKE_BALL_SIZE;
   const MENU_TOGGLE_SIZE = theme.size.lg - 2 * theme.space.lg;
@@ -44,12 +38,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
   const animatedSplashScreenStyles = createAnimatedStyles({
     overlay: {
       transform: [
-        { translateY: [0, -SCREEN.HEIGHT + LOGO_BAR_HEIGHT + edges.top] }
+        { translateY: [0, -SIZE.SCREEN.HEIGHT + LOGO_BAR_HEIGHT + edges.top] }
       ]
     },
     content: {
       transform: [
-        { translateY: [SCREEN.HEIGHT - LOGO_BAR_HEIGHT - edges.top, 0] }
+        { translateY: [SIZE.SCREEN.HEIGHT - LOGO_BAR_HEIGHT - edges.top, 0] }
       ]
     },
     pokeBall: {
@@ -57,13 +51,15 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
         {
           translateX: [
             0,
-            SCREEN.WIDTH / 2 - FINAL_POKE_BALL_SIZE / 2 - LOGO_BAR_PADDING_X
+            SIZE.SCREEN.WIDTH / 2 -
+              FINAL_POKE_BALL_SIZE / 2 -
+              LOGO_BAR_PADDING_X
           ]
         },
         {
           translateY: [
             -POKE_BALL_SIZE / 2,
-            SCREEN.HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
+            SIZE.SCREEN.HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
           ]
         },
         {
@@ -76,7 +72,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
         {
           translateY: [
             LOGO_HEIGHT / 2,
-            SCREEN.HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
+            SIZE.SCREEN.HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
           ]
         },
         {
@@ -92,26 +88,26 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
 
   useEffect(() => {
     splashScreenAnimationProgress.value = withDelay(
-      SPLASH_SCREEN_ANIMATION_DELAY,
+      ANIMATION.DELAY.SPLASH_SCREEN,
       withTiming(1, {
-        duration: SPLASH_SCREEN_ANIMATION_DURATION
+        duration: ANIMATION.DURATION.SPLASH_SCREEN
       })
     );
     menuToggleAnimationProgress.value = withDelay(
-      MENU_TOGGLE_ANIMATION_DELAY,
-      withTiming(1, { duration: MENU_TOGGLE_ANIMATION_DURATION })
+      ANIMATION.DELAY.MENU_TOGGLE,
+      withTiming(1, { duration: ANIMATION.DURATION.MENU_TOGGLE })
     );
   }, []);
 
   return (
     <>
-      <InnerWrapper height={SCREEN.HEIGHT}>
+      <InnerWrapper height={SIZE.SCREEN.HEIGHT}>
         <Overlay style={animatedSplashScreenStyles.overlay}>
           <AbsoluteView style={animatedSplashScreenStyles.pokeBall}>
             <PokeBall height={POKE_BALL_SIZE} width={POKE_BALL_SIZE} />
           </AbsoluteView>
           <AbsoluteView style={animatedSplashScreenStyles.logo}>
-            <Logo height={LOGO_HEIGHT} width={SCREEN.WIDTH} />
+            <Logo height={LOGO_HEIGHT} width={SIZE.SCREEN.WIDTH} />
           </AbsoluteView>
           <AbsoluteView
             style={[
@@ -119,7 +115,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
                 height: MENU_TOGGLE_SIZE,
                 width: MENU_TOGGLE_SIZE,
                 top:
-                  SCREEN.HEIGHT -
+                  SIZE.SCREEN.HEIGHT -
                   MENU_TOGGLE_SIZE / 2 +
                   LOGO_BAR_PADDING_Y -
                   edges.top,

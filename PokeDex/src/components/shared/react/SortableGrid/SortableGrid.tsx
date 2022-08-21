@@ -1,26 +1,40 @@
-import React, { ComponentType, useEffect } from 'react';
-import { FlatListProps, ListRenderItem } from 'react-native';
-import { runOnJS, useSharedValue } from 'react-native-reanimated';
-import { SCREEN } from '@constants';
+import React, { useEffect } from 'react';
+import Animated, {
+  runOnJS,
+  useAnimatedRef,
+  useAnimatedScrollHandler,
+  useSharedValue,
+  withTiming
+} from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SIZE, ANIMATION } from '@constants';
 import { Padding } from '@types';
-import { Separator } from '@components/shared/styled/layout';
-import { GridConfig } from './sortableGrid.utils';
-import { GridFlatList } from './SortableGrid.styles';
+import { GridConfig, calcRowHeight } from './sortableGrid.utils';
 import SortableGridItem from './SortableGridItem';
+import { GridItemsWrapper } from './SortableGrid.styles';
+import { createAnimatedStyle } from '@utils/reanimated';
+
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+type GridInputComponent =
+  | React.ComponentType<any>
+  | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+  | null;
 
 type SortableGridProps<T> = {
   data: T[];
+  renderItem: (data: { item: T; width: number; height: number }) => JSX.Element;
   keyExtractor: (item: T, index: number) => string;
-  renderItem: ({ item, size }: { item: T; size: number }) => JSX.Element;
   columnCount?: number;
   padding?: Padding;
-  gap?: number;
+  rowGap?: number;
+  columnGap?: number;
   editable?: boolean;
-  GridHeaderComponent?: React.ReactNode;
-  GridFooterComponent?: React.ReactNode;
+  editablePaddingTop?: number;
+  GridHeaderComponent?: GridInputComponent;
+  GridFooterComponent?: GridInputComponent;
   onDragEnd?: (data: T[]) => void;
   onEndReached?: () => void;
-};
+} & ({ itemHeight?: number } | { itemRatio?: number });
 
 const SortableGrid = <T extends object>({
   data,
@@ -30,30 +44,68 @@ const SortableGrid = <T extends object>({
   onEndReached,
   GridHeaderComponent,
   GridFooterComponent,
-  editable = false,
+  rowGap = 0,
+  columnGap = 0,
   columnCount = 1,
-  gap = 0,
-  padding: desiredPadding = {}
+  editable = false,
+  editablePaddingTop = 0,
+  padding: desiredPadding = {},
+  ...restProps
 }: SortableGridProps<T>) => {
+  const edges = useSafeAreaInsets();
   const padding = { top: 0, right: 0, left: 0, bottom: 0, ...desiredPadding };
-  const itemSize =
-    (SCREEN.WIDTH - (columnCount - 1) * gap - padding.left - padding.right) /
+  const itemWidth =
+    (SIZE.SCREEN.WIDTH -
+      (columnCount - 1) * columnGap -
+      padding.left -
+      padding.right) /
     columnCount;
+  const rowCount = Math.ceil(data.length / columnCount);
+  const rowHeight = calcRowHeight(itemWidth, restProps);
+  const gridHeight =
+    rowCount * rowHeight +
+    (rowCount - 1) * rowGap +
+    padding.top +
+    padding.bottom;
+  const contentHeight = SIZE.SCREEN.HEIGHT - SIZE.LOGO_BAR.HEIGHT - edges.top;
   const config: GridConfig = {
-    padding,
-    itemSize,
-    gap,
+    itemHeight: rowHeight,
+    itemWidth,
+    rowGap,
+    columnGap,
     columnCount,
-    itemsCount: data.length
+    rowCount,
+    padding,
+    itemCount: data.length
   };
-
+  const scrollY = useSharedValue(0);
+  const maxScroll = useSharedValue(0);
+  const scrollViewHeight = useSharedValue(0);
+  const editableAnimationProgress = useSharedValue(0);
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const itemsOrder = useSharedValue<{ [key: string]: number }>({});
+
+  const animatedEditablePaddingTopStyle = createAnimatedStyle({
+    height: [0, editablePaddingTop]
+  })(editableAnimationProgress);
 
   useEffect(() => {
     itemsOrder.value = Object.fromEntries(
       data.map((item, index) => [keyExtractor(item, index), index])
     );
   }, [data]);
+
+  useEffect(() => {
+    scrollViewHeight.value = gridHeight;
+    maxScroll.value = gridHeight - contentHeight;
+    if (editable) {
+      scrollViewHeight.value += editablePaddingTop;
+      maxScroll.value += editablePaddingTop;
+    }
+    editableAnimationProgress.value = withTiming(+editable, {
+      duration: ANIMATION.DURATION.FAVORITES_EDIT
+    });
+  }, [editable]);
 
   const getNewOrderData = () => {
     const newData: T[] = [];
@@ -89,53 +141,60 @@ const SortableGrid = <T extends object>({
     runOnJS(callOnDragEnd)();
   };
 
-  const renderGridItem: ListRenderItem<T> = ({
-    item,
-    index
-  }: {
-    item: T;
-    index: number;
-  }) => (
-    <SortableGridItem
-      itemKey={keyExtractor(item, index)}
-      itemsOrder={itemsOrder}
-      size={itemSize}
-      gap={gap}
-      gridConfig={config}
-      onDragStart={handleItemDragStart}
-      onDragEnd={handleItemDragEnd}
-      onOrderChange={handleOrderChange}
-      draggable={editable}
-    >
-      {renderItem({ item, size: itemSize })}
-    </SortableGridItem>
-  );
+  const handleScroll = useAnimatedScrollHandler({
+    onScroll: ({ contentOffset: { y } }) => {
+      scrollY.value = y;
+      if (onEndReached && y === maxScroll.value) runOnJS(onEndReached)();
+    }
+  });
+
+  const renderGridHeader = () =>
+    GridHeaderComponent instanceof Function ? (
+      <GridHeaderComponent />
+    ) : (
+      GridHeaderComponent
+    );
+
+  const renderGridFooter = () =>
+    GridFooterComponent instanceof Function ? (
+      <GridFooterComponent />
+    ) : (
+      GridFooterComponent
+    );
+
+  const renderGridItem = (item: T, index: number) => {
+    const key = keyExtractor(item, index);
+
+    return (
+      <SortableGridItem
+        key={key}
+        itemKey={key}
+        gridConfig={config}
+        itemsOrder={itemsOrder}
+        scrollY={scrollY}
+        maxScroll={maxScroll}
+        editablePaddingTop={editablePaddingTop}
+        contentHeight={contentHeight}
+        scrollViewRef={scrollViewRef}
+        onDragStart={handleItemDragStart}
+        onDragEnd={handleItemDragEnd}
+        onOrderChange={handleOrderChange}
+        draggable={editable}
+      >
+        {renderItem({ item, width: itemWidth, height: rowHeight })}
+      </SortableGridItem>
+    );
+  };
 
   return (
-    <GridFlatList<ComponentType<FlatListProps<T>>>
-      data={data}
-      keyExtractor={(item: T, idx: number) => keyExtractor(item, idx)}
-      renderItem={renderGridItem}
-      numColumns={columnCount}
-      // Padding object cannot be passed as a property of the styled
-      // component because it results in NSMutableDictionary error (that's
-      // why I decided to specify paddingX and paddingY separately)
-      maxToRenderPerBatch={12}
-      onEndReached={onEndReached}
-      ListHeaderComponent={
-        <>
-          <Separator height={padding.top} />
-          {GridHeaderComponent}
-        </>
-      }
-      ListFooterComponent={
-        <>
-          {GridFooterComponent}
-          <Separator height={padding.bottom} />
-        </>
-      }
-      style={{ paddingLeft: padding.left, paddingRight: padding.right }}
-    />
+    <Animated.ScrollView onScroll={handleScroll} ref={scrollViewRef}>
+      {renderGridHeader()}
+      <Animated.View style={animatedEditablePaddingTopStyle} />
+      <GridItemsWrapper height={gridHeight}>
+        {data.map((item, idx) => renderGridItem(item, idx))}
+      </GridItemsWrapper>
+      {renderGridFooter()}
+    </Animated.ScrollView>
   );
 };
 

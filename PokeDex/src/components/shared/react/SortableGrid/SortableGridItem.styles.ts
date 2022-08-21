@@ -1,32 +1,27 @@
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
-import { absoluteFill } from '@styles/shared';
 import { hexToRGBAlphaCSS } from '@utils/colors';
 
-export const GridItemWrapper = styled.View<{
-  size: number;
-  gap: number;
+const AbsoluteWrapper = styled(Animated.View)<{
+  width: number;
+  height: number;
 }>`
-  position: relative;
+  position: absolute;
 
-  ${({ size, gap }) => css`
-    width: ${size}px;
-    height: ${size}px;
-    margin-right: ${gap}px;
-    margin-bottom: ${gap}px;
+  ${({ width, height }) => css`
+    width: ${width}px;
+    height: ${height}px;
   `};
 `;
 
-export const ItemDropIndicator = styled(Animated.View)`
+export const AnimatedItemWrapper = AbsoluteWrapper;
+
+export const ItemDropIndicator = styled(AbsoluteWrapper)`
   border-radius: 5px;
-  ${absoluteFill};
+  z-index: -1;
 
   ${({ theme }) => css`
     background-color: ${hexToRGBAlphaCSS(theme.color.background.tertiary, 0.5)};
     border: 3px dashed ${theme.color.text.tertiary};
   `}
-`;
-
-export const AnimatedItemWrapper = styled(Animated.View)`
-  ${absoluteFill};
 `;

@@ -1,18 +1,18 @@
 import styled, { css } from 'styled-components/native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Animated } from 'react-native';
-import { SCREEN } from '@constants';
+import { SIZE } from '@constants';
 import { flexCenter } from '@styles/shared';
 import { PokemonType } from '@store/pokemon/pokemon.types';
 import { CardFooter as DefaultCardFooter } from '@components/shared/styled/cards';
 import { BackgroundGradientsWrapper as DefaultBackgroundGradientsWrapper } from '@components/shared/styled/backgrounds';
 
-const BACKGROUND_HEIGH = 0.4 * SCREEN.WIDTH;
+const BACKGROUND_HEIGH = 0.4 * SIZE.SCREEN.WIDTH;
 const FOOTER_HEIGHT = 85;
 const BACKGROUND_TEXT_WRAPPER_WIDTH = 1000; // Some really big value
 const CARD_WIDTH = 300;
 const GRADIENTS_WRAPPER_WIDTH = 1.2 * CARD_WIDTH;
-export const MAX_IMAGE_WIDTH = 0.4 * SCREEN.WIDTH;
+export const MAX_IMAGE_WIDTH = 0.4 * SIZE.SCREEN.WIDTH;
 export const MAX_IMAGE_HEIGHT = BACKGROUND_HEIGH;
 export const CARD_HEIGHT = BACKGROUND_HEIGH + FOOTER_HEIGHT;
 
@@ -46,7 +46,7 @@ export const BackgroundText = styled.Text`
   opacity: 0.3;
   text-transform: uppercase;
   transform: skew(-10deg, -5deg);
-  font-size: ${SCREEN.WIDTH / 7}px;
+  font-size: ${SIZE.SCREEN.WIDTH / 7}px;
 
   ${({ theme }) => css`
     color: ${theme.color.background.primary};

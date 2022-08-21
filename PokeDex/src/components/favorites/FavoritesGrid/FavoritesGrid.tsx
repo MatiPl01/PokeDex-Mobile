@@ -16,10 +16,6 @@ import { RootState } from '@store';
 import FavoritePokemonCard from '@components/favorites/FavoritePokemonCard/FavoritePokemonCard';
 import SortableGrid from '@components/shared/react/SortableGrid/SortableGrid';
 
-const useAnimatedGridHeaderStyle = createAnimatedThemedStyle(theme => ({
-  height: [0, theme.space.lg + theme.size.lg]
-}));
-
 type FavoritesGridProps = {
   editable?: boolean;
 };
@@ -45,10 +41,6 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
     right: PADDING,
     bottom: PADDING
   };
-
-  const animatedGridHeaderStyle = useAnimatedGridHeaderStyle(theme)(
-    gridHeaderAnimationProgress
-  );
 
   useEffect(() => {
     // TODO - make this useEffect run after refreshing Pokemon list (pull to refresh)
@@ -81,16 +73,16 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
 
   const renderItem = ({
     item: { pokemon, isLoading },
-    size
+    width
   }: {
     item: SinglePokemonState;
-    size: number;
+    width: number;
   }) => {
     return (
       <FavoritePokemonCard
         pokemon={pokemon}
         isLoading={isLoading}
-        width={size}
+        width={width}
         deletable={editable}
         onDelete={handleFavoriteDelete}
       />
@@ -98,17 +90,18 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   };
 
   return (
-    <SortableGrid
+    <SortableGrid<SinglePokemonState>
       data={favoritesStates}
       keyExtractor={({ id }) => id}
       renderItem={renderItem}
       columnCount={2}
       padding={padding}
-      gap={GRID_GAP}
+      rowGap={GRID_GAP}
+      columnGap={GRID_GAP}
       onDragEnd={updateFavoritesOrder}
       editable={editable}
       onEndReached={() => console.log('end reached')} // TODO - replace fetching all Pokemon at once with fetching groups of Pokemon (similarly to the Pokemon screen)
-      GridHeaderComponent={<Animated.View style={animatedGridHeaderStyle} />}
+      editablePaddingTop={theme.size.lg + theme.space.lg}
     />
   );
 };

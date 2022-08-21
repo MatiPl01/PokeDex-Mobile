@@ -1,11 +1,11 @@
 import styled from 'styled-components/native';
 import Animated from 'react-native-reanimated';
-import { SCREEN } from '@constants';
+import { SIZE } from '@constants';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 
 export const FINAL_SCREEN_SCALE = 0.75;
-const DRAWER_HEIGHT = FINAL_SCREEN_SCALE * SCREEN.HEIGHT;
-const DRAWER_PADDING_Y = (SCREEN.HEIGHT - DRAWER_HEIGHT) / 2;
+const DRAWER_HEIGHT = FINAL_SCREEN_SCALE * SIZE.SCREEN.HEIGHT;
+const DRAWER_PADDING_Y = (SIZE.SCREEN.HEIGHT - DRAWER_HEIGHT) / 2;
 
 const StyledDrawerContentScrollView = styled(DrawerContentScrollView)`
   padding-top: ${DRAWER_PADDING_Y}px;

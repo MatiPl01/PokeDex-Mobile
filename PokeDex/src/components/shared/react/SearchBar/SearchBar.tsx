@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 // TODO - debug this app on an actual device and calculate the number of suggestions based on the available space after the keyboard is displayed
 // import { useKeyboard } from '@react-native-community/hooks';
-import { SCREEN, ANIMATION } from '@constants';
+import { SIZE, ANIMATION } from '@constants';
 import {
   createAnimatedStyle,
   createAnimatedStyles,
@@ -60,7 +60,7 @@ const useAnimatedInputIconStyles = createAnimatedStyles({
 
 const useAnimatedFocusStyles = createAnimatedThemedStyles(theme => ({
   wrapper: {
-    width: [SCREEN.WIDTH - 2 * theme.space.lg, SCREEN.WIDTH],
+    width: [SIZE.SCREEN.WIDTH - 2 * theme.space.lg, SIZE.SCREEN.WIDTH],
     left: [theme.space.lg, 0],
     top: [theme.space.lg, 0],
     paddingTop: [(theme.size.lg - theme.size.md) / 2, 0],
@@ -76,7 +76,7 @@ const useAnimatedFocusStyles = createAnimatedThemedStyles(theme => ({
 
 const useToggleStyles = createAnimatedThemedStyles(theme => ({
   wrapper: {
-    width: [0, SCREEN.WIDTH - 2 * theme.space.lg]
+    width: [0, SIZE.SCREEN.WIDTH - 2 * theme.space.lg]
   },
   button: {
     right: [-theme.size.lg / 2, 0]

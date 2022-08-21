@@ -1,6 +1,7 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, RefObject, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { Vector2D } from '@types';
+import { ANIMATION } from '@constants';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent
@@ -12,31 +13,31 @@ import Animated, {
   withTiming,
   useAnimatedReaction,
   SharedValue,
-  interpolate
+  interpolate,
+  scrollTo
 } from 'react-native-reanimated';
 import {
   GridConfig,
-  getItemDropOrder,
-  getDistanceBetweenItems
+  getItemOrder,
+  getItemPosition,
+  getItemDropPosition
 } from './sortableGrid.utils';
 import {
-  GridItemWrapper,
   ItemDropIndicator,
   AnimatedItemWrapper
 } from './SortableGridItem.styles';
 
-const DROP_ANIMATION_DURATION = 500;
-const MOVE_ANIMATION_DURATION = 250;
-
-type DragContext = {
-  startTranslation: Vector2D;
-  dropTranslation: Vector2D;
-  startOrder: number;
-  currOrder: number;
-  dropOrder: number;
+const keepInRange = (value: number, range: [number, number]): number => {
+  'worklet';
+  return Math.max(range[0], Math.min(range[1], value));
 };
 
-type AnimatedTranslation = {
+type DragContext = {
+  startPosition: Vector2D;
+  dropPosition: Vector2D;
+};
+
+type AnimatedPosition = {
   x: SharedValue<number>;
   y: SharedValue<number>;
 };
@@ -44,8 +45,11 @@ type AnimatedTranslation = {
 type SortableGridItemProps = PropsWithChildren<{
   itemKey: string;
   itemsOrder: SharedValue<{ [key: string]: number }>;
-  size: number;
-  gap: number;
+  scrollY: SharedValue<number>;
+  maxScroll: SharedValue<number>;
+  contentHeight: number;
+  editablePaddingTop: number;
+  scrollViewRef: RefObject<Animated.ScrollView>;
   gridConfig: GridConfig;
   draggable: boolean;
   onOrderChange: (itemKey: string, newOrder: number) => void;
@@ -56,8 +60,11 @@ type SortableGridItemProps = PropsWithChildren<{
 const SortableGridItem: React.FC<SortableGridItemProps> = ({
   itemKey,
   itemsOrder,
-  size,
-  gap,
+  scrollY,
+  maxScroll,
+  contentHeight,
+  editablePaddingTop,
+  scrollViewRef,
   gridConfig,
   draggable,
   onOrderChange,
@@ -65,47 +72,52 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
   onDragEnd,
   children
 }) => {
-  if (itemsOrder.value[itemKey] === undefined) return null;
-  const renderOrder = useSharedValue(itemsOrder.value[itemKey]);
   const isDragging = useSharedValue(false);
   const itemAnimationProgress = useSharedValue(0);
-  const itemTranslation: AnimatedTranslation = {
+  const itemPosition: AnimatedPosition = {
     x: useSharedValue(0),
     y: useSharedValue(0)
   };
-  const dropIndicatorTranslation: AnimatedTranslation = {
+  const dropIndicatorPosition: AnimatedPosition = {
     x: useSharedValue(0),
     y: useSharedValue(0)
   };
 
   const animatedItemStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateX: itemTranslation.x.value },
-      { translateY: itemTranslation.y.value },
+      { translateX: itemPosition.x.value },
+      { translateY: itemPosition.y.value },
       { scale: interpolate(itemAnimationProgress.value, [0, 1], [1, 1.1]) }
     ],
-    opacity: interpolate(itemAnimationProgress.value, [0, 1], [1, 0.5])
+    zIndex: +isDragging.value
   }));
-  const animatedDropAreaStyle = useAnimatedStyle(() => ({
+
+  useEffect(() => {
+    const position = getItemPosition(itemsOrder.value[itemKey], gridConfig);
+    dropIndicatorPosition.x.value = itemPosition.x.value = position.x;
+    dropIndicatorPosition.y.value = itemPosition.y.value = position.y;
+  }, [gridConfig]);
+
+  const animatedDropIndicatorStyle = useAnimatedStyle(() => ({
     opacity: +isDragging.value,
     transform: [
-      { translateX: dropIndicatorTranslation.x.value },
-      { translateY: dropIndicatorTranslation.y.value }
+      { translateX: dropIndicatorPosition.x.value },
+      { translateY: dropIndicatorPosition.y.value }
     ]
   }));
 
   const translateWithTiming = (
-    translationValue: AnimatedTranslation,
-    targetTranslation: Vector2D,
+    animatedPosition: AnimatedPosition,
+    targetPosition: Vector2D,
     { duration, callback }: { duration?: number; callback?: () => void } = {}
   ) => {
     'worklet';
     const animationConfig = {
       duration: duration || 1000
     };
-    translationValue.x.value = withTiming(targetTranslation.x, animationConfig);
-    translationValue.y.value = withTiming(
-      targetTranslation.y,
+    animatedPosition.x.value = withTiming(targetPosition.x, animationConfig);
+    animatedPosition.y.value = withTiming(
+      targetPosition.y,
       animationConfig,
       callback
     );
@@ -114,13 +126,9 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
   useAnimatedReaction(
     () => itemsOrder.value[itemKey],
     newOrder => {
-      const translation = getDistanceBetweenItems(
-        renderOrder.value,
-        newOrder,
-        gridConfig
-      );
-      translateWithTiming(itemTranslation, translation, {
-        duration: MOVE_ANIMATION_DURATION
+      const newPosition = getItemPosition(newOrder, gridConfig);
+      translateWithTiming(itemPosition, newPosition, {
+        duration: ANIMATION.DURATION.FAVORITES_MOVE
       });
     }
   );
@@ -130,49 +138,56 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
     DragContext
   >({
     onStart: (_, ctx) => {
-      ctx.dropOrder = ctx.startOrder = itemsOrder.value[itemKey];
-      ctx.dropTranslation = ctx.startTranslation = getDistanceBetweenItems(
-        renderOrder.value,
-        ctx.startOrder,
-        gridConfig
-      );
+      ctx.startPosition = ctx.dropPosition = {
+        x: itemPosition.x.value,
+        y: itemPosition.y.value
+      };
       onDragStart(itemKey);
     },
     onActive: ({ translationX, translationY }, ctx) => {
+      // Drag
       if (!isDragging.value) {
         isDragging.value = true;
         itemAnimationProgress.value = withTiming(1, {
-          duration: MOVE_ANIMATION_DURATION
+          duration: ANIMATION.DURATION.FAVORITES_MOVE
         });
       }
-      itemTranslation.x.value = ctx.startTranslation.x + translationX;
-      itemTranslation.y.value = ctx.startTranslation.y + translationY;
-      ctx.currOrder = itemsOrder.value[itemKey];
-      ctx.dropOrder = getItemDropOrder(
-        ctx.startOrder,
-        { x: translationX, y: translationY },
-        gridConfig
-      );
-      if (ctx.currOrder !== ctx.dropOrder) {
-        ctx.dropTranslation = getDistanceBetweenItems(
-          renderOrder.value,
-          ctx.dropOrder,
-          gridConfig
-        );
-        translateWithTiming(dropIndicatorTranslation, ctx.dropTranslation, {
-          duration: MOVE_ANIMATION_DURATION
+      const x = (itemPosition.x.value = ctx.startPosition.x + translationX);
+      const y = (itemPosition.y.value = ctx.startPosition.y + translationY);
+      const newDropPosition = getItemDropPosition({ x, y }, gridConfig);
+      if (
+        newDropPosition.x !== ctx.dropPosition.x ||
+        newDropPosition.y !== ctx.dropPosition.y
+      ) {
+        ctx.dropPosition = newDropPosition;
+        translateWithTiming(dropIndicatorPosition, newDropPosition, {
+          duration: ANIMATION.DURATION.FAVORITES_MOVE
         });
-        onOrderChange(itemKey, ctx.dropOrder);
+        onOrderChange(itemKey, getItemOrder(newDropPosition, gridConfig));
       }
+
+      // Scroll
+      const lowerBound = scrollY.value - editablePaddingTop;
+      const upperBound = lowerBound + contentHeight - gridConfig.itemHeight;
+
+      let diff = 0;
+      if (y < lowerBound) diff = y - lowerBound;
+      else if (y > upperBound) diff = y - upperBound;
+
+      const translation =
+        keepInRange(scrollY.value + diff, [0, maxScroll.value]) - scrollY.value;
+      scrollY.value += translation;
+      itemPosition.y.value += translation;
+      ctx.startPosition.y += translation;
+      scrollTo(scrollViewRef, 0, scrollY.value, false);
     },
     onEnd: (_, ctx) => {
       itemAnimationProgress.value = withTiming(0, {
-        duration: MOVE_ANIMATION_DURATION
+        duration: ANIMATION.DURATION.FAVORITES_MOVE
       });
-      translateWithTiming(itemTranslation, ctx.dropTranslation, {
-        duration: DROP_ANIMATION_DURATION,
+      translateWithTiming(itemPosition, ctx.dropPosition, {
+        duration: ANIMATION.DURATION.FAVORITES_DROP,
         callback: () => {
-          ctx.startOrder = ctx.dropOrder;
           isDragging.value = false;
           onDragEnd(itemKey);
         }
@@ -181,16 +196,24 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
   });
 
   return (
-    <GridItemWrapper size={size} gap={gap}>
-      <ItemDropIndicator style={animatedDropAreaStyle} />
-      <AnimatedItemWrapper style={animatedItemStyle}>
+    <>
+      <ItemDropIndicator
+        width={gridConfig.itemWidth}
+        height={gridConfig.itemHeight}
+        style={animatedDropIndicatorStyle}
+      />
+      <AnimatedItemWrapper
+        width={gridConfig.itemWidth}
+        height={gridConfig.itemHeight}
+        style={animatedItemStyle}
+      >
         <PanGestureHandler onGestureEvent={handleItemDrag} enabled={draggable}>
           <Animated.View style={StyleSheet.absoluteFill}>
             {children}
           </Animated.View>
         </PanGestureHandler>
       </AnimatedItemWrapper>
-    </GridItemWrapper>
+    </>
   );
 };
 

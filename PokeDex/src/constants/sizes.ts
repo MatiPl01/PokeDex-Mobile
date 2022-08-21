@@ -7,3 +7,7 @@ export const SCREEN = {
       : Dimensions.get('window').height,
   WIDTH: Dimensions.get('window').width
 };
+
+export const LOGO_BAR = {
+  HEIGHT: 64
+}
