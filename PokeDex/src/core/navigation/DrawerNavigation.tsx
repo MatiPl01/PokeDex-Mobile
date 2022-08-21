@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components/native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 import {
   createDrawerNavigator,
@@ -26,9 +25,9 @@ import Logo from '@assets/svg/logo.svg';
 import HamburgerIcon from './hamburger-icon/HamburgerIcon';
 import {
   FINAL_SCREEN_SCALE,
-  DrawerContentScrollView,
+  DrawerContentView,
   DrawerWrapper,
-  ScreensWrapper
+  ScreensInnerWrapper
 } from './DrawerNavigation.styles';
 
 const Drawer = createDrawerNavigator();
@@ -54,10 +53,8 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
   const animatedStyles = useAnimatedScreensStyles(progress);
 
   return (
-    <ScreensWrapper style={animatedStyles.outerWrapper}>
-      <Animated.View
-        style={[{ overflow: 'hidden' }, animatedStyles.innerWrapper]}
-      >
+    <Animated.View style={animatedStyles.outerWrapper}>
+      <ScreensInnerWrapper style={animatedStyles.innerWrapper}>
         <SplashScreen menuToggle={<HamburgerIcon navigation={navigation} />}>
           <Stack.Navigator
             screenOptions={{
@@ -65,7 +62,7 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
               headerTitle: '',
               cardOverlayEnabled: false,
               cardStyle: {
-                backgroundColor: theme.color.background.primary
+                backgroundColor: theme.color.background.secondary
               },
               presentation: 'card',
               gestureEnabled: false,
@@ -73,14 +70,14 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
               cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
             }}
           >
-            <Stack.Screen name="Favorites" component={FavoritesScreen} />
             <Stack.Screen name="Pokemon" component={PokemonScreen} />
+            <Stack.Screen name="Favorites" component={FavoritesScreen} />
             <Stack.Screen name="Map" component={MapScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
           </Stack.Navigator>
         </SplashScreen>
-      </Animated.View>
-    </ScreensWrapper>
+      </ScreensInnerWrapper>
+    </Animated.View>
   );
 };
 
@@ -92,7 +89,7 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
   const iconProps = { size: 20, color: theme.color.text.primary };
 
   return (
-    <DrawerContentScrollView
+    <DrawerContentView
       contentContainerStyle={{
         paddingTop: 0
       }}
@@ -122,7 +119,7 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
         labelStyle={labelStyle}
         icon={() => <IonIcon name="settings-outline" {...iconProps} />}
       />
-    </DrawerContentScrollView>
+    </DrawerContentView>
   );
 };
 

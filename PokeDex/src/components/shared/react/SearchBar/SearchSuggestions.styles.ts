@@ -16,7 +16,7 @@ export const OuterWrapper = styled(Animated.View)<{ itemCount: number }>`
     border: 1px solid ${theme.color.text.tertiary};
     min-height: ${theme.size.md * itemCount}px;
     top: ${theme.size.md}px;
-    ${theme.shadow.strong.lg};
+    ${theme.shadow.box.strong.lg};
   `};
 `;
 
@@ -80,7 +80,7 @@ export const ScrollTopButton = styled(Animated.View)`
     height: ${theme.size.md - 2 * theme.space.md}px;
     border-radius: ${theme.size.md - 2 * theme.space.md}px;
     background-color: ${theme.color.accent.primary};
-    ${theme.shadow.soft.sm};
+    ${theme.shadow.box.soft.sm};
   `};
 `;
 

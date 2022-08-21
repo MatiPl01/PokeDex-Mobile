@@ -11,6 +11,6 @@ export const Icon = styled(MaterialIcon).attrs({
 })`
   ${({ theme }) => css`
     color: ${theme.color.white};
-    ${theme.shadow.strong.md};
+    ${theme.shadow.box.strong.md};
   `};
 `;

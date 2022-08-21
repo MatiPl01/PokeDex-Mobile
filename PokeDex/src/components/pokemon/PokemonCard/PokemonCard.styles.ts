@@ -10,7 +10,7 @@ import { BackgroundGradientsWrapper as DefaultBackgroundGradientsWrapper } from 
 const BACKGROUND_HEIGH = 0.4 * SIZE.SCREEN.WIDTH;
 const FOOTER_HEIGHT = 85;
 const BACKGROUND_TEXT_WRAPPER_WIDTH = 1000; // Some really big value
-const CARD_WIDTH = 300;
+const CARD_WIDTH = 0.8 * SIZE.SCREEN.WIDTH;
 const GRADIENTS_WRAPPER_WIDTH = 1.2 * CARD_WIDTH;
 export const MAX_IMAGE_WIDTH = 0.4 * SIZE.SCREEN.WIDTH;
 export const MAX_IMAGE_HEIGHT = BACKGROUND_HEIGH;
@@ -21,7 +21,7 @@ export const CardWrapper = styled(Animated.View)`
   max-width: 100%;
   margin: 0 auto;
   width: ${CARD_WIDTH}px;
-  ${({ theme }) => theme.shadow.medium.lg};
+  ${({ theme }) => theme.shadow.box.medium.lg};
 `;
 
 export const BackgroundWrapper = styled.View`
@@ -93,7 +93,7 @@ export const BackgroundGradient = styled(LinearGradient).attrs<{
   flex-grow: 1;
   transform: skewX(-10deg);
   height: 100%;
-  ${({ theme }) => theme.shadow.strong.lg};
+  ${({ theme }) => theme.shadow.box.strong.lg};
 `;
 
 export const CardTitleSkeletonWrapper = styled.View`

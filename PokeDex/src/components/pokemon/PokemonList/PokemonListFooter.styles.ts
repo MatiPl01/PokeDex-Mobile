@@ -3,7 +3,7 @@ import { flexCenter } from '@styles/shared';
 import { SIZE } from '@constants';
 
 export const FooterWrapper = styled.View`
-  height: ${SIZE.SCREEN.WIDTH / 2}px;
+  height: ${SIZE.SCREEN.HEIGHT / 2}px;
   ${flexCenter};
 `;
 

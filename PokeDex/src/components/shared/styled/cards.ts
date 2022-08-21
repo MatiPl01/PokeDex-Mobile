@@ -17,7 +17,6 @@ export const CardTitle = styled.Text`
     font-weight: ${theme.fontWeight.bold};
     color: ${theme.color.text.primary};
     margin-bottom: ${theme.space.md}px;
-    ${theme.shadow.medium
-      .md}; // TODO - create text shadows separate from the background shadows
+    ${theme.shadow.text.medium.md};
   `};
 `;

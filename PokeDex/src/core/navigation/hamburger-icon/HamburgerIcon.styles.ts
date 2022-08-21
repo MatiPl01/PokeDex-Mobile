@@ -24,6 +24,6 @@ export const AnimatedBar = styled(Animated.View)`
 
   ${({ theme }) => css`
     background-color: ${theme.color.white};
-    ${theme.shadow.strong.md};
+    ${theme.shadow.box.strong.md};
   `};
 `;

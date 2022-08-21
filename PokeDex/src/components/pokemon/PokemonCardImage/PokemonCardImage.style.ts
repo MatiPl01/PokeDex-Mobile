@@ -9,7 +9,7 @@ const pokemonImageStyles = css`
 
   ${({ theme }) => css`
     bottom: ${theme.space.lg}px;
-    ${theme.shadow.medium.md};
+    ${theme.shadow.box.medium.md};
   `};
 `;
 
@@ -44,6 +44,6 @@ export const PlaceholderImageIcon = styled(FontistoIcon).attrs<{
     width: ${size}px;
     transform: translateX(-${size / 2}px);
     color: ${theme.color.background.tertiary};
-    ${theme.shadow.medium.sm};
+    ${theme.shadow.box.medium.sm};
   `}
 `;

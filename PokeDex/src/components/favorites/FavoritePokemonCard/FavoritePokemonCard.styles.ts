@@ -16,7 +16,7 @@ export const CardWrapper = styled.View`
 
   ${({ theme }) => css`
     background-color: ${theme.color.background.primary};
-    ${theme.shadow.medium.md}
+    ${theme.shadow.box.medium.md}
   `};
 `;
 
@@ -38,7 +38,7 @@ export const CardTitle = styled(DefaultCardTitle)`
 `;
 
 export const PokemonImageWrapper = styled.View`
-  ${({ theme }) => theme.shadow.medium.md};
+  ${({ theme }) => theme.shadow.box.medium.md};
   ${absoluteFill};
 `;
 
@@ -65,6 +65,6 @@ export const DeleteButtonIcon = styled(MaterialIcon).attrs({
 })`
   ${({ theme }) => css`
     color: ${theme.color.white};
-    ${theme.shadow.strong.sm};
+    ${theme.shadow.box.strong.sm};
   `};
 `;
