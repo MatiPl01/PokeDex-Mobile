@@ -85,5 +85,16 @@ export default {
       primary: '#ea1369',
       secondary: '#971944'
     }
+  },
+
+  dayNightSwitch: {
+    day: {
+      primary: '#f8c12b',
+      secondary: '#f08d37'
+    },
+    night: {
+      primary: '#99359c',
+      secondary: '#251069'
+    }
   }
 };
