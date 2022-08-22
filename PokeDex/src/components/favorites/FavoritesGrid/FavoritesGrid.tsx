@@ -24,7 +24,7 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   const dispatch = useDispatch();
   const PADDING = theme.space.lg;
   const GRID_GAP = theme.space.lg;
-
+  
   const [favoritesStates, setFavoritesStates] = useState<SinglePokemonState[]>(
     []
   );
