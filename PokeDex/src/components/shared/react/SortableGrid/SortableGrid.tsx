@@ -87,7 +87,6 @@ const SortableGrid = <T extends object>({
   const sharedData = useSharedValue<T[]>([]);
   const scrollY = useSharedValue(0);
   const maxScroll = useSharedValue(0);
-  const scrollViewHeight = useSharedValue(0);
   const editableAnimationProgress = useSharedValue(0);
   const itemsOrder = useSharedValue<Record<string, number>>({});
 
@@ -100,16 +99,14 @@ const SortableGrid = <T extends object>({
       data.map((item, index) => [keyExtractor(item, index), index])
     );
     config.value = { ...config.value, rowCount, itemCount: data.length };
+    maxScroll.value =
+      gridHeight - contentHeight + (editable ? editablePaddingTop : 0);
     sharedData.value = data;
   }, [data]);
 
   useEffect(() => {
-    scrollViewHeight.value = gridHeight;
-    maxScroll.value = gridHeight - contentHeight;
-    if (editable) {
-      scrollViewHeight.value += editablePaddingTop;
-      maxScroll.value += editablePaddingTop;
-    }
+    maxScroll.value =
+      gridHeight - contentHeight + (editable ? editablePaddingTop : 0);
     editableAnimationProgress.value = withTiming(+editable, {
       duration: ANIMATION.DURATION.FAVORITES_EDIT
     });

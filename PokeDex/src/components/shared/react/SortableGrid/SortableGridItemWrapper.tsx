@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, RefObject, useEffect } from 'react';
+import React, { PropsWithChildren, RefObject } from 'react';
 import { StyleSheet } from 'react-native';
 import { Vector2D } from '@types';
 import { ANIMATION } from '@constants';
@@ -83,15 +83,6 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
     y: useSharedValue(0)
   };
 
-  useEffect(() => {
-    const position = getItemPosition(
-      itemsOrder.value[itemKey],
-      gridConfig.value
-    );
-    dropIndicatorPosition.x.value = itemPosition.x.value = position.x;
-    dropIndicatorPosition.y.value = itemPosition.y.value = position.y;
-  }, [gridConfig]);
-
   const animatedItemStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: itemPosition.x.value },
@@ -170,11 +161,12 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
       }
 
       // Scroll
+      scrollY.value = Math.min(scrollY.value, maxScroll.value);
       const lowerBound = scrollY.value - editablePaddingTop;
       const upperBound =
         lowerBound + contentHeight - gridConfig.value.itemHeight;
-
       let diff = 0;
+
       if (y < lowerBound) diff = y - lowerBound;
       else if (y > upperBound) diff = y - upperBound;
 
