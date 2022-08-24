@@ -47,6 +47,6 @@ export const box = {
 
 export const text = {
   soft: createShadowGroup(createTextShadow, 0.2),
-  medium: createShadowGroup(createTextShadow, 0.4),
-  strong: createShadowGroup(createTextShadow, 0.75)
+  medium: createShadowGroup(createTextShadow, 0.35),
+  strong: createShadowGroup(createTextShadow, 0.65)
 };

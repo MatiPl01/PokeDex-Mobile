@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Animated, {
   runOnJS,
   useAnimatedRef,
@@ -8,14 +8,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SIZE, ANIMATION } from '@constants';
-import { Padding } from '@types';
-import { GridConfig, calcRowHeight } from './sortableGrid.utils';
-import SortableGridItem from './SortableGridItem';
-import { GridItemsWrapper } from './SortableGrid.styles';
+import { Complete, Padding } from '@types';
 import { createAnimatedStyle } from '@utils/reanimated';
+import { GridConfig, calcRowHeight } from './sortableGrid.utils';
+import SortableGridRenderItem from './SortableGridRenderItem';
+import { GridItemsWrapper } from './SortableGrid.styles';
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-type GridInputComponent =
+type GridComponent =
   | React.ComponentType<any>
   | React.ReactElement<any, string | React.JSXElementConstructor<any>>
   | null;
@@ -30,8 +30,8 @@ type SortableGridProps<T> = {
   columnGap?: number;
   editable?: boolean;
   editablePaddingTop?: number;
-  GridHeaderComponent?: GridInputComponent;
-  GridFooterComponent?: GridInputComponent;
+  GridHeaderComponent?: GridComponent;
+  GridFooterComponent?: GridComponent;
   onDragEnd?: (data: T[]) => void;
   onEndReached?: () => void;
 } & ({ itemHeight?: number } | { itemRatio?: number });
@@ -53,22 +53,27 @@ const SortableGrid = <T extends object>({
   ...restProps
 }: SortableGridProps<T>) => {
   const edges = useSafeAreaInsets();
-  const padding = { top: 0, right: 0, left: 0, bottom: 0, ...desiredPadding };
+  const padding = useSharedValue<Complete<Padding>>({
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0
+  });
   const itemWidth =
     (SIZE.SCREEN.WIDTH -
       (columnCount - 1) * columnGap -
-      padding.left -
-      padding.right) /
+      (desiredPadding.left || 0) -
+      (desiredPadding.right || 0)) /
     columnCount;
   const rowCount = Math.ceil(data.length / columnCount);
   const rowHeight = calcRowHeight(itemWidth, restProps);
   const gridHeight =
     rowCount * rowHeight +
     (rowCount - 1) * rowGap +
-    padding.top +
-    padding.bottom;
+    (desiredPadding.top || 0) +
+    (desiredPadding.bottom || 0);
   const contentHeight = SIZE.SCREEN.HEIGHT - SIZE.LOGO_BAR.HEIGHT - edges.top;
-  const config: GridConfig = {
+  const config = useSharedValue<GridConfig>({
     itemHeight: rowHeight,
     itemWidth,
     rowGap,
@@ -77,13 +82,13 @@ const SortableGrid = <T extends object>({
     rowCount,
     padding,
     itemCount: data.length
-  };
+  });
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
+  const sharedData = useSharedValue<T[]>([]);
   const scrollY = useSharedValue(0);
   const maxScroll = useSharedValue(0);
-  const scrollViewHeight = useSharedValue(0);
   const editableAnimationProgress = useSharedValue(0);
-  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
-  const itemsOrder = useSharedValue<{ [key: string]: number }>({});
+  const itemsOrder = useSharedValue<Record<string, number>>({});
 
   const animatedEditablePaddingTopStyle = createAnimatedStyle({
     height: [0, editablePaddingTop]
@@ -93,33 +98,43 @@ const SortableGrid = <T extends object>({
     itemsOrder.value = Object.fromEntries(
       data.map((item, index) => [keyExtractor(item, index), index])
     );
+    config.value = { ...config.value, rowCount, itemCount: data.length };
+    maxScroll.value =
+      gridHeight - contentHeight + (editable ? editablePaddingTop : 0);
+    sharedData.value = data;
   }, [data]);
 
   useEffect(() => {
-    scrollViewHeight.value = gridHeight;
-    maxScroll.value = gridHeight - contentHeight;
-    if (editable) {
-      scrollViewHeight.value += editablePaddingTop;
-      maxScroll.value += editablePaddingTop;
-    }
+    maxScroll.value =
+      gridHeight - contentHeight + (editable ? editablePaddingTop : 0);
     editableAnimationProgress.value = withTiming(+editable, {
       duration: ANIMATION.DURATION.FAVORITES_EDIT
     });
   }, [editable]);
 
-  const getNewOrderData = () => {
+  useEffect(() => {
+    padding.value = { top: 0, right: 0, bottom: 0, left: 0, ...desiredPadding };
+  }, [desiredPadding]);
+
+  const getNewData = (newOrder: Record<string, number>) => {
     const newData: T[] = [];
-    data.forEach((item: T, index: number) => {
-      newData[itemsOrder.value[keyExtractor(item, index)]] = item;
+
+    sharedData.value.forEach((item: T, index: number) => {
+      newData[newOrder[keyExtractor(item, index)]] = item;
     });
+
     return newData;
   };
 
-  const handleItemDragStart = (itemKey: string) => {
-    'worklet';
+  const callOnDragEnd = (newOrder: Record<string, number>) => {
+    if (onDragEnd) onDragEnd(getNewData(newOrder));
   };
 
-  const handleOrderChange = (itemKey: string, newOrder: number) => {
+  const handleItemDragStart = useCallback((itemKey: string) => {
+    'worklet';
+  }, []);
+
+  const handleOrderChange = useCallback((itemKey: string, newOrder: number) => {
     'worklet';
     const oldOrder = itemsOrder.value[itemKey];
     const swappedItemKey = Object.keys(itemsOrder.value).find(
@@ -130,16 +145,12 @@ const SortableGrid = <T extends object>({
     newItemsOrder.value[itemKey] = newOrder;
     newItemsOrder.value[swappedItemKey] = oldOrder;
     itemsOrder.value = newItemsOrder.value;
-  };
+  }, []);
 
-  const callOnDragEnd = () => {
-    if (onDragEnd) onDragEnd(getNewOrderData());
-  };
-
-  const handleItemDragEnd = () => {
+  const handleItemDragEnd = useCallback((newOrder: Record<string, number>) => {
     'worklet';
-    runOnJS(callOnDragEnd)();
-  };
+    runOnJS(callOnDragEnd)(newOrder);
+  }, []);
 
   const handleScroll = useAnimatedScrollHandler({
     onScroll: ({ contentOffset: { y } }) => {
@@ -148,25 +159,37 @@ const SortableGrid = <T extends object>({
     }
   });
 
-  const renderGridHeader = () =>
-    GridHeaderComponent instanceof Function ? (
-      <GridHeaderComponent />
-    ) : (
-      GridHeaderComponent
-    );
+  const renderGridHeader = useCallback(
+    () =>
+      GridHeaderComponent instanceof Function ? (
+        <GridHeaderComponent />
+      ) : (
+        GridHeaderComponent
+      ),
+    [GridHeaderComponent]
+  );
 
-  const renderGridFooter = () =>
-    GridFooterComponent instanceof Function ? (
-      <GridFooterComponent />
-    ) : (
-      GridFooterComponent
-    );
+  const renderGridFooter = useCallback(
+    () =>
+      GridFooterComponent instanceof Function ? (
+        <GridFooterComponent />
+      ) : (
+        GridFooterComponent
+      ),
+    [GridFooterComponent]
+  );
+
+  const memoizedRenderItem = useCallback(
+    (item: T, width: number, height: number): JSX.Element =>
+      renderItem({ item, width, height }),
+    [editable]
+  );
 
   const renderGridItem = (item: T, index: number) => {
     const key = keyExtractor(item, index);
 
     return (
-      <SortableGridItem
+      <SortableGridRenderItem<T>
         key={key}
         itemKey={key}
         gridConfig={config}
@@ -180,9 +203,9 @@ const SortableGrid = <T extends object>({
         onDragEnd={handleItemDragEnd}
         onOrderChange={handleOrderChange}
         draggable={editable}
-      >
-        {renderItem({ item, width: itemWidth, height: rowHeight })}
-      </SortableGridItem>
+        renderItem={memoizedRenderItem}
+        item={item}
+      />
     );
   };
 

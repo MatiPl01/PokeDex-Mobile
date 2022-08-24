@@ -1,3 +1,4 @@
+import { SharedValue } from 'react-native-reanimated';
 import { Vector2D, Padding, Complete } from '@types';
 
 export type GridConfig = {
@@ -8,7 +9,7 @@ export type GridConfig = {
   itemWidth: number;
   rowGap: number;
   columnGap: number;
-  padding: Complete<Padding>;
+  padding: SharedValue<Complete<Padding>>;
 };
 
 type RowHeightDataType = { itemHeight?: number } | { itemRatio?: number };
@@ -38,8 +39,8 @@ export const getItemPosition = (
 ) => {
   'worklet';
   return {
-    x: padding.left + (order % columnCount) * (itemWidth + columnGap),
-    y: padding.top + Math.floor(order / columnCount) * (itemHeight + rowGap)
+    x: padding.value.left + (order % columnCount) * (itemWidth + columnGap),
+    y: padding.value.top + Math.floor(order / columnCount) * (itemHeight + rowGap)
   };
 };
 

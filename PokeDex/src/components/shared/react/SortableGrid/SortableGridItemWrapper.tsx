@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, RefObject, useEffect } from 'react';
+import React, { PropsWithChildren, RefObject } from 'react';
 import { StyleSheet } from 'react-native';
 import { Vector2D } from '@types';
 import { ANIMATION } from '@constants';
@@ -25,7 +25,7 @@ import {
 import {
   ItemDropIndicator,
   AnimatedItemWrapper
-} from './SortableGridItem.styles';
+} from './SortableGridItemWrapper.styles';
 
 const keepInRange = (value: number, range: [number, number]): number => {
   'worklet';
@@ -42,19 +42,19 @@ type AnimatedPosition = {
   y: SharedValue<number>;
 };
 
-type SortableGridItemProps = PropsWithChildren<{
+export type SortableGridItemProps = PropsWithChildren<{
   itemKey: string;
-  itemsOrder: SharedValue<{ [key: string]: number }>;
+  itemsOrder: SharedValue<Record<string, number>>;
   scrollY: SharedValue<number>;
   maxScroll: SharedValue<number>;
   contentHeight: number;
   editablePaddingTop: number;
   scrollViewRef: RefObject<Animated.ScrollView>;
-  gridConfig: GridConfig;
+  gridConfig: SharedValue<GridConfig>;
   draggable: boolean;
   onOrderChange: (itemKey: string, newOrder: number) => void;
   onDragStart: (itemKey: string) => void;
-  onDragEnd: (itemKey: string) => void;
+  onDragEnd: (newOrder: Record<string, number>) => void;
 }>;
 
 const SortableGridItem: React.FC<SortableGridItemProps> = ({
@@ -92,12 +92,6 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
     zIndex: +isDragging.value
   }));
 
-  useEffect(() => {
-    const position = getItemPosition(itemsOrder.value[itemKey], gridConfig);
-    dropIndicatorPosition.x.value = itemPosition.x.value = position.x;
-    dropIndicatorPosition.y.value = itemPosition.y.value = position.y;
-  }, [gridConfig]);
-
   const animatedDropIndicatorStyle = useAnimatedStyle(() => ({
     opacity: +isDragging.value,
     transform: [
@@ -126,7 +120,7 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
   useAnimatedReaction(
     () => itemsOrder.value[itemKey],
     newOrder => {
-      const newPosition = getItemPosition(newOrder, gridConfig);
+      const newPosition = getItemPosition(newOrder, gridConfig.value);
       translateWithTiming(itemPosition, newPosition, {
         duration: ANIMATION.DURATION.FAVORITES_MOVE
       });
@@ -154,7 +148,7 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
       }
       const x = (itemPosition.x.value = ctx.startPosition.x + translationX);
       const y = (itemPosition.y.value = ctx.startPosition.y + translationY);
-      const newDropPosition = getItemDropPosition({ x, y }, gridConfig);
+      const newDropPosition = getItemDropPosition({ x, y }, gridConfig.value);
       if (
         newDropPosition.x !== ctx.dropPosition.x ||
         newDropPosition.y !== ctx.dropPosition.y
@@ -163,14 +157,16 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
         translateWithTiming(dropIndicatorPosition, newDropPosition, {
           duration: ANIMATION.DURATION.FAVORITES_MOVE
         });
-        onOrderChange(itemKey, getItemOrder(newDropPosition, gridConfig));
+        onOrderChange(itemKey, getItemOrder(newDropPosition, gridConfig.value));
       }
 
       // Scroll
+      scrollY.value = Math.min(scrollY.value, maxScroll.value);
       const lowerBound = scrollY.value - editablePaddingTop;
-      const upperBound = lowerBound + contentHeight - gridConfig.itemHeight;
-
+      const upperBound =
+        lowerBound + contentHeight - gridConfig.value.itemHeight;
       let diff = 0;
+
       if (y < lowerBound) diff = y - lowerBound;
       else if (y > upperBound) diff = y - upperBound;
 
@@ -189,7 +185,7 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
         duration: ANIMATION.DURATION.FAVORITES_DROP,
         callback: () => {
           isDragging.value = false;
-          onDragEnd(itemKey);
+          onDragEnd(itemsOrder.value);
         }
       });
     }
@@ -198,13 +194,13 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
   return (
     <>
       <ItemDropIndicator
-        width={gridConfig.itemWidth}
-        height={gridConfig.itemHeight}
+        width={gridConfig.value.itemWidth}
+        height={gridConfig.value.itemHeight}
         style={animatedDropIndicatorStyle}
       />
       <AnimatedItemWrapper
-        width={gridConfig.itemWidth}
-        height={gridConfig.itemHeight}
+        width={gridConfig.value.itemWidth}
+        height={gridConfig.value.itemHeight}
         style={animatedItemStyle}
       >
         <PanGestureHandler onGestureEvent={handleItemDrag} enabled={draggable}>

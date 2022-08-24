@@ -157,8 +157,6 @@ const PokemonList: React.FC<PokemonListProps> = ({
 
   const renderSeparator = () => <Separator height={LIST_SEPARATOR_HEIGHT} />;
 
-  console.log('rerender');
-
   return (
     <CardListWrapper>
       <CardList
