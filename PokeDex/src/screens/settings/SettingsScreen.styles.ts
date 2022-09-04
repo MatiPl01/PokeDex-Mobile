@@ -1,16 +1,18 @@
 import { Separator } from '@components/shared/styled/layout';
 import styled, { css } from 'styled-components/native';
 
-export const SettingsWrapper = styled.ScrollView`
-  padding: ${({ theme }) => `${theme.space.xl}px ${theme.space.lg}px`};
+export const SettingsWrapper = styled.View`
+  padding: ${({ theme }) => `0 ${theme.space.lg}px`};
+  flex: 1;
 `;
 
-export const SettingsSection = styled.View``;
+export const SettingsSection = styled.View`
+  padding: ${({ theme }) => `${theme.space.lg}px 0`};
+`;
 
 export const SectionSeparator = styled.View`
   ${({ theme }) => css`
     border-radius: 3px;
-    margin: ${theme.space.lg}px 0;
     height: ${theme.space.sm}px;
     background-color: ${theme.color.background.tertiary};
   `};
@@ -22,7 +24,7 @@ export const SectionHeading = styled.Text`
     font-size: ${theme.fontSize.title}px
     font-weight: ${theme.fontWeight.bold};
     line-height: ${theme.lineHeight.title}px;
-    padding-bottom: ${theme.space.xs}px;
+    padding-bottom: ${theme.space.sm}px;
   `};
 `;
 
@@ -38,7 +40,7 @@ export const SectionSubheading = styled.Text`
 export const SettingsRow = styled.View`
   ${({ theme }) => css`
     border-top: 5px solid ${theme.color.text.primary};
-    padding: ${theme.space.lg}px 0;
+    padding: ${theme.space.md}px 0;
     flex-direction: row;
     align-items: center;
   `};

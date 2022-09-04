@@ -1,4 +1,3 @@
-// TODO - this is a temporary settings screen
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -40,26 +39,29 @@ const SettingsScreen: React.FC = () => {
   };
 
   return (
-    // TODO - fix error: VirtualizedList cannot be nested in the ScrollView
     <SettingsWrapper>
-      <SettingsSection>
-        <SectionHeading>Theme mode</SectionHeading>
-        <SettingsRow>
-          <DayNightSwitch onChange={switchThemeMode} />
-          <ColumnSeparator />
-          <SettingsText>Light / Dark mode</SettingsText>
-        </SettingsRow>
-      </SettingsSection>
-      <SectionSeparator />
-      <SettingsSection>
-        <SectionHeading>Theme colors</SectionHeading>
-        <SectionSubheading>
-          Select a theme to personalize app appearance
-        </SectionSubheading>
-        <SettingsRow>
-          <ThemeSelector onChange={changeTheme} />
-        </SettingsRow>
-      </SettingsSection>
+      <ThemeSelector
+        onChange={changeTheme}
+        listHeaderComponent={
+          <>
+            <SettingsSection>
+              <SectionHeading>Theme mode</SectionHeading>
+              <SettingsRow>
+                <DayNightSwitch onChange={switchThemeMode} />
+                <ColumnSeparator />
+                <SettingsText>Light / Dark mode</SettingsText>
+              </SettingsRow>
+            </SettingsSection>
+            <SectionSeparator />
+            <SettingsSection>
+              <SectionHeading>Theme colors</SectionHeading>
+              <SectionSubheading>
+                Select a theme to personalize app appearance
+              </SectionSubheading>
+            </SettingsSection>
+          </>
+        }
+      />
     </SettingsWrapper>
   );
 };
