@@ -17,6 +17,6 @@ export const CardTitle = styled.Text`
     font-weight: ${theme.fontWeight.bold};
     color: ${theme.color.text.primary};
     margin-bottom: ${theme.space.md}px;
-    ${theme.shadow.text.medium.md};
+    ${theme.shadow.text.soft.md};
   `};
 `;

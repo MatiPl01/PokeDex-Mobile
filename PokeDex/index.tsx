@@ -6,14 +6,20 @@ import App from './App';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import store from '@store';
 
 // Load icon fonts
-[AntDesignIcon, MaterialIcon, EntypoIcon, FontistoIcon, IonIcon].map(icon =>
-  icon.loadFont()
-);
+[
+  AntDesignIcon,
+  MaterialIcon,
+  FeatherIcon,
+  EntypoIcon,
+  FontistoIcon,
+  IonIcon
+].map(icon => icon.loadFont());
 
 const Root: React.FC = () => (
   <Provider store={store}>

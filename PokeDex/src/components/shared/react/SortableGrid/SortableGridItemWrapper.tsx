@@ -136,6 +136,8 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
         x: itemPosition.x.value,
         y: itemPosition.y.value
       };
+      dropIndicatorPosition.x.value = itemPosition.x.value;
+      dropIndicatorPosition.y.value = itemPosition.y.value;
       onDragStart(itemKey);
     },
     onActive: ({ translationX, translationY }, ctx) => {

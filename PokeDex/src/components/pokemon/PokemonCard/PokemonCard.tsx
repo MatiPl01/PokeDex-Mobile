@@ -11,7 +11,7 @@ import {
   CardWrapper,
   BackgroundWrapper,
   BackgroundGradient,
-  BackgroundGradientsWrapper,
+  BarBackgroundWrapper,
   CardFooter,
   BackgroundTextWrapper,
   BackgroundText,
@@ -75,7 +75,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
       <BackgroundWrapper>
         <RoundedBackgroundClip>
           {!isImageLoading && (
-            <BackgroundGradientsWrapper>
+            <BarBackgroundWrapper>
               {types.map((type: PokemonType) => (
                 <BackgroundGradient
                   pokemonType={type}
@@ -83,7 +83,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
                   colors={[]}
                 />
               ))}
-            </BackgroundGradientsWrapper>
+            </BarBackgroundWrapper>
           )}
           <BackgroundTextWrapper>
             <BackgroundText numberOfLines={1} ellipsizeMode="clip">

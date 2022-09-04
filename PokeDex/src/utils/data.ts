@@ -7,3 +7,10 @@ export const haveArraysTheSameElements = <T>(arr1: T[], arr2: T[]): boolean => {
     arr1.length === arr2.length && areSetsEqual(new Set(arr1), new Set(arr2))
   );
 };
+
+export const cloneObj = <T extends object>(obj: T): T => {
+  return JSON.parse(JSON.stringify(obj));
+};
+
+export const lowerCase = <T extends string>(value: T): Lowercase<T> =>
+  value.toLowerCase() as Lowercase<T>;

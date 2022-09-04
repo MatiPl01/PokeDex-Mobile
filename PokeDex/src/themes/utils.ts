@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import shared from './shared';
 import defaultTheme from './default';
+import { lowerCase } from '@utils/data';
 import { ThemeMode } from '@store/theme/theme.types';
 import {
   DefaultTheme,
@@ -27,5 +28,11 @@ export const createTheme = (
   theme: { light: PartialTheme; dark: PartialTheme },
   mode: ThemeMode
 ): DefaultTheme => {
-  return _.merge({}, shared, defaultTheme[mode], theme[mode]) as DefaultTheme;
+  const lowerCaseMode = lowerCase(mode);
+  return _.merge(
+    {},
+    shared,
+    defaultTheme[lowerCaseMode],
+    theme[lowerCaseMode]
+  );
 };

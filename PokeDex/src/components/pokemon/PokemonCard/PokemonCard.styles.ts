@@ -5,7 +5,7 @@ import { SIZE } from '@constants';
 import { flexCenter } from '@styles/shared';
 import { PokemonType } from '@store/pokemon/pokemon.types';
 import { CardFooter as DefaultCardFooter } from '@components/shared/styled/cards';
-import { BackgroundGradientsWrapper as DefaultBackgroundGradientsWrapper } from '@components/shared/styled/backgrounds';
+import { BarBackgroundWrapper as DefaultBackgroundGradientsWrapper } from '@components/shared/styled/backgrounds';
 
 const BACKGROUND_HEIGH = 0.4 * SIZE.SCREEN.WIDTH;
 const FOOTER_HEIGHT = 85;
@@ -76,7 +76,7 @@ export const TypeBadgeWrapper = styled.View`
   margin: ${({ theme }) => theme.space.sm}px;
 `;
 
-export const BackgroundGradientsWrapper = styled(
+export const BarBackgroundWrapper = styled(
   DefaultBackgroundGradientsWrapper
 ).attrs({ width: GRADIENTS_WRAPPER_WIDTH })``;
 

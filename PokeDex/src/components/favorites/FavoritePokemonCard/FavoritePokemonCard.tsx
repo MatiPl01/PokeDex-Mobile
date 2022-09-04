@@ -8,7 +8,7 @@ import PokemonCardImage from '@components/pokemon/PokemonCardImage/PokemonCardIm
 import { RoundedBackgroundClip } from '@components/shared/styled/backgrounds';
 import {
   BackgroundGradient,
-  BackgroundGradientsWrapper
+  BarBackgroundWrapper
 } from '@components/pokemon/PokemonCard/PokemonCard.styles';
 import {
   BackgroundWrapper,
@@ -83,7 +83,7 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
     <CardWrapper>
       <BackgroundWrapper>
         <RoundedBackgroundClip>
-          <BackgroundGradientsWrapper>
+          <BarBackgroundWrapper>
             {types.map((type: PokemonType) => (
               <BackgroundGradient
                 pokemonType={type}
@@ -91,7 +91,7 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
                 colors={[]}
               />
             ))}
-          </BackgroundGradientsWrapper>
+          </BarBackgroundWrapper>
         </RoundedBackgroundClip>
         <PokemonImageWrapper>
           {!isLoading && (

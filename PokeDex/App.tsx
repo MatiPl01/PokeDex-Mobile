@@ -6,8 +6,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
-import { selectTheme, selectThemeMode } from '@store/theme/theme.selector';
-import { setTheme, setThemeMode } from '@store/theme/theme.actions';
+import {
+  selectCurrentTheme,
+  selectCurrentThemeMode
+} from '@store/theme/theme.selector';
+import { setThemeName, setThemeMode } from '@store/theme/theme.actions';
 import { ThemeMode, ThemeName } from '@store/theme/theme.types';
 import { setFavoritePokemonIds } from '@store/favorites/favorites.actions';
 import { selectFavoritePokemonIdsList } from '@store/favorites/favorites.selector';
@@ -15,10 +18,10 @@ import { catchAsync } from '@utils/errors';
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
-  const theme = useSelector(selectTheme);
-  const themeMode = useSelector(selectThemeMode);
+  const theme = useSelector(selectCurrentTheme);
+  const themeMode = useSelector(selectCurrentThemeMode);
   const favoritesIdsList = useSelector(selectFavoritePokemonIdsList);
-  const systemThemeMode = useColorScheme() as ThemeMode;
+  const systemThemeMode = useColorScheme();
 
   useEffect(() => {
     loadThemeSettings();
@@ -37,15 +40,15 @@ const App: React.FC = () => {
       themeName &&
       (Object.values(ThemeName) as string[]).includes(themeName)
     ) {
-      dispatch(setTheme(themeName as ThemeName));
+      dispatch(setThemeName(themeName as ThemeName));
     }
     if (
       themeMode &&
       (Object.values(ThemeMode) as string[]).includes(themeMode)
     ) {
       dispatch(setThemeMode(themeMode as ThemeMode));
-    } else {
-      dispatch(setThemeMode(systemThemeMode));
+    } else if (systemThemeMode) {
+      dispatch(setThemeMode(systemThemeMode.toUpperCase() as ThemeMode));
     }
   });
 
