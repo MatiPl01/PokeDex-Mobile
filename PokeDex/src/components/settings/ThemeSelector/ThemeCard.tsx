@@ -1,9 +1,7 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { DefaultTheme, useTheme } from 'styled-components';
 import { SIZE } from '@constants';
 import { ThemeName } from '@store/theme/theme.types';
-import { setTheme } from '@store/theme/theme.actions';
 import {
   CardHeader,
   CardWrapper,
@@ -37,7 +35,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({
 
   return (
     <CardSelectionWrapper gap={GAP} width={CARD_WIDTH} selected={selected}>
-      <CardWrapper onPress={onPress}>
+      <CardWrapper onPress={onPress && (() => onPress(name))}>
         <CardHeader backgroundColor={theme.color.accent.primary}>
           <CardTitle color={theme.color.text.primary}>{name}</CardTitle>
         </CardHeader>

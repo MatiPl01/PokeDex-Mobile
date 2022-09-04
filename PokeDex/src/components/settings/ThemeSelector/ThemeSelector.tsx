@@ -10,10 +10,14 @@ import { ThemeCardsGrid } from './ThemeSelector.styles';
 import ThemeCard from './ThemeCard';
 
 type ThemeSelectorProps = {
+  listHeaderComponent: JSX.Element;
   onChange: (selectedThemeName: ThemeName) => void;
 };
 
-const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onChange }) => {
+const ThemeSelector: React.FC<ThemeSelectorProps> = ({
+  listHeaderComponent,
+  onChange
+}) => {
   const themes = useSelector(selectCurrentModeThemesList);
   const currentThemeName = useSelector(selectCurrentThemeName);
 
@@ -32,6 +36,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onChange }) => {
     <ThemeCardsGrid<ComponentType<FlatListProps<ThemeWithName>>>
       data={themes}
       keyExtractor={(item: ThemeWithName) => item.name}
+      ListHeaderComponent={listHeaderComponent}
       renderItem={renderItem}
       numColumns={2}
     />

@@ -22,6 +22,7 @@ export const CardSelectionWrapper = styled.View<{
 `;
 
 export const CardWrapper = styled(TouchableWrapper)`
+  height: auto;
   border-radius: 5px;
   overflow: hidden;
   align-items: stretch;
