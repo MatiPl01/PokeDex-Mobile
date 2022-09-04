@@ -163,7 +163,7 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
       }
 
       // Scroll
-      scrollY.value = Math.min(scrollY.value, maxScroll.value);
+      scrollY.value = Math.max(0, Math.min(scrollY.value, maxScroll.value));
       const lowerBound = scrollY.value - editablePaddingTop;
       const upperBound =
         lowerBound + contentHeight - gridConfig.value.itemHeight;

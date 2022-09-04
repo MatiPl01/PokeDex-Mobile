@@ -48,11 +48,6 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   }, []);
 
   useEffect(() => {
-    // TODO - the if statement below fixes the rerendering issue on the favorites order change
-    // but introduces the new issue causing inability to drag some items
-    // if (
-    //   !areSetsEqual(new Set(selectedFavoritesStates), new Set(favoritesStates))
-    // )
     setFavoritesStates(selectedFavoritesStates);
   }, [selectedFavoritesStates, favoritesIds]);
 
