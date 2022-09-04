@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
 import { Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ThemeMode } from '@store/theme/theme.types';
-import { selectThemeMode } from '@store/theme/theme.selector';
+import { selectCurrentThemeMode } from '@store/theme/theme.selector';
 import { createAnimatedThemedStyles } from '@utils/reanimated';
 import { AnimatedIconWrapper } from '@components/shared/styled/icons';
 import {
@@ -56,7 +56,7 @@ type DayNightSwitchProps = {
 const DayNightSwitch: React.FC<DayNightSwitchProps> = ({ onChange }) => {
   const theme = useTheme();
   const switchColors = theme.color.dayNightSwitch;
-  const themeMode = useSelector(selectThemeMode);
+  const themeMode = useSelector(selectCurrentThemeMode);
   const switchAnimationProgress = useSharedValue(
     +(themeMode === ThemeMode.DARK)
   );

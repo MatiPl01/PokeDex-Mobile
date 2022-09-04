@@ -1,3 +1,4 @@
+import { FlattenSimpleInterpolation } from 'styled-components';
 import '@types/styled-components';
 import '@types/styled-components-react-native';
 
@@ -6,11 +7,11 @@ type PokemonTypeColor = {
   secondary: string;
 };
 
-type ShadowSizes = {
-  xs: string;
-  sm: string;
-  md: string;
-  lg: string;
+type ShadowGroup = {
+  xs: FlattenSimpleInterpolation;
+  sm: FlattenSimpleInterpolation;
+  md: FlattenSimpleInterpolation;
+  lg: FlattenSimpleInterpolation;
 };
 
 declare module 'styled-components/native' {
@@ -89,9 +90,9 @@ declare module 'styled-components/native' {
   };
 
   export type ThemeShadows = {
-    soft: ShadowSizes;
-    medium: ShadowSizes;
-    strong: ShadowSizes;
+    soft: ShadowGroup;
+    medium: ShadowGroup;
+    strong: ShadowGroup;
   };
 
   export type ThemeSizes = {

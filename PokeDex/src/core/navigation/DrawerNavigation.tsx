@@ -19,7 +19,7 @@ import PokemonScreen from '@screens/pokemon/PokemonScreen';
 import FavoritesScreen from '@screens/favorites/FavoritesScreen';
 import MapScreen from '@screens/map/MapScreen';
 import SettingsScreen from '@screens/settings/SettingsScreen';
-import { selectTheme } from '@store/theme/theme.selector';
+import { selectCurrentTheme } from '@store/theme/theme.selector';
 import { createAnimatedStyles } from '@utils/reanimated';
 import Logo from '@assets/svg/logo.svg';
 import HamburgerIcon from './hamburger-icon/HamburgerIcon';
@@ -48,7 +48,7 @@ type ScreensProps = {
 };
 
 const Screens: React.FC<ScreensProps> = ({ navigation }) => {
-  const theme = useSelector(selectTheme);
+  const theme = useSelector(selectCurrentTheme);
   const progress = useDrawerProgress() as Readonly<SharedValue<number>>;
   const animatedStyles = useAnimatedScreensStyles(progress);
 
@@ -84,7 +84,7 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
 const DrawerContent: React.FC<DrawerContentComponentProps> = ({
   navigation
 }) => {
-  const theme = useSelector(selectTheme);
+  const theme = useSelector(selectCurrentTheme);
   const labelStyle = { marginLeft: -16, color: theme.color.text.primary };
   const iconProps = { size: 20, color: theme.color.text.primary };
 

@@ -1,24 +1,25 @@
 // TODO - this is a temporary settings screen
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { selectThemeMode, selectThemeName } from '@store/theme/theme.selector';
 import { ThemeName, ThemeMode } from '@store/theme/theme.types';
-import { setTheme, setThemeMode } from '@store/theme/theme.actions';
+import { setThemeName, setThemeMode } from '@store/theme/theme.actions';
 import { catchAsync } from '@utils/errors';
 import {
-  Container,
-  TextContainer,
-  Text,
-  Button,
-  ButtonText
+  SettingsRow,
+  SettingsSection,
+  SectionSeparator,
+  ColumnSeparator,
+  SectionHeading,
+  SectionSubheading,
+  SettingsText,
+  SettingsWrapper
 } from './SettingsScreen.styles';
 import DayNightSwitch from '@components/settings/DayNightSwitch/DayNightSwitch';
+import ThemeSelector from '@components/settings/ThemeSelector/ThemeSelector';
 
-const ThemeTestScreen: React.FC = () => {
+const SettingsScreen: React.FC = () => {
   const dispatch = useDispatch();
-  const themeMode = useSelector(selectThemeMode);
-  const themeName = useSelector(selectThemeName);
 
   const saveThemeMode = catchAsync(async (themeMode: ThemeMode) => {
     await AsyncStorage.setItem('@theme-mode', themeMode);
@@ -33,34 +34,34 @@ const ThemeTestScreen: React.FC = () => {
     saveThemeMode(newThemeMode);
   };
 
-  const switchTheme = () => {
-    const newThemeName =
-      themeName === ThemeName.DEFAULT ? ThemeName.OCEAN : ThemeName.DEFAULT;
-    dispatch(setTheme(newThemeName));
+  const changeTheme = (newThemeName: ThemeName) => {
+    dispatch(setThemeName(newThemeName));
     saveThemeName(newThemeName);
   };
 
   return (
-    <Container>
-      <DayNightSwitch onChange={switchThemeMode} />
-      <TextContainer>
-        <Text>Switching theme with Redux</Text>
-      </TextContainer>
-
-      {/* <Button onPress={switchThemeMode}>
-        <ButtonText>
-          Change to {themeMode === ThemeMode.DARK ? 'light' : 'dark'} mode
-        </ButtonText>
-      </Button> */}
-
-      <Button onPress={switchTheme}>
-        <ButtonText>
-          Change to {themeName === ThemeName.DEFAULT ? 'ocean' : 'default'}{' '}
-          theme
-        </ButtonText>
-      </Button>
-    </Container>
+    // TODO - fix error: VirtualizedList cannot be nested in the ScrollView
+    <SettingsWrapper>
+      <SettingsSection>
+        <SectionHeading>Theme mode</SectionHeading>
+        <SettingsRow>
+          <DayNightSwitch onChange={switchThemeMode} />
+          <ColumnSeparator />
+          <SettingsText>Light / Dark mode</SettingsText>
+        </SettingsRow>
+      </SettingsSection>
+      <SectionSeparator />
+      <SettingsSection>
+        <SectionHeading>Theme colors</SectionHeading>
+        <SectionSubheading>
+          Select a theme to personalize app appearance
+        </SectionSubheading>
+        <SettingsRow>
+          <ThemeSelector onChange={changeTheme} />
+        </SettingsRow>
+      </SettingsSection>
+    </SettingsWrapper>
   );
 };
 
-export default ThemeTestScreen;
+export default SettingsScreen;

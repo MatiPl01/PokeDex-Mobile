@@ -1,40 +1,47 @@
 import { DefaultTheme } from 'styled-components/native';
+import { ThemeAction } from './theme.actions';
+import { ThemeActionType, ThemeName, ThemeMode } from './theme.types';
+import { cloneObj } from '@utils/data';
 import { createTheme } from '@themes/utils';
 import defaultTheme from '@themes/default';
 import oceanTheme from '@themes/ocean';
-import { ThemeAction } from './theme.actions';
-import { ThemeActionType, ThemeName, ThemeMode } from './theme.types';
+
+type ThemesConfig = Record<ThemeMode, Record<ThemeName, DefaultTheme>>;
+
+const THEMES: ThemesConfig = {
+  LIGHT: {
+    DEFAULT: createTheme(defaultTheme, ThemeMode.LIGHT),
+    OCEAN: createTheme(oceanTheme, ThemeMode.LIGHT)
+  },
+  DARK: {
+    DEFAULT: createTheme(defaultTheme, ThemeMode.DARK),
+    OCEAN: createTheme(oceanTheme, ThemeMode.DARK)
+  }
+};
 
 export type ThemeState = {
-  readonly theme: DefaultTheme;
+  readonly currentTheme: DefaultTheme;
+  readonly themes: ThemesConfig;
   readonly name: ThemeName;
   readonly mode: ThemeMode;
 };
 
 const INITIAL_STATE: ThemeState = {
-  theme: createTheme(defaultTheme, ThemeMode.LIGHT),
+  currentTheme: cloneObj(THEMES.LIGHT.DEFAULT),
+  themes: cloneObj(THEMES),
   name: ThemeName.DEFAULT,
   mode: ThemeMode.LIGHT
 };
 
-const chooseTheme = (name: ThemeName, mode: ThemeMode): ThemeState => {
+const handleThemeChange = (state: ThemeState, name: ThemeName, mode: ThemeMode): ThemeState => {
   let themeMode = ThemeMode.LIGHT;
   if (Object.values(ThemeMode).includes(mode)) themeMode = mode;
-
-  switch (name) {
-    case ThemeName.OCEAN:
-      return {
-        mode: themeMode,
-        name,
-        theme: createTheme(oceanTheme, themeMode)
-      };
-    default:
-      return {
-        mode: themeMode,
-        name,
-        theme: createTheme(defaultTheme, themeMode)
-      };
-  }
+  return {
+    ...state,
+    currentTheme: cloneObj(THEMES[themeMode][name]),
+    name,
+    mode
+  };
 };
 
 const themeReducer = (
@@ -43,9 +50,9 @@ const themeReducer = (
 ): ThemeState => {
   switch (action.type) {
     case ThemeActionType.SET_THEME:
-      return chooseTheme(action.payload, state.mode);
+      return handleThemeChange(state, action.payload, state.mode);
     case ThemeActionType.SET_MODE:
-      return chooseTheme(state.name, action.payload);
+      return handleThemeChange(state, state.name, action.payload);
     default:
       return state;
   }

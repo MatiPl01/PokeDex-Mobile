@@ -7,7 +7,7 @@ export const RoundedBackgroundClip = styled.View`
   ${relativeFill};
 `;
 
-export const BackgroundGradientsWrapper = styled.View<{ width: number }>`
+export const BarBackgroundWrapper = styled.View<{ width: number }>`
   position: absolute;
   top: 0;
   bottom: 0;
