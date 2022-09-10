@@ -1,7 +1,13 @@
 import React, { useEffect } from 'react';
 import Svg, { G, Circle } from 'react-native-svg';
-import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useDerivedValue,
+  useAnimatedProps,
+  withTiming
+} from 'react-native-reanimated';
 import { createAnimatedProps } from '@utils/reanimated';
+import { Wrapper, SvgWrapper, CounterText } from './CircularProgress.styles';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -24,7 +30,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   strokeColor = 'tomato',
   strokeWidth = 10,
   animationDelay = 0,
-  animationDuration = 500
+  animationDuration = 50000
 }) => {
   // Data
   const percentage = value / maxValue;
@@ -59,22 +65,41 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
     return () => clearTimeout(timeout);
   }, []);
 
+  const animatedCounterText = useDerivedValue(() =>
+    String(Math.floor(animationProgress.value * value))
+  );
+
+  const animatedCounterProps = useAnimatedProps(() => {
+    const counterValue = animatedCounterText.value;
+
+    return {
+      text: counterValue,
+      fontSize: Math.min(1.5 * radius / counterValue.length, radius / 1.5)
+    };
+  });
+
   return (
-    <Svg
-      width={diameter}
-      height={diameter}
-      viewBox={`0 0 ${outerDiameter} ${outerDiameter}`}
-    >
-      <G rotation="-90" origin={`${outerRadius}, ${outerRadius}`}>
-        <Circle {...circleProps} strokeOpacity={0.2} />
-        <AnimatedCircle
-          {...circleProps}
-          strokeDasharray={circleCircumference}
-          strokeLinecap="round"
-          animatedProps={animatedCircleProps}
-        />
-      </G>
-    </Svg>
+    <Wrapper size={diameter}>
+      <SvgWrapper>
+        <Svg
+          width={diameter}
+          height={diameter}
+          viewBox={`0 0 ${outerDiameter} ${outerDiameter}`}
+        >
+          <G rotation="-90" origin={`${outerRadius}, ${outerRadius}`}>
+            <Circle {...circleProps} strokeOpacity={0.2} />
+            <AnimatedCircle
+              {...circleProps}
+              strokeDasharray={circleCircumference}
+              strokeLinecap="round"
+              animatedProps={animatedCircleProps}
+            />
+          </G>
+        </Svg>
+      </SvgWrapper>
+      {/* TODO - calculate font size based on the number of digits */}
+      <CounterText animatedProps={animatedCounterProps} color={textColor} />
+    </Wrapper>
   );
 };
 
