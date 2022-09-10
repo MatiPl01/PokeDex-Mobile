@@ -4,7 +4,8 @@ import {
   ListRenderItem,
   ViewToken,
   FlatList,
-  RefreshControl
+  RefreshControl,
+  Pressable
 } from 'react-native';
 import ReAnimated, {
   useSharedValue,
@@ -13,7 +14,10 @@ import ReAnimated, {
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { SIZE } from '@constants';
+import { RootStackParamList } from '@core/navigation/DrawerNavigation';
 import { createAnimatedThemedStyle } from '@utils/reanimated';
 import {
   fetchNextPokemonBatchAsync,
@@ -50,6 +54,8 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const theme = useTheme();
   const dispatch = useDispatch();
   const edges = useSafeAreaInsets();
+  const navigation =
+    useNavigation<StackNavigationProp<RootStackParamList, 'PokemonDetails'>>();
   const cardListRef = useRef<FlatList | null>(null);
   const LOGO_BAR_HEIGHT = theme.size.lg;
   const LIST_CONTAINER_HEIGHT = SIZE.SCREEN.HEIGHT - LOGO_BAR_HEIGHT;
@@ -115,7 +121,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
   };
 
   const renderItem: ListRenderItem<SinglePokemonState> = ({
-    item: { pokemon, isLoading },
+    item: { id: pokemonId, pokemon, isLoading },
     index
   }) => {
     const position = Animated.subtract(index * LIST_ITEM_HEIGHT, scrollY);
@@ -139,7 +145,12 @@ const PokemonList: React.FC<PokemonListProps> = ({
       <Animated.View
         style={{ transform: [{ scale }, { translateY }], opacity }}
       >
-        <PokemonCard pokemon={pokemon} isLoading={isLoading} />
+        <Pressable
+          key={pokemonId}
+          onPress={() => navigation.push('PokemonDetails', { pokemonId })}
+        >
+          <PokemonCard pokemon={pokemon} isLoading={isLoading} />
+        </Pressable>
       </Animated.View>
     );
   };
