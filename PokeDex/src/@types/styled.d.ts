@@ -75,6 +75,7 @@ declare module 'styled-components/native' {
     regular: number;
     medium: number;
     bold: number;
+    extraBold: number;
   };
 
   export type ThemeFontSizes = {
