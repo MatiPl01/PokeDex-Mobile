@@ -17,7 +17,7 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
   return (
     <>
       <StyledText>Pokemon ID: {route.params.pokemonId}</StyledText>
-      <CircularProgress value={75} />
+      <CircularProgress value={10000} maxValue={10000} />
     </>
   );
 };
