@@ -4,6 +4,7 @@ import {
   Extrapolate,
   SharedValue,
   useAnimatedStyle,
+  useAnimatedProps,
   interpolateColor
 } from 'react-native-reanimated';
 import memoizeOne from 'memoize-one';
@@ -12,7 +13,7 @@ import memoizeOne from 'memoize-one';
 type InterpolationNumbers = readonly number[];
 type InterpolationStrings = readonly string[];
 type InterpolationRange = InterpolationNumbers | InterpolationStrings;
-type InterpolationValuesList = { [key: string]: InterpolationRange }[];
+type InterpolationValuesList = Record<string, InterpolationRange>[];
 
 type InterpolationRanges = {
   inputRange: InterpolationNumbers;
@@ -24,19 +25,20 @@ type InterpolationPropertyValue =
   | InterpolationRange // default inputRange will be used
   | InterpolationValuesList; // default inputRange will be used
 
-export type AnimatedStyleConfig = { [key: string]: InterpolationPropertyValue };
+export type AnimatedStyleConfig = Record<string, InterpolationPropertyValue>;
 
-export type AnimatedStylesConfig = { [key: string]: AnimatedStyleConfig };
+export type AnimatedStylesConfig = Record<string, AnimatedStyleConfig>;
 
-type InterpolatedValue =
-  | string
-  | number
-  | { [key: string]: InterpolatedValue }[];
+type InterpolatedValue = string | number | Record<string, InterpolatedValue>[];
+
+export type AnimatedPropsConfig = Record<string, InterpolationRange>;
+export type AnimatedPropsGroupsConfig = Record<string, AnimatedPropsConfig>;
 
 /**
  *
- * @param stops - number of animation stop values (the same as the number of outputRange values)
- * @returns - uniformly distributed inputRange values
+ * @param stops - number of animation stop values (the same as the
+ *                number of outputRange values)
+ * @returns     - uniformly distributed inputRange values
  */
 const createUniformInputRange = (stops: number): number[] => {
   'worklet';
@@ -56,7 +58,8 @@ const createUniformInputRange = (stops: number): number[] => {
  *  progress - animation progress value
  * }
  *
- * @return - value calculated based on the interpolation inputRange, outputRange and the progress value
+ * @return - value calculated based on the interpolation inputRange,
+ *           outputRange and the progress value
  */
 const interpolateNumbers = ({
   inputRange,
@@ -132,10 +135,13 @@ const isStringRange = (value: readonly any[]): boolean => {
 };
 
 /**
- * Detects if the value assigned to the animated property is a list of objects containing properties and interpolation ranges
+ * Detects if the value assigned to the animated property is a list
+ * of objects containing properties and interpolation ranges
  *
- * @param value - array of values expected to be a list of objects containing animated values
- * @returns - boolean value indicating if the value provided is an array of objects with properties and interpolation ranges
+ * @param value - array of values expected to be a list of objects
+ *                containing animated values
+ * @returns     - boolean value indicating if the value provided is an
+ *                array of objects with properties and interpolation ranges
  */
 const isInterpolatedValuesList = (value: readonly any[]): boolean => {
   'worklet';
@@ -145,10 +151,11 @@ const isInterpolatedValuesList = (value: readonly any[]): boolean => {
 /**
  * Interpolate values assigned to the specific property
  *
- * @param progress - animation progress value
- * @param propertyName - name of a property which has interpolation values assigned to it
- * @param value - interpolated property value]
- * @returns
+ * @param progress     - animation progress value
+ * @param propertyName - name of a property which has interpolation
+ *                       values assigned to it
+ * @param value        - interpolated property value
+ * @returns            - interpolated value
  */
 function interpolateValue(
   progress: Readonly<SharedValue<number>>,
@@ -222,8 +229,8 @@ function interpolateValue(
  * Create animated style hook based on the config object
  *
  * @param config - config specifying animated properties and their value ranges
- * @returns      - a hook that creates animated style when called with the progress
- *                 variable
+ * @returns      - a hook that creates animated style when called with the
+ *                 progress variable
  */
 export const createAnimatedStyle =
   (config: AnimatedStyleConfig) => (progress: Readonly<SharedValue<number>>) =>
@@ -243,16 +250,23 @@ export const createAnimatedStyle =
  * @param config - an object containing style names and AnimatedStyleConfig objects
  * @returns      - an object containing animated styles
  */
-export const createAnimatedStyles =
-  (config: AnimatedStylesConfig) =>
-  (progress: Readonly<SharedValue<number>>) => {
-    'worklet';
-    return Object.fromEntries(
-      Object.entries(config).map(([key, styleConfig]) => {
-        return [key, createAnimatedStyle(styleConfig)(progress)];
-      })
+export const createAnimatedStyles = (config: AnimatedStylesConfig) => {
+  'worklet';
+
+  const animatedStyles = Object.fromEntries(
+    Object.entries(config).map(([key, styleConfig]) => {
+      return [key, createAnimatedStyle(styleConfig)];
+    })
+  );
+
+  return (progress: Readonly<SharedValue<number>>) =>
+    Object.fromEntries(
+      Object.entries(animatedStyles).map(([styleName, animatedStyleFn]) => [
+        styleName,
+        animatedStyleFn(progress)
+      ])
     );
-  };
+};
 
 /**
  * Create animated style hook based on the themed config object
@@ -281,3 +295,53 @@ export const createAnimatedThemedStyles = <T = void>(
   memoizeOne((theme: DefaultTheme, customProps: T) =>
     createAnimatedStyles(themedConfig(theme, customProps))
   );
+
+/**
+ * Create an object with animated properties
+ *
+ * @param config - an object containing property names and their ranges
+ * @returns      - an object containing animated values assigned to the
+ *                 appropriate property names
+ */
+export const createAnimatedProps =
+  (config: AnimatedPropsConfig) => (progress: Readonly<SharedValue<number>>) =>
+    useAnimatedProps(() => {
+      'worklet';
+      return Object.fromEntries(
+        Object.entries(config).map(([prop, value]) => [
+          prop,
+          interpolateValue(progress, prop, value)
+        ])
+      );
+    });
+
+/**
+ * Create an object containing grouped animated properties
+ *
+ * @param config - an object containing group names and animated
+ *                 properties configs
+ * @returns      - an object containing group names and animated
+ *                 values assigned to property names in groups
+ */
+export const createAnimatedPropsGroups = (
+  config: AnimatedPropsGroupsConfig
+) => {
+  'worklet';
+
+  const animatedPropsGroups = Object.fromEntries(
+    Object.entries(config).map(([groupName, groupConfig]) => [
+      groupName,
+      createAnimatedProps(groupConfig)
+    ])
+  );
+
+  return (progress: Readonly<SharedValue<number>>) =>
+    Object.fromEntries(
+      Object.entries(animatedPropsGroups).map(
+        ([groupName, groupAnimatedPropsFn]) => [
+          groupName,
+          groupAnimatedPropsFn(progress)
+        ]
+      )
+    );
+};
