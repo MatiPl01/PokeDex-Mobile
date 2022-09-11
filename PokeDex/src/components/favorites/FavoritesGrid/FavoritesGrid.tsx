@@ -80,7 +80,11 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   }) => (
     <Pressable
       key={pokemonId}
-      onPress={() => navigation.push('PokemonDetails', { pokemonId })}
+      onPress={
+        editable
+          ? undefined
+          : () => navigation.push('PokemonDetails', { pokemonId })
+      }
     >
       <FavoritePokemonCard
         pokemon={pokemon}

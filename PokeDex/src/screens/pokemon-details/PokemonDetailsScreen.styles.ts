@@ -1,6 +1,11 @@
 import styled, { css } from 'styled-components/native';
 import DefaultProgressCircular from '@components/shared/react/ProgressCircular/ProgressCircular';
 
+export const ScrollableWrapper = styled.ScrollView`
+  flex: 1;
+  background-color: ${({ theme }) => theme.color.background.primary};
+`;
+
 export const Row = styled.View`
   flex-direction: row;
   justify-content: center;
@@ -18,6 +23,13 @@ export const SectionHeading = styled.Text`
     font-size: ${theme.fontSize.title}px;
     font-weight: ${theme.fontWeight.bold};
     margin-bottom: ${theme.space.md}px;
+  `};
+`;
+
+export const SectionText = styled.Text`
+  ${({ theme }) => css`
+    color: ${theme.color.text.secondary};
+    font-size: ${theme.fontSize.body}px;
   `};
 `;
 

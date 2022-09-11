@@ -44,13 +44,13 @@ const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
   } else {
     return imageUrl ? (
       <>
-        {isImageLoading && <SkeletonPlaceholder />}
         <PokemonImage
           source={{ uri: imageUrl }}
           onLoadEnd={handleLoadEnd}
           width={width}
           height={height}
         />
+        {isImageLoading && <SkeletonPlaceholder />}
       </>
     ) : (
       <PlaceholderImageIcon name="question" size={height} />

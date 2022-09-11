@@ -44,7 +44,7 @@ export const StatLabel = styled.Text<{ width: number }>`
   flex-basis: ${({ width }) => width}px;
 
   ${({ theme }) => css`
-    color: ${theme.color.text.primary};
+    color: ${theme.color.text.secondary};
     font-size: ${theme.fontSize.body}px;
   `};
 `;
