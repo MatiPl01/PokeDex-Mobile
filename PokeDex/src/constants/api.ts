@@ -6,6 +6,7 @@ export default {
   POKEMON: {
     MAX_HEIGHT: 1000,
     MAX_WEIGHT: 10000,
+    MAX_BASE_EXPERIENCE: 635,
     MAX_HP: 255,
     MAX_ATTACK: 190,
     MAX_DEFENSE: 250,

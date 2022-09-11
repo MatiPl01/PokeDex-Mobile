@@ -6,6 +6,8 @@ import { catchThrowAxiosError } from '@utils/errors';
 import { getImageExtensionFromUrl } from '@utils/files';
 import {
   Pokemon,
+  PokemonItem,
+  PokemonItemResponse,
   PokemonResponse,
   PokemonSearchResponse,
   PokemonStatName
@@ -15,8 +17,9 @@ import {
   PokemonSearchItemResponse
 } from '@store/search/search.types';
 
-export const getPokemonIdFromUrl = (url: string): string => {
-  return url.replace(`${API.URL}/pokemon`, '').replace(/\//g, '');
+export const getIdFromUrl = (url: string): string => {
+  const urlParts = url.split('/');
+  return urlParts[urlParts.length - 2];
 };
 
 export const getNextPokemonCountFromUrl = (url: string) => {
@@ -41,7 +44,7 @@ export const fetchPokemonSearchItems = catchThrowAxiosError(
       results.push(
         ...res.results.map((item: PokemonSearchItemResponse) => ({
           value: item.name,
-          id: getPokemonIdFromUrl(item.url)
+          id: getIdFromUrl(item.url)
         }))
       );
     } while (url);
@@ -70,15 +73,26 @@ export const fetchSinglePokemonDataById = catchThrowAxiosError(
   }
 );
 
+export const fetchItemDataById = catchThrowAxiosError(
+  async (id: string): Promise<PokemonItem> => {
+    const url = `${API.URL}/item/${id}`;
+    const res = (await axios.get<PokemonItemResponse>(url)).data;
+    return pokemonImageTransform(res);
+  }
+);
+
 const pokemonDataTransform = ({
   id,
   name,
   sprites,
   height,
   weight,
+  base_experience,
   types,
   abilities,
-  stats
+  stats,
+  held_items,
+  moves
 }: PokemonResponse): Pokemon => {
   const imageUrl =
     sprites.other.dream_world.front_default ||
@@ -93,11 +107,29 @@ const pokemonDataTransform = ({
     imageExtension: imageUrl ? getImageExtensionFromUrl(imageUrl) : null,
     height,
     weight,
+    baseExperience: base_experience,
     types: types.map(({ type }) => type.name),
     abilities: abilities.map(({ ability }) => ability.name),
     stats: stats.map(({ base_stat, stat }) => ({
       name: kebabCaseToCamelCase(stat.name) as PokemonStatName,
       value: base_stat
-    }))
+    })),
+    items: held_items.map(({ item: { name, url } }) => ({
+      name,
+      id: getIdFromUrl(url)
+    })),
+    moves: moves.map(({ move: { name } }) => name)
   };
 };
+
+const pokemonImageTransform = ({
+  id,
+  cost,
+  name,
+  sprites
+}: PokemonItemResponse): PokemonItem => ({
+  id: String(id),
+  cost,
+  name,
+  imageUrl: sprites.default
+});

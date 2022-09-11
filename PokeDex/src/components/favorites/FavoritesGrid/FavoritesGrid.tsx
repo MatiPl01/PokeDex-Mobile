@@ -6,6 +6,8 @@ import { useTheme } from 'styled-components';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@core/navigation/DrawerNavigation';
+import { Padding } from '@types';
+import { RootState } from '@store';
 import { selectFavoritePokemonIdsList } from '@store/favorites/favorites.selector';
 import { fetchPokemonBatchByIdsAsync } from '@store/pokemon/pokemon.actions';
 import { selectPokemonStateListByIds } from '@store/pokemon/pokemon.selector';
@@ -14,8 +16,6 @@ import {
   setFavoritePokemonIds
 } from '@store/favorites/favorites.actions';
 import { SinglePokemonState } from '@store/pokemon/pokemon.reducer';
-import { Padding } from '@types';
-import { RootState } from '@store';
 import FavoritePokemonCard from '@components/favorites/FavoritePokemonCard/FavoritePokemonCard';
 import SortableGrid from '@components/shared/react/SortableGrid/SortableGrid';
 
@@ -77,22 +77,20 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   }: {
     item: SinglePokemonState;
     width: number;
-  }) => {
-    return (
-      <Pressable
-        key={pokemonId}
-        onPress={() => navigation.push('PokemonDetails', { pokemonId })}
-      >
-        <FavoritePokemonCard
-          pokemon={pokemon}
-          isLoading={isLoading}
-          width={width}
-          deletable={editable}
-          onDelete={handleFavoriteDelete}
-        />
-      </Pressable>
-    );
-  };
+  }) => (
+    <Pressable
+      key={pokemonId}
+      onPress={() => navigation.push('PokemonDetails', { pokemonId })}
+    >
+      <FavoritePokemonCard
+        pokemon={pokemon}
+        isLoading={isLoading}
+        width={width}
+        deletable={editable}
+        onDelete={handleFavoriteDelete}
+      />
+    </Pressable>
+  );
 
   return (
     <SortableGrid<SinglePokemonState>

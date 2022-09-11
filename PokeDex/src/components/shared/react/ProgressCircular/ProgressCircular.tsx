@@ -22,6 +22,7 @@ type ProgressCircularProps = {
   maxValue?: number;
   label?: string;
   labelPosition?: 'top' | 'bottom';
+  width?: number;
   radius?: number;
   textColor?: string;
   strokeBackgroundColor?: string;
@@ -34,8 +35,8 @@ type ProgressCircularProps = {
 
 const ProgressCircular: React.FC<ProgressCircularProps> = ({
   value,
-  maxValue = 100,
   label,
+  maxValue = 100,
   labelPosition = 'bottom',
   radius = 40,
   textColor = 'tomato',
@@ -43,6 +44,7 @@ const ProgressCircular: React.FC<ProgressCircularProps> = ({
   strokeBackgroundColor = 'tomato',
   strokeBackgroundOpacity = 0.2,
   strokeWidth = 10,
+  width = 2 * (radius + strokeWidth),
   animationDelay = 0,
   animationDuration = 500
 }) => {
@@ -92,7 +94,7 @@ const ProgressCircular: React.FC<ProgressCircularProps> = ({
   }, []);
 
   return (
-    <Wrapper reversed={labelPosition === 'top'}>
+    <Wrapper reversed={labelPosition === 'top'} width={width}>
       <ProgressWrapper size={diameter}>
         <SvgWrapper>
           <Svg
@@ -118,7 +120,7 @@ const ProgressCircular: React.FC<ProgressCircularProps> = ({
         </SvgWrapper>
         <CounterText color={textColor} animatedProps={animatedCounterProps} />
       </ProgressWrapper>
-      {label && <Label>{label}</Label>}
+      {label && <Label maxWidth={width}>{label}</Label>}
     </Wrapper>
   );
 };
