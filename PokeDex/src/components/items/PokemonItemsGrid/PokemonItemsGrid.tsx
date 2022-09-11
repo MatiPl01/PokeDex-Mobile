@@ -9,7 +9,7 @@ import { fetchPokemonItemsBatchAsync } from '@store/items/items.actions';
 import SortableGrid from '@components/shared/react/SortableGrid/SortableGrid';
 import PokemonItem from '../PokemonItem/PokemonItem';
 
-const getItemIds = (items: { name: string; id: string }[]): string[] =>
+const getItemsIds = (items: { name: string; id: string }[]): string[] =>
   items.map(({ id }) => id);
 
 type PokemonItemsGridProps = {
@@ -21,8 +21,9 @@ const PokemonItemsGrid: React.FC<PokemonItemsGridProps> = ({ items }) => {
   const dispatch = useDispatch();
   const GRID_GAP = theme.space.lg;
   const PADDING = theme.space.lg;
+  const ITEM_HEIGHT = theme.size.lg;
   const itemStates = useSelector((rootState: RootState) =>
-    selectItemStatesByIds(rootState, getItemIds(items))
+    selectItemStatesByIds(rootState, getItemsIds(items))
   );
 
   const padding: Padding = {
@@ -31,15 +32,14 @@ const PokemonItemsGrid: React.FC<PokemonItemsGridProps> = ({ items }) => {
   };
 
   useEffect(() => {
-    dispatch(fetchPokemonItemsBatchAsync(getItemIds(items)));
+    dispatch(fetchPokemonItemsBatchAsync(getItemsIds(items)));
   }, [items]);
 
   const renderItem = ({
-    item: { id, isLoading, item }
+    item: { isLoading, item }
   }: {
     item: SingleItemState;
-    width: number;
-  }) => <PokemonItem id={id} item={item} isLoading={isLoading} />;
+  }) => <PokemonItem item={item} isLoading={isLoading} height={ITEM_HEIGHT} />;
 
   return (
     <SortableGrid<SingleItemState>
@@ -50,7 +50,7 @@ const PokemonItemsGrid: React.FC<PokemonItemsGridProps> = ({ items }) => {
       rowGap={GRID_GAP}
       columnGap={GRID_GAP}
       padding={padding}
-      itemHeight={theme.size.xl}
+      itemHeight={ITEM_HEIGHT}
       editable={false}
     />
   );

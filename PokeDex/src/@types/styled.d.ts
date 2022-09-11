@@ -39,6 +39,10 @@ declare module 'styled-components/native' {
       light: string;
       dark: string;
     };
+    green: {
+      primary: string;
+      secondary: string;
+    };
     pokemon: {
       type: {
         normal: PokemonTypeColor;

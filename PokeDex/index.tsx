@@ -15,9 +15,9 @@ import store from '@store';
 [
   AntDesignIcon,
   MaterialIcon,
+  FontistoIcon,
   FeatherIcon,
   EntypoIcon,
-  FontistoIcon,
   IonIcon
 ].map(icon => icon.loadFont());
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from 'styled-components/native';
+import { useTheme } from 'styled-components';
 import { PokemonStatName } from '@store/pokemon/pokemon.types';
 import { camelCaseToWordsString } from '@utils/text';
 import {
