@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SIZE } from '@constants';
+import { RootStackParamList } from '@core/navigation/DrawerNavigation';
 import { createAnimatedThemedStyle } from '@utils/reanimated';
 import {
   fetchNextPokemonBatchAsync,
@@ -54,7 +55,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const dispatch = useDispatch();
   const edges = useSafeAreaInsets();
   const navigation =
-    useNavigation<StackNavigationProp<RootStackParamList, RouteName>>();
+    useNavigation<StackNavigationProp<RootStackParamList, "PokemonDetails">>();
   const cardListRef = useRef<FlatList | null>(null);
   const LOGO_BAR_HEIGHT = theme.size.lg;
   const LIST_CONTAINER_HEIGHT = SIZE.SCREEN.HEIGHT - LOGO_BAR_HEIGHT;
