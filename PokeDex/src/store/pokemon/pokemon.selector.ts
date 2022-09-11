@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
+import { idToIdx } from '@utils/data';
 import { RootState } from '@store';
-import { idToIdx } from './pokemon.utils';
 
 const selectPokemonState = (state: RootState) => state.pokemon;
 

@@ -17,7 +17,7 @@ export const SectionHeading = styled.Text`
     color: ${theme.color.text.primary};
     font-size: ${theme.fontSize.title}px;
     font-weight: ${theme.fontWeight.bold};
-    margin-bottom: ${theme.space.lg}px;
+    margin-bottom: ${theme.space.md}px;
   `};
 `;
 
@@ -28,3 +28,7 @@ export const ProgressCircular = styled(DefaultProgressCircular).attrs(
     strokeBackgroundColor: theme.color.accent.primary
   })
 )``;
+
+export const ItemsGridWrapper = styled.View`
+  margin: ${({ theme }) => `0 -${theme.space.lg}px`};
+`;
