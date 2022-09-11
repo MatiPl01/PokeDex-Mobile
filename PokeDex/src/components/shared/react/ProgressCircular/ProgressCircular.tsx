@@ -7,30 +7,35 @@ import Animated, {
   withTiming
 } from 'react-native-reanimated';
 import { createAnimatedProps } from '@utils/reanimated';
-import { Wrapper, SvgWrapper, CounterText } from './CircularProgress.styles';
+import { CounterText } from '@components/shared/styled/text';
+import { Wrapper, SvgWrapper } from './ProgressCircular.styles';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-type CircularProgressProps = {
+type ProgressCircularProps = {
   value: number;
   maxValue?: number;
   radius?: number;
   textColor?: string;
+  strokeBackgroundColor?: string;
+  strokeBackgroundOpacity?: number;
   strokeColor?: string;
   strokeWidth?: number;
   animationDelay?: number;
   animationDuration?: number;
 };
 
-const CircularProgress: React.FC<CircularProgressProps> = ({
+const ProgressCircular: React.FC<ProgressCircularProps> = ({
   value,
   maxValue = 100,
   radius = 40,
   textColor = 'tomato',
   strokeColor = 'tomato',
+  strokeBackgroundColor = 'tomato',
+  strokeBackgroundOpacity = 0.2,
   strokeWidth = 10,
   animationDelay = 0,
-  animationDuration = 50000
+  animationDuration = 500
 }) => {
   // Data
   const percentage = value / maxValue;
@@ -42,10 +47,9 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
     cx: '50%',
     cy: '50%',
     r: radius,
-    stroke: strokeColor,
     strokeWidth: strokeWidth
   };
-  // Animated values
+  // Animated progress values
   const animationProgress = useSharedValue(0);
   // Animated props
   const animatedCircleProps = createAnimatedProps({
@@ -54,6 +58,19 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
       circleCircumference * (1 - percentage)
     ]
   })(animationProgress);
+
+  const animatedCounterText = useDerivedValue(() =>
+    String(Math.floor(animationProgress.value * value))
+  );
+
+  const animatedCounterProps = useAnimatedProps(() => {
+    const counterValue = animatedCounterText.value;
+
+    return {
+      text: counterValue,
+      fontSize: Math.min((1.5 * radius) / counterValue.length, radius / 1.5)
+    };
+  });
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -65,19 +82,6 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
     return () => clearTimeout(timeout);
   }, []);
 
-  const animatedCounterText = useDerivedValue(() =>
-    String(Math.floor(animationProgress.value * value))
-  );
-
-  const animatedCounterProps = useAnimatedProps(() => {
-    const counterValue = animatedCounterText.value;
-
-    return {
-      text: counterValue,
-      fontSize: Math.min(1.5 * radius / counterValue.length, radius / 1.5)
-    };
-  });
-
   return (
     <Wrapper size={diameter}>
       <SvgWrapper>
@@ -87,9 +91,14 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
           viewBox={`0 0 ${outerDiameter} ${outerDiameter}`}
         >
           <G rotation="-90" origin={`${outerRadius}, ${outerRadius}`}>
-            <Circle {...circleProps} strokeOpacity={0.2} />
+            <Circle
+              {...circleProps}
+              stroke={strokeBackgroundColor}
+              strokeOpacity={strokeBackgroundOpacity}
+            />
             <AnimatedCircle
               {...circleProps}
+              stroke={strokeColor}
               strokeDasharray={circleCircumference}
               strokeLinecap="round"
               animatedProps={animatedCircleProps}
@@ -97,10 +106,9 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
           </G>
         </Svg>
       </SvgWrapper>
-      {/* TODO - calculate font size based on the number of digits */}
-      <CounterText animatedProps={animatedCounterProps} color={textColor} />
+      <CounterText color={textColor} animatedProps={animatedCounterProps} />
     </Wrapper>
   );
 };
 
-export default CircularProgress;
+export default ProgressCircular;

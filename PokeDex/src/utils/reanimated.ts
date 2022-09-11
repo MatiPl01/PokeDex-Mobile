@@ -112,11 +112,13 @@ const interpolateColors = ({
  * Detect if the value assigned to the animated property is a range
  * containing 2 numbers
  *
- * @param value - array of values expected to be 2 numbers
- * @returns - boolean value indicating if the value provided is a range
- *            of numbers
+ * @param value - array of values expected to be numbers
+ * @returns     - boolean value indicating if the value provided is a range
+ *                of numbers
  */
-const isNumberRange = (value: readonly any[]): boolean => {
+const isNumberRange = (
+  value: readonly any[]
+): value is InterpolationNumbers => {
   'worklet';
   return value.every(v => typeof v === 'number');
 };
@@ -126,12 +128,30 @@ const isNumberRange = (value: readonly any[]): boolean => {
  * containing color strings (e.g. colors)
  *
  * @param value - array of values expected to be strings
- * @returns - boolean value indicating if the value provided is a range
- *            of strings
+ * @returns     - boolean value indicating if the value provided is a range
+ *                of strings
  */
-const isStringRange = (value: readonly any[]): boolean => {
+const isStringRange = (
+  value: readonly any[]
+): value is InterpolationStrings => {
   'worklet';
   return value.every(v => typeof v === 'string');
+};
+
+/**
+ * Detect if the value assigned to the animated property is a range
+ * containing percentage values (strings ending with %)
+ *
+ * @param value - array of values expected to be percentage values
+ * @returns     - boolean value indicating if the value provided is a range
+ *                of percentage values
+ *
+ */
+const isPercentRange = (
+  value: readonly any[]
+): value is InterpolationStrings => {
+  'worklet';
+  return value.every(v => typeof v === 'string' && v[v.length - 1] === '%');
 };
 
 /**
@@ -143,7 +163,9 @@ const isStringRange = (value: readonly any[]): boolean => {
  * @returns     - boolean value indicating if the value provided is an
  *                array of objects with properties and interpolation ranges
  */
-const isInterpolatedValuesList = (value: readonly any[]): boolean => {
+const isInterpolatedValuesList = (
+  value: readonly any[]
+): value is InterpolationValuesList => {
   'worklet';
   return value.every(v => v instanceof Object);
 };
@@ -206,15 +228,22 @@ function interpolateValue(
     );
   }
   // If outputRange is an InterpolationNumbers range
-  if (isNumberRange(outputRange as InterpolationRange)) {
-    outputRange = outputRange as InterpolationNumbers;
+  if (isNumberRange(outputRange)) {
     const result = interpolateNumbers({ progress, inputRange, outputRange });
     if (propertyName === 'rotate') return `${result}deg`;
     return result;
   }
+  // If outputRange is a range of percentage values
+  else if (isPercentRange(outputRange)) {
+    const result = interpolateNumbers({
+      progress,
+      inputRange,
+      outputRange: outputRange.map(v => parseFloat(v))
+    });
+    return `${result}%`;
+  }
   // If outputRange is an InterpolationStrings range
-  else if (isStringRange(outputRange as InterpolationRange)) {
-    outputRange = outputRange as InterpolationStrings;
+  else if (isStringRange(outputRange)) {
     if (!['color', 'backgroundColor'].includes(propertyName)) {
       throw new Error('Unexpected property name for a string range value');
     }
