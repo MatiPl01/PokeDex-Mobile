@@ -83,7 +83,7 @@ export const BarBackgroundWrapper = styled(
 export const BackgroundGradient = styled(LinearGradient).attrs<{
   pokemonType: PokemonType;
 }>(({ theme, pokemonType }) => {
-  const pokemonTypeColors = theme.color.pokemonType[pokemonType];
+  const pokemonTypeColors = theme.color.pokemon.type[pokemonType];
   return {
     colors: [pokemonTypeColors.primary, pokemonTypeColors.secondary],
     start: { x: 0, y: 1 },

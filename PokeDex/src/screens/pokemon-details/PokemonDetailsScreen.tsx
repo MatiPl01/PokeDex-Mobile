@@ -1,9 +1,20 @@
-import React from 'react';
-import styled from 'styled-components/native';
+import React, { useEffect } from 'react';
+import { ScrollView, Text } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import styled, { useTheme } from 'styled-components/native';
 import { Route } from '@react-navigation/native';
-import ProgressCircular from '@components/shared/react/ProgressCircular/ProgressCircular';
-import ProgressBar from '@components/shared/react/ProgressBar/ProgressBar';
-import { View } from 'react-native';
+import { API } from '@constants';
+import { RootState } from '@store';
+import { fetchSinglePokemonByIdAsync } from '@store/pokemon/pokemon.actions';
+import { selectSinglePokemonStateById } from '@store/pokemon/pokemon.selector';
+import { Separator } from '@components/shared/styled/layout';
+import PokemonStats from '@components/pokemon/PokemonStats/PokemonStats';
+import {
+  Row,
+  DetailsSection,
+  SectionHeading,
+  ProgressCircular
+} from './PokemonDetailsScreen.styles';
 
 type PokemonDetailsScreenProps = {
   route: Route<'PokemonDetails', { pokemonId: string }>;
@@ -16,12 +27,48 @@ const StyledText = styled.Text`
 const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
   route
 }) => {
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  // Data
+  const pokemonId = route.params.pokemonId;
+  const { pokemon, isLoading } = useSelector((rootState: RootState) =>
+    selectSinglePokemonStateById(rootState, pokemonId)
+  );
+
+  // TODO - handle loading and errors
+  if (isLoading) return <Text>Loading...</Text>;
+  if (!pokemon) return <Text>No pokemon</Text>;
+
+  useEffect(() => {
+    dispatch(fetchSinglePokemonByIdAsync(pokemonId));
+  }, [pokemonId]);
+
   return (
-    <>
-      <StyledText>Pokemon ID: {route.params.pokemonId}</StyledText>
-      <ProgressCircular value={75} />
-      <ProgressBar value={75} />
-    </>
+    <ScrollView>
+      {/* TODO - remove  temporary StyledText after implementing Pokemon details screen */}
+      <StyledText>Pokemon ID: {pokemonId}</StyledText>
+      <DetailsSection>
+        {/* TODO - think of the better section name */}
+        <SectionHeading>Dimensions</SectionHeading>
+        <Row>
+          <ProgressCircular
+            value={pokemon.height}
+            maxValue={API.POKEMON.MAX_HEIGHT}
+            label="Height"
+          />
+          <Separator width={theme.space.md} />
+          <ProgressCircular
+            value={pokemon.weight}
+            maxValue={API.POKEMON.MAX_WEIGHT}
+            label="Weight"
+          />
+        </Row>
+      </DetailsSection>
+      <DetailsSection>
+        <SectionHeading>Statistics</SectionHeading>
+        <PokemonStats stats={pokemon.stats} />
+      </DetailsSection>
+    </ScrollView>
   );
 };
 
