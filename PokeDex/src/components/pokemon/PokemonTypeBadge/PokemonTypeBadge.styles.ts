@@ -4,9 +4,16 @@ import { PokemonType } from '@store/pokemon/pokemon.types';
 import { flexCenter } from '@styles/shared';
 import { calculateTextColor, mixColorsHex } from '@utils/colors';
 
-export const BadgeText = styled.Text<{ pokemonType: PokemonType }>`
-  ${({ theme, pokemonType }) => css`
-    font-size: ${theme.fontSize.caption}px;
+export type TypeBadgeSize = 'small' | 'big';
+
+export const BadgeText = styled.Text<{
+  pokemonType: PokemonType;
+  size: TypeBadgeSize;
+}>`
+  ${({ theme, size, pokemonType }) => css`
+    font-size: ${size === 'small'
+      ? theme.fontSize.caption
+      : theme.fontSize.body}px;
     font-weight: ${theme.fontWeight.bold};
     color: ${calculateTextColor(
       mixColorsHex(
@@ -30,13 +37,20 @@ export const BadgeWrapper = styled(LinearGradient).attrs<{
   };
 })<{
   pokemonType: PokemonType;
+  size: TypeBadgeSize;
 }>`
   border-radius: 5px;
+  ${({ theme }) => theme.shadow.box.strong.lg};
   ${flexCenter};
 
-  ${({ theme }) => css`
-    padding: ${theme.space.sm}px;
-    width: ${theme.size.lg}px;
-    ${theme.shadow.box.strong.lg};
-  `};
+  ${({ theme, size }) =>
+    size === 'small'
+      ? css`
+          padding: ${theme.space.sm}px;
+          width: ${theme.size.lg}px;
+        `
+      : css`
+          padding: ${theme.space.md}px;
+          width: ${theme.size.xl}px;
+        `};
 `;

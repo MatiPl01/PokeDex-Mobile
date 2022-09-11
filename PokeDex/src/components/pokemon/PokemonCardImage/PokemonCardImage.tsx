@@ -47,7 +47,6 @@ const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
   } else {
     return imageUrl ? (
       <>
-        {isImageLoading && <SkeletonPlaceholder />}
         <PokemonImage
           source={{ uri: imageUrl }}
           onLoadEnd={handleLoadEnd}
@@ -55,6 +54,7 @@ const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
           height={height}
           loading={isImageLoading}
         />
+        {isImageLoading && <SkeletonPlaceholder />}
       </>
     ) : (
       <PlaceholderImageIcon name="question" size={height} />
