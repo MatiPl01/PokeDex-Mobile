@@ -92,6 +92,14 @@ export type PokemonResponse = {
   ];
 };
 
+export type PokemonStatName =
+  | 'hp'
+  | 'attack'
+  | 'defense'
+  | 'specialAttack'
+  | 'specialDefense'
+  | 'speed';
+
 export type Pokemon = {
   id: string;
   name: string;
@@ -102,7 +110,7 @@ export type Pokemon = {
   types: PokemonType[];
   abilities: string[];
   stats: {
-    name: string;
+    name: PokemonStatName;
     value: number;
   }[];
 };

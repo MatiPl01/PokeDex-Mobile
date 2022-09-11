@@ -1,12 +1,14 @@
 import axios from 'axios';
 import { API } from '@constants';
 import { SearchItem } from '@utils/search';
+import { kebabCaseToCamelCase } from '@utils/text';
 import { catchThrowAxiosError } from '@utils/errors';
 import { getImageExtensionFromUrl } from '@utils/files';
 import {
   Pokemon,
   PokemonResponse,
-  PokemonSearchResponse
+  PokemonSearchResponse,
+  PokemonStatName
 } from '@store/pokemon/pokemon.types';
 import {
   PokemonSearchItemsResponse,
@@ -94,7 +96,7 @@ const pokemonDataTransform = ({
     types: types.map(({ type }) => type.name),
     abilities: abilities.map(({ ability }) => ability.name),
     stats: stats.map(({ base_stat, stat }) => ({
-      name: stat.name,
+      name: kebabCaseToCamelCase(stat.name) as PokemonStatName,
       value: base_stat
     }))
   };

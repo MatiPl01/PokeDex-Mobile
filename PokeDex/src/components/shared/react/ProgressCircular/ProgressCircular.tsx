@@ -8,13 +8,20 @@ import Animated, {
 } from 'react-native-reanimated';
 import { createAnimatedProps } from '@utils/reanimated';
 import { CounterText } from '@components/shared/styled/text';
-import { Wrapper, SvgWrapper } from './ProgressCircular.styles';
+import {
+  Wrapper,
+  ProgressWrapper,
+  SvgWrapper,
+  Label
+} from './ProgressCircular.styles';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 type ProgressCircularProps = {
   value: number;
   maxValue?: number;
+  label?: string;
+  labelPosition?: 'top' | 'bottom';
   radius?: number;
   textColor?: string;
   strokeBackgroundColor?: string;
@@ -28,6 +35,8 @@ type ProgressCircularProps = {
 const ProgressCircular: React.FC<ProgressCircularProps> = ({
   value,
   maxValue = 100,
+  label,
+  labelPosition = 'bottom',
   radius = 40,
   textColor = 'tomato',
   strokeColor = 'tomato',
@@ -38,7 +47,7 @@ const ProgressCircular: React.FC<ProgressCircularProps> = ({
   animationDuration = 500
 }) => {
   // Data
-  const percentage = value / maxValue;
+  const percentage = Math.min(1, value / maxValue);
   const diameter = 2 * radius;
   const outerRadius = radius + strokeWidth;
   const outerDiameter = 2 * outerRadius;
@@ -83,30 +92,33 @@ const ProgressCircular: React.FC<ProgressCircularProps> = ({
   }, []);
 
   return (
-    <Wrapper size={diameter}>
-      <SvgWrapper>
-        <Svg
-          width={diameter}
-          height={diameter}
-          viewBox={`0 0 ${outerDiameter} ${outerDiameter}`}
-        >
-          <G rotation="-90" origin={`${outerRadius}, ${outerRadius}`}>
-            <Circle
-              {...circleProps}
-              stroke={strokeBackgroundColor}
-              strokeOpacity={strokeBackgroundOpacity}
-            />
-            <AnimatedCircle
-              {...circleProps}
-              stroke={strokeColor}
-              strokeDasharray={circleCircumference}
-              strokeLinecap="round"
-              animatedProps={animatedCircleProps}
-            />
-          </G>
-        </Svg>
-      </SvgWrapper>
-      <CounterText color={textColor} animatedProps={animatedCounterProps} />
+    <Wrapper reversed={labelPosition === 'top'}>
+      <ProgressWrapper size={diameter}>
+        <SvgWrapper>
+          <Svg
+            width={diameter}
+            height={diameter}
+            viewBox={`0 0 ${outerDiameter} ${outerDiameter}`}
+          >
+            <G rotation="-90" origin={`${outerRadius}, ${outerRadius}`}>
+              <Circle
+                {...circleProps}
+                stroke={strokeBackgroundColor}
+                strokeOpacity={strokeBackgroundOpacity}
+              />
+              <AnimatedCircle
+                {...circleProps}
+                stroke={strokeColor}
+                strokeDasharray={circleCircumference}
+                strokeLinecap="round"
+                animatedProps={animatedCircleProps}
+              />
+            </G>
+          </Svg>
+        </SvgWrapper>
+        <CounterText color={textColor} animatedProps={animatedCounterProps} />
+      </ProgressWrapper>
+      {label && <Label>{label}</Label>}
     </Wrapper>
   );
 };

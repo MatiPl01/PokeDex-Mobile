@@ -47,7 +47,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   reversed = false
 }) => {
   // Data
-  const percentage = value / maxValue;
+  const percentage = Math.min(1, value / maxValue);
   const fontSize = 1.5 * barSize;
   const counterTextWidth = 0.7 * maxDigitsCount * fontSize + 10;
   // Animation progress values

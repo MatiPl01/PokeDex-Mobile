@@ -39,25 +39,35 @@ declare module 'styled-components/native' {
       light: string;
       dark: string;
     };
-    pokemonType: {
-      normal: PokemonTypeColor;
-      fighting: PokemonTypeColor;
-      flying: PokemonTypeColor;
-      poison: PokemonTypeColor;
-      ground: PokemonTypeColor;
-      rock: PokemonTypeColor;
-      bug: PokemonTypeColor;
-      ghost: PokemonTypeColor;
-      steel: PokemonTypeColor;
-      fire: PokemonTypeColor;
-      water: PokemonTypeColor;
-      grass: PokemonTypeColor;
-      electric: PokemonTypeColor;
-      psychic: PokemonTypeColor;
-      ice: PokemonTypeColor;
-      dragon: PokemonTypeColor;
-      dark: PokemonTypeColor;
-      fairy: PokemonTypeColor;
+    pokemon: {
+      type: {
+        normal: PokemonTypeColor;
+        fighting: PokemonTypeColor;
+        flying: PokemonTypeColor;
+        poison: PokemonTypeColor;
+        ground: PokemonTypeColor;
+        rock: PokemonTypeColor;
+        bug: PokemonTypeColor;
+        ghost: PokemonTypeColor;
+        steel: PokemonTypeColor;
+        fire: PokemonTypeColor;
+        water: PokemonTypeColor;
+        grass: PokemonTypeColor;
+        electric: PokemonTypeColor;
+        psychic: PokemonTypeColor;
+        ice: PokemonTypeColor;
+        dragon: PokemonTypeColor;
+        dark: PokemonTypeColor;
+        fairy: PokemonTypeColor;
+      };
+      stat: {
+        hp: string;
+        attack: string;
+        defense: string;
+        specialAttack: string;
+        specialDefense: string;
+        speed: string;
+      };
     };
     dayNightSwitch: {
       day: {

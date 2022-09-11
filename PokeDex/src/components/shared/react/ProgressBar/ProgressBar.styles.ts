@@ -14,6 +14,7 @@ export const Wrapper = styled.View<{
   ${({ orientation, reversed }) =>
     orientation === 'horizontal'
       ? css`
+          width: 100%;
           flex-direction: ${reversed ? 'row-reverse' : 'row'};
         `
       : css`
@@ -28,7 +29,6 @@ export const BarsWrapper = styled.View<{
   size: number;
   reversed: boolean;
 }>`
-  overflow: hidden;
   position: relative;
   flex-grow: 1;
   border-radius: ${({ size }) => `${size}px`};
@@ -58,6 +58,8 @@ export const Bar = styled(Animated.View)<{
   color: string;
 }>`
   background-color: ${({ color }) => color};
+  border-radius: 100px;
+  ${({ theme }) => theme.shadow.box.soft.sm};
 
   ${({ orientation }) =>
     orientation === 'horizontal'
