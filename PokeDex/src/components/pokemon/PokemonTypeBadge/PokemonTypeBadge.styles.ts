@@ -10,8 +10,8 @@ export const BadgeText = styled.Text<{ pokemonType: PokemonType }>`
     font-weight: ${theme.fontWeight.bold};
     color: ${calculateTextColor(
       mixColorsHex(
-        theme.color.pokemonType[pokemonType].primary,
-        theme.color.pokemonType[pokemonType].secondary
+        theme.color.pokemon.type[pokemonType].primary,
+        theme.color.pokemon.type[pokemonType].secondary
       ),
       150
     )};
@@ -22,7 +22,7 @@ export const BadgeText = styled.Text<{ pokemonType: PokemonType }>`
 export const BadgeWrapper = styled(LinearGradient).attrs<{
   pokemonType: PokemonType;
 }>(({ theme, pokemonType }) => {
-  const pokemonTypeColors = theme.color.pokemonType[pokemonType];
+  const pokemonTypeColors = theme.color.pokemon.type[pokemonType];
   return {
     colors: [pokemonTypeColors.primary, pokemonTypeColors.secondary],
     start: { x: 0, y: 0 },

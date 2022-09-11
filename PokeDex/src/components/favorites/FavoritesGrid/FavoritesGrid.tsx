@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { Pressable } from 'react-native';
 import { useSharedValue, withTiming } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '@core/navigation/DrawerNavigation';
 import { selectFavoritePokemonIdsList } from '@store/favorites/favorites.selector';
 import { fetchPokemonBatchByIdsAsync } from '@store/pokemon/pokemon.actions';
 import { selectPokemonStateListByIds } from '@store/pokemon/pokemon.selector';
@@ -22,9 +26,11 @@ type FavoritesGridProps = {
 const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const navigation =
+    useNavigation<StackNavigationProp<RootStackParamList, 'PokemonDetails'>>();
   const PADDING = theme.space.lg;
   const GRID_GAP = theme.space.lg;
-  
+
   const [favoritesStates, setFavoritesStates] = useState<SinglePokemonState[]>(
     []
   );
@@ -66,20 +72,25 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   };
 
   const renderItem = ({
-    item: { pokemon, isLoading },
+    item: { id: pokemonId, pokemon, isLoading },
     width
   }: {
     item: SinglePokemonState;
     width: number;
   }) => {
     return (
-      <FavoritePokemonCard
-        pokemon={pokemon}
-        isLoading={isLoading}
-        width={width}
-        deletable={editable}
-        onDelete={handleFavoriteDelete}
-      />
+      <Pressable
+        key={pokemonId}
+        onPress={() => navigation.push('PokemonDetails', { pokemonId })}
+      >
+        <FavoritePokemonCard
+          pokemon={pokemon}
+          isLoading={isLoading}
+          width={width}
+          deletable={editable}
+          onDelete={handleFavoriteDelete}
+        />
+      </Pressable>
     );
   };
 

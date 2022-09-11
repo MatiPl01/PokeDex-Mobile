@@ -13,9 +13,9 @@ import ReAnimated, {
 } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SIZE } from '@constants';
 import { RootStackParamList } from '@core/navigation/DrawerNavigation';
 import { createAnimatedThemedStyle } from '@utils/reanimated';
