@@ -6,6 +6,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
+import { Padding } from '@types';
 import { API } from '@constants';
 import { selectFavoritePokemonIdsList } from '@store/favorites/favorites.selector';
 import { fetchPokemonBatchByIdsAsync } from '@store/pokemon/pokemon.actions';
@@ -15,7 +16,6 @@ import {
   setFavoritePokemonIds
 } from '@store/favorites/favorites.actions';
 import { SinglePokemonState } from '@store/pokemon/pokemon.reducer';
-import { Padding } from '@types';
 import { RootState } from '@store';
 import FavoritePokemonCard from '@components/favorites/FavoritePokemonCard/FavoritePokemonCard';
 import SortableGrid from '@components/shared/react/SortableGrid/SortableGrid';

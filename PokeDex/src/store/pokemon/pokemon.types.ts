@@ -68,28 +68,34 @@ export type PokemonResponse = {
   };
   height: number;
   weight: number;
-  types: [
-    {
-      type: {
-        name: PokemonType;
-      };
-    }
-  ];
-  abilities: [
-    {
-      ability: {
-        name: string;
-      };
-    }
-  ];
-  stats: [
-    {
-      base_stat: number;
-      stat: {
-        name: string;
-      };
-    }
-  ];
+  base_experience: number;
+  types: {
+    type: {
+      name: PokemonType;
+    };
+  }[];
+  abilities: {
+    ability: {
+      name: string;
+    };
+  }[];
+  stats: {
+    base_stat: number;
+    stat: {
+      name: string;
+    };
+  }[];
+  held_items: {
+    item: {
+      name: string;
+      url: string;
+    };
+  }[];
+  moves: {
+    move: {
+      name: string;
+    };
+  }[];
 };
 
 export type PokemonStatName =
@@ -107,10 +113,32 @@ export type Pokemon = {
   imageExtension: ImageExtension | null;
   height: number;
   weight: number;
+  baseExperience: number;
   types: PokemonType[];
   abilities: string[];
   stats: {
     name: PokemonStatName;
     value: number;
   }[];
+  items: {
+    name: string;
+    id: string;
+  }[];
+  moves: string[];
 };
+
+export type PokemonItemResponse = {
+  id: number;
+  cost: number;
+  name: string;
+  sprites: {
+    default: string;
+  }
+};
+
+export type PokemonItem = {
+  id: string;
+  imageUrl: string;
+  name: string;
+  cost: number;
+};  
