@@ -20,11 +20,16 @@ export const PokemonSvg = styled(SvgUri)<{ width: number; height: number }>`
   ${pokemonImageStyles};
 `;
 
-export const PokemonImage = styled.Image<{ width: number; height: number }>`
-  ${({ width, height }) => css`
+export const PokemonImage = styled.Image<{
+  width: number;
+  height: number;
+  loading?: boolean;
+}>`
+  ${({ width, height, loading }) => css`
     transform: translateX(-${width / 2}px);
     height: ${width}px;
     width: ${height}px;
+    opacity: ${loading ? 0 : 1};
   `};
   ${pokemonImageStyles};
 `;

@@ -4,9 +4,7 @@ import Animated from 'react-native-reanimated';
 import { hexToRGBAlphaCSS } from '@utils/colors';
 import { flexCenter, absoluteFill } from '@styles/shared';
 
-const SPINNER_DIAMETER = 65;
 const STROKE_WIDTH = 5;
-export const SPINNER_CIRCUMFERENCE = Math.PI * SPINNER_DIAMETER;
 
 export const SpinnerWrapper = styled.View<{ showOverlay?: boolean }>`
   z-index: 1000;
@@ -19,22 +17,28 @@ export const SpinnerWrapper = styled.View<{ showOverlay?: boolean }>`
       : 'transparent'};
 `;
 
-export const SpinnerSvg = styled(Animated.createAnimatedComponent(Svg)).attrs({
-  viewBox: `0 0 ${SPINNER_DIAMETER} ${SPINNER_DIAMETER}`
-})`
-  width: ${SPINNER_DIAMETER}px;
-  height: ${SPINNER_DIAMETER}px;
+export const SpinnerSvg = styled(Animated.createAnimatedComponent(Svg)).attrs(
+  ({ theme }) => ({
+    viewBox: `0 0 ${theme.size.lg} ${theme.size.lg}`
+  })
+)`
+  ${({ theme }) => css`
+    width: ${theme.size.lg}px;
+    height: ${theme.size.lg}px;
+  `}
 `;
 
-export const SpinnerCircle = styled(Animated.createAnimatedComponent(Circle)).attrs({
-  cx: SPINNER_DIAMETER / 2,
-  cy: SPINNER_DIAMETER / 2,
-  r: (SPINNER_DIAMETER - STROKE_WIDTH) / 2
-})`
-  stroke-dasharray: ${SPINNER_CIRCUMFERENCE}px;
+export const SpinnerCircle = styled(
+  Animated.createAnimatedComponent(Circle)
+).attrs(({ theme }) => ({
+  cx: theme.size.lg / 2,
+  cy: theme.size.lg / 2,
+  r: (theme.size.lg - STROKE_WIDTH) / 2
+}))`
   stroke-width: ${STROKE_WIDTH}px;
 
   ${({ theme }) => css`
+    stroke-dasharray: ${theme.size.lg * Math.PI}px;
     stroke: ${theme.color.accent.primary};
     ${theme.shadow.box.medium.md};
   `}

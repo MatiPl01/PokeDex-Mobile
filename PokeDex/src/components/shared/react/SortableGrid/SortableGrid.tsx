@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { LayoutChangeEvent } from 'react-native';
 import Animated, {
   runOnJS,
   useAnimatedRef,
@@ -22,7 +23,10 @@ type GridComponent =
 
 type SortableGridProps<T> = {
   data: T[];
-  renderItem: (data: { item: T; width: number; height: number }) => JSX.Element;
+  renderItem: (
+    data: { item: T; width: number; height: number },
+    index: number
+  ) => JSX.Element;
   keyExtractor: (item: T, index: number) => string;
   columnCount?: number;
   padding?: Padding;
@@ -32,6 +36,7 @@ type SortableGridProps<T> = {
   editablePaddingTop?: number;
   GridHeaderComponent?: GridComponent;
   GridFooterComponent?: GridComponent;
+  onEndReachedThreshold?: number;
   onDragEnd?: (data: T[]) => void;
   onEndReached?: () => void;
 } & ({ itemHeight?: number } | { itemRatio?: number });
@@ -49,6 +54,7 @@ const SortableGrid = <T extends object>({
   columnCount = 1,
   editable = false,
   editablePaddingTop = 0,
+  onEndReachedThreshold = 0,
   padding: desiredPadding = {},
   ...restProps
 }: SortableGridProps<T>) => {
@@ -83,6 +89,11 @@ const SortableGrid = <T extends object>({
     padding,
     itemCount: data.length
   });
+  const dataLengthRef = useRef(0);
+  const prevDataLengthRef = useRef(0);
+  const renderItemIdxRef = useRef(0);
+  const endReachedRef = useRef(false);
+  const scrollViewHeightRef = useRef(0);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const sharedData = useSharedValue<T[]>([]);
   const scrollY = useSharedValue(0);
@@ -102,6 +113,9 @@ const SortableGrid = <T extends object>({
     maxScroll.value =
       gridHeight - contentHeight + (editable ? editablePaddingTop : 0);
     sharedData.value = data;
+    renderItemIdxRef.current = prevDataLengthRef.current;
+    prevDataLengthRef.current = dataLengthRef.current;
+    dataLengthRef.current = data.length;
   }, [data]);
 
   useEffect(() => {
@@ -155,9 +169,21 @@ const SortableGrid = <T extends object>({
   const handleScroll = useAnimatedScrollHandler({
     onScroll: ({ contentOffset: { y } }) => {
       scrollY.value = y;
-      if (onEndReached && y === maxScroll.value) runOnJS(onEndReached)();
+      if (!onEndReached) return;
+      const endReachedThreshold =
+        maxScroll.value - onEndReachedThreshold * scrollViewHeightRef.current;
+      if (endReachedRef.current && y < endReachedThreshold)
+        endReachedRef.current = false;
+      else if (!endReachedRef.current && y >= endReachedThreshold) {
+        endReachedRef.current = true;
+        runOnJS(onEndReached)();
+      }
     }
   });
+
+  const measureScrollViewHeight = useCallback((event: LayoutChangeEvent) => {
+    scrollViewHeightRef.current = event.nativeEvent.layout.height;
+  }, []);
 
   const renderGridHeader = useCallback(
     () =>
@@ -180,8 +206,14 @@ const SortableGrid = <T extends object>({
   );
 
   const memoizedRenderItem = useCallback(
-    (item: T, width: number, height: number): JSX.Element =>
-      renderItem({ item, width, height }),
+    (item: T, width: number, height: number): JSX.Element => {
+      const renderedItem = renderItem(
+        { item, width, height },
+        renderItemIdxRef.current
+      );
+      renderItemIdxRef.current += 1;
+      return renderedItem;
+    },
     [editable]
   );
 
@@ -210,7 +242,11 @@ const SortableGrid = <T extends object>({
   };
 
   return (
-    <Animated.ScrollView onScroll={handleScroll} ref={scrollViewRef}>
+    <Animated.ScrollView
+      onScroll={handleScroll}
+      ref={scrollViewRef}
+      onLayout={measureScrollViewHeight}
+    >
       {renderGridHeader()}
       <Animated.View style={animatedEditablePaddingTopStyle} />
       <GridItemsWrapper height={gridHeight}>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { View } from 'react-native';
 import Svg from 'react-native-remote-svg';
 import SkeletonPlaceholder from '@components/shared/react/SkeletonPlaceholder/SkeletonPlaceholder';
 import { ImageExtension } from '@utils/files';
@@ -35,7 +36,9 @@ const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
     return isImageLoading ? (
       <>
         {/* The Svg component below is used to determine if the Svg image was fetched from the server and finished loading. Using this Svg component to display the image results in showing cropped image. Therefore, another library is used for displaying the actual image */}
-        <Svg source={{ uri: imageUrl }} onLoadEnd={handleLoadEnd} />
+        <View style={{ opacity: 0 }}>
+          <Svg source={{ uri: imageUrl }} onLoadEnd={handleLoadEnd} />
+        </View>
         <SkeletonPlaceholder />
       </>
     ) : (
@@ -50,6 +53,7 @@ const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
           onLoadEnd={handleLoadEnd}
           width={width}
           height={height}
+          loading={isImageLoading}
         />
       </>
     ) : (

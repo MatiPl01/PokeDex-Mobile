@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { createAnimatedStyles } from '@utils/reanimated';
+import { useTheme } from 'styled-components';
+import { createAnimatedThemedStyles } from '@utils/reanimated';
 import {
   useSharedValue,
   withRepeat,
@@ -9,30 +10,30 @@ import {
 import {
   SpinnerWrapper,
   SpinnerSvg,
-  SpinnerCircle,
-  SPINNER_CIRCUMFERENCE
+  SpinnerCircle
 } from './LoadingSpinner.styles';
 
 const ANIMATION_DURATION = 1000; // Single animation duration (a part of the infinite animation)
 
-const useAnimatedCircleStyle = createAnimatedStyles({
+const useAnimatedCircleStyle = createAnimatedThemedStyles(theme => ({
   svg: {
     transform: [{ rotate: [0, 360] }]
   },
   circle: {
     strokeDashoffset: [0.2, 0.4, 0.2].map(
-      percent => (1 - percent) * SPINNER_CIRCUMFERENCE
+      percent => (1 - percent) * theme.size.lg * Math.PI
     )
   }
-});
+}));
 
 type LoadingSpinnerProps = {
   showOverlay?: boolean;
 };
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ showOverlay }) => {
+  const theme = useTheme();
   const animationProgress = useSharedValue(0);
-  const animatedCircleStyles = useAnimatedCircleStyle(animationProgress);
+  const animatedCircleStyles = useAnimatedCircleStyle(theme)(animationProgress);
 
   useEffect(() => {
     animationProgress.value = withRepeat(
