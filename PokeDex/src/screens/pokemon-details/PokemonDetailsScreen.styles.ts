@@ -1,6 +1,13 @@
 import styled, { css } from 'styled-components/native';
 import DefaultProgressCircular from '@components/shared/react/ProgressCircular/ProgressCircular';
 
+export const ScreenWrapper = styled.View`
+  flex: 1;
+  background-color: ${({ theme }) => theme.color.background.primary};
+`;
+
+
+
 export const ScrollableWrapper = styled.ScrollView`
   flex: 1;
   background-color: ${({ theme }) => theme.color.background.primary};
