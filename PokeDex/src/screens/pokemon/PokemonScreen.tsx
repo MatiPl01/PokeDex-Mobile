@@ -9,6 +9,7 @@ import {
   displayAllPokemon,
   displayPokemonWithIds
 } from '@store/pokemon/pokemon.actions';
+import { useNavigation } from '@react-navigation/native';
 
 const PokemonScreen: React.FC = () => {
   const dispatch = useDispatch();
@@ -19,6 +20,12 @@ const PokemonScreen: React.FC = () => {
 
   useEffect(() => {
     fetchSearchItems();
+  }, []);
+
+  // TODO - remove lines below
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.push('PokemonDetails', { pokemonId: 264 });
   }, []);
 
   const fetchSearchItems = () => {

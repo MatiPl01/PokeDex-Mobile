@@ -24,6 +24,7 @@ type SortableGridProps<T> = {
   data: T[];
   renderItem: (data: { item: T; width: number; height: number }) => JSX.Element;
   keyExtractor: (item: T, index: number) => string;
+  scrollable?: boolean;
   columnCount?: number;
   padding?: Padding;
   rowGap?: number;
@@ -32,8 +33,8 @@ type SortableGridProps<T> = {
   editablePaddingTop?: number;
   GridHeaderComponent?: GridComponent;
   GridFooterComponent?: GridComponent;
-  onDragEnd?: (data: T[]) => void;
   onEndReached?: () => void;
+  onDragEnd?: (data: T[]) => void;
 } & ({ itemHeight?: number } | { itemRatio?: number });
 
 const SortableGrid = <T extends object>({
@@ -48,6 +49,7 @@ const SortableGrid = <T extends object>({
   columnGap = 0,
   columnCount = 1,
   editable = false,
+  scrollable = true,
   editablePaddingTop = 0,
   padding: desiredPadding = {},
   ...restProps
@@ -210,7 +212,11 @@ const SortableGrid = <T extends object>({
   };
 
   return (
-    <Animated.ScrollView onScroll={handleScroll} ref={scrollViewRef}>
+    <Animated.ScrollView
+      onScroll={handleScroll}
+      ref={scrollViewRef}
+      scrollEnabled={scrollable}
+    >
       {renderGridHeader()}
       <Animated.View style={animatedEditablePaddingTopStyle} />
       <GridItemsWrapper height={gridHeight}>

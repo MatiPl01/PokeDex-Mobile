@@ -52,6 +52,7 @@ const PokemonItemsGrid: React.FC<PokemonItemsGridProps> = ({ items }) => {
       padding={padding}
       itemHeight={ITEM_HEIGHT}
       editable={false}
+      scrollable={false}
     />
   );
 };
