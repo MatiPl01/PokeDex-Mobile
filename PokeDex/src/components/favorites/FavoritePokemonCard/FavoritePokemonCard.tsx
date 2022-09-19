@@ -65,7 +65,7 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
   if (isLoading) return <FavoritePokemonCardSkeleton width={width} />;
   if (!pokemon) return null;
 
-  const { id, name, types, imageUrl, imageExtension } = pokemon;
+  const { id, name, types, images } = pokemon;
 
   const deleteButtonAnimationProgress = useSharedValue(0);
   const animatedDeleteButtonStyle = useAnimatedDeleteButtonStyle(
@@ -98,8 +98,7 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
             <PokemonCardImage
               width={0.75 * width}
               height={0.65 * width}
-              extension={imageExtension}
-              imageUrl={imageUrl}
+              imageUrl={images[0]?.url || null}
             />
           )}
         </PokemonImageWrapper>

@@ -3,10 +3,10 @@ import { API } from '@constants';
 import { SearchItem } from '@utils/search';
 import { kebabCaseToCamelCase } from '@utils/text';
 import { catchThrowAxiosError } from '@utils/errors';
-import { getImageExtensionFromUrl } from '@utils/files';
 import {
   Pokemon,
   PokemonItem,
+  PokemonImage,
   PokemonItemResponse,
   PokemonResponse,
   PokemonSearchResponse,
@@ -94,17 +94,73 @@ const pokemonDataTransform = ({
   held_items,
   moves
 }: PokemonResponse): Pokemon => {
-  const imageUrl =
-    sprites.other.dream_world.front_default ||
-    sprites.other.home.front_default ||
-    sprites.other['official-artwork'].front_default ||
-    sprites.front_default;
+  const images = [
+      {
+        name: 'Dream world - front default',
+        url: sprites.other.dream_world.front_default
+      },
+      {
+        name: 'Dream world - front female',
+        url: sprites.other.dream_world.front_female
+      },
+      {
+        name: 'Home - front default',
+        url: sprites.other.home.front_default
+      },
+      {
+        name: 'Home - front female',
+        url: sprites.other.home.front_female
+      },
+      {
+        name: 'Home - front shiny',
+        url: sprites.other.home.front_shiny
+      },
+      {
+        name: 'Home - front shiny female',
+        url: sprites.other.home.front_shiny_female
+      },
+      {
+        name: 'Official artwork - front default',
+        url: sprites.other['official-artwork'].front_default
+      },
+      {
+        name: 'Back default',
+        url: sprites.back_default
+      },
+      {
+        name: 'Back female',
+        url: sprites.back_female
+      },
+      {
+        name: 'Back shiny',
+        url: sprites.back_shiny
+      },
+      {
+        name: 'Back shiny female',
+        url: sprites.back_shiny_female
+      },
+      {
+        name: 'Front default',
+        url: sprites.front_default
+      },
+      {
+        name: 'Front female',
+        url: sprites.front_female
+      },
+      {
+        name: 'Front shiny',
+        url: sprites.front_shiny
+      },
+      {
+        name: 'Front shiny female',
+        url: sprites.front_shiny_female
+      }
+    ].filter(({ url }) => !!url) as PokemonImage[];
 
   return {
     id: String(id),
     name,
-    imageUrl,
-    imageExtension: imageUrl ? getImageExtensionFromUrl(imageUrl) : null,
+    images,
     height,
     weight,
     baseExperience: base_experience,
