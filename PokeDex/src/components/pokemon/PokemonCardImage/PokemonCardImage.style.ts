@@ -1,6 +1,5 @@
 import styled, { css } from 'styled-components/native';
 import { SvgUri } from 'react-native-svg';
-import FontistoIcon from 'react-native-vector-icons/Fontisto';
 
 const pokemonImageStyles = css`
   position: absolute;
@@ -34,21 +33,3 @@ export const PokemonImage = styled.Image<{
   ${pokemonImageStyles};
 `;
 
-export const PlaceholderImageIcon = styled(FontistoIcon).attrs<{
-  size: number;
-  name: string;
-}>(({ name, size }) => ({
-  name,
-  size
-}))<{ size: number }>`
-  text-align: center;
-  ${pokemonImageStyles};
-
-  ${({ theme, size }) => css`
-    height: ${size}px;
-    width: ${size}px;
-    transform: translateX(-${size / 2}px);
-    color: ${theme.color.background.tertiary};
-    ${theme.shadow.box.medium.sm};
-  `}
-`;

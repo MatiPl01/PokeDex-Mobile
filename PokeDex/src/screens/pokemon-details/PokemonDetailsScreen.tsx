@@ -12,12 +12,10 @@ import PokemonStats from '@components/pokemon/PokemonStats/PokemonStats';
 import PokemonItemsGrid from '@components/items/PokemonItemsGrid/PokemonItemsGrid';
 import StickyHeaderScrollView from '@components/shared/react/StickyHeaderScrollView/StickyHeaderScrollView';
 import ScrollViewSection from '@components/shared/react/StickyHeaderScrollView/ScrollViewSection/ScrollViewSection';
+import PokemonImageGallery from '@components/pokemon/PokemonImageGallery/PokemonImageGallery';
 import {
   ScreenWrapper,
-  ScrollableWrapper,
   Row,
-  DetailsSection,
-  SectionHeading,
   SectionText,
   ProgressCircular,
   ItemsGridWrapper
@@ -54,9 +52,7 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
       <StickyHeaderScrollView
         id={pokemon.id}
         title={pokemon.name}
-        images={
-          pokemon.imageUrl ? [{ name: 'Test', url: pokemon.imageUrl }] : []
-        }
+        ImageGalleryComponent={<PokemonImageGallery images={pokemon.images} pokemonType={pokemon.types[0]} />}
       >
         <ScrollViewSection heading="Basic information">
           <Row>
@@ -82,15 +78,6 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
         <ScrollViewSection heading="Statistics">
           <PokemonStats stats={pokemon.stats} />
         </ScrollViewSection>
-        <ScrollViewSection heading="Items">
-          {pokemon?.items.length ? (
-            <ItemsGridWrapper>
-              <PokemonItemsGrid items={pokemon.items} />
-            </ItemsGridWrapper>
-          ) : (
-            <SectionText>Pokemon has no items</SectionText>
-          )}
-        </ScrollViewSection>
         <ScrollViewSection heading="Types">
           <Row>
             {pokemon.types.map((type, index) => (
@@ -102,6 +89,15 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
               </Row>
             ))}
           </Row>
+        </ScrollViewSection>
+        <ScrollViewSection heading="Items">
+          {pokemon?.items.length ? (
+            <ItemsGridWrapper>
+              <PokemonItemsGrid items={pokemon.items} />
+            </ItemsGridWrapper>
+          ) : (
+            <SectionText>Pokemon has no items</SectionText>
+          )}
         </ScrollViewSection>
         <ScrollViewSection heading="Abilities">
           {pokemon.abilities.map(ability => (

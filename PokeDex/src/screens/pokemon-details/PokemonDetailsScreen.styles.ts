@@ -6,31 +6,9 @@ export const ScreenWrapper = styled.View`
   background-color: ${({ theme }) => theme.color.background.primary};
 `;
 
-
-
-export const ScrollableWrapper = styled.ScrollView`
-  flex: 1;
-  background-color: ${({ theme }) => theme.color.background.primary};
-`;
-
 export const Row = styled.View`
   flex-direction: row;
   justify-content: center;
-`;
-
-export const DetailsSection = styled.View`
-  ${({ theme }) => css`
-    padding: ${theme.space.md}px ${theme.space.lg}px;
-  `};
-`;
-
-export const SectionHeading = styled.Text`
-  ${({ theme }) => css`
-    color: ${theme.color.text.primary};
-    font-size: ${theme.fontSize.title}px;
-    font-weight: ${theme.fontWeight.bold};
-    margin-bottom: ${theme.space.md}px;
-  `};
 `;
 
 export const SectionText = styled.Text`

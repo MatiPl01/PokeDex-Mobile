@@ -1,24 +1,28 @@
 import React, { useState, useRef, Children, ReactElement } from 'react';
-import { View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { HeaderTab } from './StickyHeader/StickyHeaderTabs/StickyHeaderTab';
 import { ScrollViewSectionProps } from './ScrollViewSection/ScrollViewSection';
 import StickyHeader from './StickyHeader/StickyHeader';
-import { Wrapper, SectionsScrollView } from './StickyHeaderScrollView.styles';
+import {
+  Wrapper,
+  GalleryWrapper,
+  SectionsContentWrapper
+} from './StickyHeaderScrollView.styles';
 
 type StickyHeaderScrollViewProps = {
   title: string;
-  images: { name?: string; url: string }[];
   children:
-    | ReactElement<ScrollViewSectionProps>
-    | ReactElement<ScrollViewSectionProps>[];
+  | ReactElement<ScrollViewSectionProps>
+  | ReactElement<ScrollViewSectionProps>[];
   id?: string;
+  ImageGalleryComponent?: React.ReactNode;
 };
 
 const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
   id,
   title,
-  images,
-  children
+  children,
+  ImageGalleryComponent
 }) => {
   const renderedTabsCount = useRef(0);
   const [tabs, setTabs] = useState<HeaderTab[]>([]);
@@ -28,9 +32,12 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
 
   return (
     <Wrapper>
-      <SectionsScrollView scrollEventThrottle={1}>
+      <ScrollView scrollEventThrottle={1}>
+        {ImageGalleryComponent && <GalleryWrapper>
+          {ImageGalleryComponent}
+        </GalleryWrapper>}
         {Children.map(children, (child, idx) => (
-          <View
+          <SectionsContentWrapper
             onLayout={({
               nativeEvent: {
                 layout: { y: anchor }
@@ -39,7 +46,7 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
               tabs[idx] = { heading: child.props.heading, anchor };
               renderedTabsCount.current = renderedTabsCount.current + 1;
               if (
-                !children.length ||
+                !(children instanceof Array) ||
                 renderedTabsCount.current === children.length
               ) {
                 setTabs([...tabs]);
@@ -47,10 +54,10 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
             }}
           >
             {child}
-          </View>
+          </SectionsContentWrapper>
         ))}
-      </SectionsScrollView>
-      <StickyHeader id={id} title={title} tabs={tabs} />
+      </ScrollView>
+      {/* <StickyHeader id={id} title={title} tabs={tabs} /> */}
     </Wrapper>
   );
 };

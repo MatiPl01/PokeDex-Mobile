@@ -53,18 +53,29 @@ export type PokemonResponse = {
   id: string;
   name: string;
   sprites: {
+    back_default: string | null;
+    back_female: string | null;
+    back_shiny: string | null;
+    back_shiny_female: string | null;
+    front_default: string | null;
+    front_female: string | null;
+    front_shiny: string | null;
+    front_shiny_female: string | null;
     other: {
       dream_world: {
-        front_default: string;
+        front_default: string | null;
+        front_female: string | null;
       };
       home: {
-        front_default: string;
+        front_default: string | null;
+        front_female: string | null;
+        front_shiny: string | null;
+        front_shiny_female: string | null;
       };
       'official-artwork': {
-        front_default: string;
+        front_default: string | null;
       };
     };
-    front_default: string;
   };
   height: number;
   weight: number;
@@ -106,14 +117,19 @@ export type PokemonStatName =
   | 'specialDefense'
   | 'speed';
 
+export type PokemonImage = {
+  name?: string;
+  url: string;
+  extension: ImageExtension;
+};
+
 export type Pokemon = {
   id: string;
   name: string;
-  imageUrl: string | null;
-  imageExtension: ImageExtension | null;
   height: number;
   weight: number;
   baseExperience: number;
+  images: PokemonImage[];
   types: PokemonType[];
   abilities: string[];
   stats: {
@@ -133,7 +149,7 @@ export type PokemonItemResponse = {
   name: string;
   sprites: {
     default: string;
-  }
+  };
 };
 
 export type PokemonItem = {
@@ -141,4 +157,4 @@ export type PokemonItem = {
   imageUrl: string;
   name: string;
   cost: number;
-};  
+};

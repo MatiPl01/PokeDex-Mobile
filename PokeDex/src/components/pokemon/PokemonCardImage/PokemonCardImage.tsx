@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import Svg from 'react-native-remote-svg';
+import { getImageExtensionFromUrl, isImageExtension } from '@utils/files';
 import SkeletonPlaceholder from '@components/shared/react/SkeletonPlaceholder/SkeletonPlaceholder';
-import { ImageExtension } from '@utils/files';
-import {
-  PlaceholderImageIcon,
-  PokemonImage,
-  PokemonSvg
-} from './PokemonCardImage.style';
+import { PlaceholderImageIcon } from '@components/shared/styled/images';
+import { PokemonImage, PokemonSvg } from './PokemonCardImage.style';
 
 type PokemonCardImageProps = {
-  extension: ImageExtension | null;
   imageUrl: string | null;
   width: number;
   height: number;
@@ -19,7 +15,6 @@ type PokemonCardImageProps = {
 };
 
 const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
-  extension,
   imageUrl,
   width,
   height,
@@ -31,6 +26,8 @@ const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
     setIsImageLoading(false);
     if (onLoadEnd) onLoadEnd();
   };
+
+  const extension = imageUrl && getImageExtensionFromUrl(imageUrl);
 
   if (extension === 'svg') {
     return isImageLoading ? (
@@ -45,7 +42,7 @@ const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
       <PokemonSvg width={width} height={height} uri={imageUrl} />
     );
   } else {
-    return imageUrl ? (
+    return imageUrl && extension && isImageExtension(extension) ? (
       <>
         <PokemonImage
           source={{ uri: imageUrl }}
@@ -54,7 +51,7 @@ const PokemonCardImage: React.FC<PokemonCardImageProps> = ({
           height={height}
           loading={isImageLoading}
         />
-        {isImageLoading && <SkeletonPlaceholder />}
+        {isImageLoading ? <SkeletonPlaceholder /> : null}
       </>
     ) : (
       <PlaceholderImageIcon name="question" size={height} />
