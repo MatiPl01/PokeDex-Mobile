@@ -10,4 +10,9 @@ export type Vector2D = {
   y: number;
 };
 
+export type Dimensions = {
+  width: number;
+  height: number;
+};
+
 export * from './utils';
