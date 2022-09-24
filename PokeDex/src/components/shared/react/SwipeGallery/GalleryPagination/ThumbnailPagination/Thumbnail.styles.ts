@@ -1,6 +1,5 @@
 import Animated from 'react-native-reanimated';
 import styled, { css } from 'styled-components/native';
-import { relativeFill } from '@styles/shared';
 
 export const ThumbnailWrapper = styled(Animated.View)<{ size: number }>`
   ${({ theme, size }) => css`
@@ -11,8 +10,4 @@ export const ThumbnailWrapper = styled(Animated.View)<{ size: number }>`
     border-radius: ${theme.space.md}px;
     ${theme.shadow.box.medium.sm};
   `}
-`;
-
-export const ImageWrapper = styled(Animated.View)`
-  ${relativeFill};
 `;

@@ -30,6 +30,9 @@ type ThumbnailPaginationProps = {
   position: Position;
   dimensions: Dimensions;
   scrollToIndex: (index: number) => void;
+  onSwipeStart: () => void;
+  onSwipeEnd: () => void;
+  visible?: boolean;
   size?: PaginationSize;
 };
 
@@ -39,6 +42,9 @@ const ThumbnailPagination: React.FC<ThumbnailPaginationProps> = ({
   position,
   dimensions,
   scrollToIndex,
+  onSwipeStart,
+  onSwipeEnd,
+  visible = true,
   size = 'medium'
 }) => {
   const theme = useTheme();
@@ -55,10 +61,9 @@ const ThumbnailPagination: React.FC<ThumbnailPaginationProps> = ({
   useEffect(() => {
     const offset =
       LIST_PADDING +
-      (activeImageIndex) * (thumbnailSize + LIST_GAP) +
+      activeImageIndex * (thumbnailSize + LIST_GAP) +
       thumbnailSize / 2 -
       (isHorizontal ? dimensions.width / 2 : dimensions.height / 2);
-    console.log({ offset });
     listRef.current?.scrollToOffset({ offset });
   }, [activeImageIndex]);
 
@@ -67,7 +72,10 @@ const ThumbnailPagination: React.FC<ThumbnailPaginationProps> = ({
       <Thumbnail
         url={url}
         size={thumbnailSize}
-        active={index === activeImageIndex}
+        index={index}
+        activeIndex={activeImageIndex}
+        position={position}
+        visible={visible}
       />
     </Pressable>
   );
@@ -83,6 +91,8 @@ const ThumbnailPagination: React.FC<ThumbnailPaginationProps> = ({
         data={images}
         renderItem={renderItem}
         keyExtractor={({ url }) => url}
+        onMomentumScrollBegin={onSwipeStart}
+        onMomentumScrollEnd={onSwipeEnd}
         ItemSeparatorComponent={renderSeparator}
         ListHeaderComponent={
           <Separator width={LIST_PADDING} height={LIST_PADDING} />
@@ -90,6 +100,11 @@ const ThumbnailPagination: React.FC<ThumbnailPaginationProps> = ({
         ListFooterComponent={
           <Separator width={LIST_PADDING} height={LIST_PADDING} />
         }
+        contentContainerStyle={{
+          alignItems: ['top', 'left'].includes(position)
+            ? 'flex-start'
+            : 'flex-end'
+        }}
         {...orientationProps}
       />
     </PaginationWrapper>

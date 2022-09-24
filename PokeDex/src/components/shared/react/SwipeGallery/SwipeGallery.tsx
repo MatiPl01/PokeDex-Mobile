@@ -1,4 +1,4 @@
-import React, { ComponentType, useRef, useState } from 'react';
+import React, { ComponentType, useEffect, useRef, useState } from 'react';
 import {
   ListRenderItem,
   FlatListProps,
@@ -24,14 +24,20 @@ export type GalleryPagination = {
 const renderPagination = (
   activeImageIndex: number,
   scrollToIndex: (index: number) => void,
+  onSwipeStart: () => void,
+  onSwipeEnd: () => void,
   { type: paginationType, ...restPaginationProps }: GalleryPagination,
   dimensions: Dimensions,
+  visible: boolean,
   images: Image[]
 ): React.ReactNode => {
   const props = {
     activeImageIndex,
     scrollToIndex,
+    onSwipeStart,
+    onSwipeEnd,
     dimensions,
+    visible,
     ...restPaginationProps
   };
 
@@ -45,6 +51,7 @@ type SwipeGalleryProps = {
   images: Image[];
   pagination?: GalleryPagination;
   scrollDirection?: Orientation;
+  paginationHideTimeout?: number;
   renderImage?: (data: {
     url: string;
     dimensions: Dimensions;
@@ -56,14 +63,30 @@ const SwipeGallery: React.FC<SwipeGalleryProps> = ({
   images,
   renderImage,
   pagination,
+  paginationHideTimeout,
   scrollDirection = 'horizontal'
 }) => {
   const listRef = useRef<FlatList | null>(null);
+  const paginationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  const [isSwiping, setIsSwiping] = useState(false);
+  const [isPaginationVisible, setIsPaginationVisible] = useState(false);
   const [dimensions, setDimensions] = useState<Dimensions>({
     height: 0,
     width: 0
   });
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  useEffect(() => {
+    if (isSwiping) setIsPaginationVisible(true);
+    if (!paginationHideTimeout) return;
+    if (paginationTimeoutRef.current)
+      clearTimeout(paginationTimeoutRef.current);
+    paginationTimeoutRef.current = setTimeout(() => {
+      setIsPaginationVisible(false);
+    }, paginationHideTimeout);
+  }, [isSwiping]);
 
   const measureGallery = (event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
@@ -85,7 +108,17 @@ const SwipeGallery: React.FC<SwipeGalleryProps> = ({
 
   const scrollToIndex = (index: number) => {
     listRef.current?.scrollToIndex({ index });
+    setIsSwiping(true);
     setActiveImageIndex(Math.min(Math.max(index, 0), images.length - 1));
+  };
+
+  const handleScrollStart = () => {
+    setIsSwiping(true);
+  };
+
+  const handleScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setIsSwiping(false);
+    updateActiveImage(event);
   };
 
   const renderItem: ListRenderItem<Image> = ({ item: { name, url } }) => (
@@ -105,7 +138,8 @@ const SwipeGallery: React.FC<SwipeGalleryProps> = ({
         data={images}
         keyExtractor={({ url }) => url}
         renderItem={renderItem}
-        onMomentumScrollEnd={updateActiveImage}
+        onMomentumScrollBegin={handleScrollStart}
+        onMomentumScrollEnd={handleScrollEnd}
         initialNumToRender={1}
         showsHorizontalScrollIndicator={false}
         horizontal={scrollDirection === 'horizontal'}
@@ -115,8 +149,11 @@ const SwipeGallery: React.FC<SwipeGalleryProps> = ({
         renderPagination(
           activeImageIndex,
           scrollToIndex,
+          () => setIsSwiping(true),
+          () => setIsSwiping(false),
           pagination,
           dimensions,
+          isPaginationVisible,
           images
         )}
     </GalleryWrapper>
