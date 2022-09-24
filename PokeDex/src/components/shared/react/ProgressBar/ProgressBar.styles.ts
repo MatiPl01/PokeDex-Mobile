@@ -1,11 +1,10 @@
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
+import { Orientation } from '@types';
 import { absoluteFill } from '@styles/shared';
 
-export type ProgressBarOrientation = 'horizontal' | 'vertical';
-
 export const Wrapper = styled.View<{
-  orientation: ProgressBarOrientation;
+  orientation: Orientation;
   reversed: boolean;
 }>`
   justify-content: space-between;
@@ -25,7 +24,7 @@ export const Wrapper = styled.View<{
 `;
 
 export const BarsWrapper = styled.View<{
-  orientation: ProgressBarOrientation;
+  orientation: Orientation;
   size: number;
   reversed: boolean;
 }>`
@@ -54,7 +53,7 @@ export const BarBackground = styled.View<{
 `;
 
 export const Bar = styled(Animated.View)<{
-  orientation: ProgressBarOrientation;
+  orientation: Orientation;
   color: string;
 }>`
   background-color: ${({ color }) => color};
@@ -72,7 +71,7 @@ export const Bar = styled(Animated.View)<{
 `;
 
 export const CounterTextWrapper = styled.View<{
-  orientation: ProgressBarOrientation;
+  orientation: Orientation;
   reversed: boolean;
   width: number;
 }>`

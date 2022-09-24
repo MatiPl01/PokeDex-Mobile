@@ -52,7 +52,17 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
       <StickyHeaderScrollView
         id={pokemon.id}
         title={pokemon.name}
-        ImageGalleryComponent={<PokemonImageGallery images={pokemon.images} pokemonType={pokemon.types[0]} />}
+        ImageGalleryComponent={
+          <PokemonImageGallery
+            images={pokemon.images}
+            pokemonType={pokemon.types[0]}
+            pagination={{
+              type: 'thumbnail',
+              position: 'bottom',
+              size: 'medium'
+            }}
+          />
+        }
       >
         <ScrollViewSection heading="Basic information">
           <Row>

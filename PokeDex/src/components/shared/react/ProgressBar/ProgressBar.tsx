@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
 import {
   useSharedValue,
   useDerivedValue,
   useAnimatedProps,
   withTiming
 } from 'react-native-reanimated';
+import { Orientation } from '@types';
 import { CounterText } from '@components/shared/styled/text';
 import {
-  ProgressBarOrientation,
   Wrapper,
   BarsWrapper,
   BarBackground,
@@ -28,7 +27,7 @@ type ProgressBarProps = {
   barSize?: number;
   animationDelay?: number;
   animationDuration?: number;
-  orientation?: ProgressBarOrientation;
+  orientation?: Orientation;
   reversed?: boolean;
 };
 
