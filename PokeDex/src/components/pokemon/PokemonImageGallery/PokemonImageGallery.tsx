@@ -13,6 +13,7 @@ type PokemonImageGalleryProps = {
   pokemonType: PokemonType;
   pagination?: GalleryPagination;
   scrollDirection?: Orientation;
+  paginationHideTimeout?: number;
 };
 
 // TODO - add fullscreen gallery mode

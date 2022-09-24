@@ -9,11 +9,10 @@ import {
 } from 'react-native-reanimated';
 import memoizeOne from 'memoize-one';
 
-// TODO - maybe improve types, maybe improve isInterpolatedValuesList function
 type InterpolationNumbers = readonly number[];
 type InterpolationStrings = readonly string[];
 type InterpolationRange = InterpolationNumbers | InterpolationStrings;
-type InterpolationValuesList = Record<string, InterpolationRange>[];
+type InterpolationValuesList = Record<string, InterpolationRange | undefined>[];
 
 type InterpolationRanges = {
   inputRange: InterpolationNumbers;
