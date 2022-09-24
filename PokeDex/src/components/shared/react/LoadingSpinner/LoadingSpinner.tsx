@@ -14,6 +14,8 @@ import {
 } from './LoadingSpinner.styles';
 
 const ANIMATION_DURATION = 1000; // Single animation duration (a part of the infinite animation)
+const DEFAULT_SPINNER_DIAMETER = 65;
+const DEFAULT_STROKE_WIDTH = 5;
 
 const useAnimatedCircleStyle = createAnimatedThemedStyles(theme => ({
   svg: {
@@ -47,8 +49,12 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ showOverlay }) => {
 
   return (
     <SpinnerWrapper showOverlay={showOverlay}>
-      <SpinnerSvg style={animatedCircleStyles.svg}>
-        <SpinnerCircle style={animatedCircleStyles.circle} />
+      <SpinnerSvg style={animatedCircleStyles.svg} diameter={diameter}>
+        <SpinnerCircle
+          style={animatedCircleStyles.circle}
+          diameter={diameter}
+          strokeWidth={strokeWidth}
+        />
       </SpinnerSvg>
     </SpinnerWrapper>
   );
