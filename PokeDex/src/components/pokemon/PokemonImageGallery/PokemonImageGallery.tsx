@@ -1,21 +1,24 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Dimensions } from '@types';
+import { Dimensions, Orientation } from '@types';
 import { PokemonImage, PokemonType } from '@store/pokemon/pokemon.types';
-import SwipeGallery from '@components/shared/react/SwipeGallery/SwipeGallery';
+import SwipeGallery, {
+  GalleryPagination
+} from '@components/shared/react/SwipeGallery/SwipeGallery';
 import GalleryImage from '@components/shared/react/SwipeGallery/GalleryImage/GalleryImage';
 import { ImageText, BackgroundGradient } from './PokemonImageGallery.styles';
 
 type PokemonImageGalleryProps = {
   images: PokemonImage[];
   pokemonType: PokemonType;
+  pagination?: GalleryPagination;
+  scrollDirection?: Orientation;
 };
 
 // TODO - add fullscreen gallery mode
-const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = ({
-  images,
-  pokemonType
-}) => {
+const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
+  const { pokemonType, ...restProps } = props;
+
   const renderImage = ({
     url,
     dimensions,
@@ -40,7 +43,7 @@ const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = ({
   return (
     <View style={{ flex: 1 }}>
       <BackgroundGradient pokemonType={pokemonType} colors={[]} />
-      <SwipeGallery images={images} renderImage={renderImage} />
+      <SwipeGallery renderImage={renderImage} {...restProps} />
     </View>
   );
 };
