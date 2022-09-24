@@ -56,10 +56,11 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
           <PokemonImageGallery
             images={pokemon.images}
             pokemonType={pokemon.types[0]}
+            paginationHideTimeout={1500}
             pagination={{
               type: 'thumbnail',
               position: 'bottom',
-              size: 'medium'
+              size: 'small'
             }}
           />
         }
