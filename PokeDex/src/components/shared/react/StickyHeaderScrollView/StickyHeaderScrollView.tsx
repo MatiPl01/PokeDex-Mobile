@@ -12,8 +12,8 @@ import {
 type StickyHeaderScrollViewProps = {
   title: string;
   children:
-  | ReactElement<ScrollViewSectionProps>
-  | ReactElement<ScrollViewSectionProps>[];
+    | ReactElement<ScrollViewSectionProps>
+    | ReactElement<ScrollViewSectionProps>[];
   id?: string;
   ImageGalleryComponent?: React.ReactNode;
 };
@@ -33,9 +33,9 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
   return (
     <Wrapper>
       <ScrollView scrollEventThrottle={1}>
-        {ImageGalleryComponent && <GalleryWrapper>
-          {ImageGalleryComponent}
-        </GalleryWrapper>}
+        {ImageGalleryComponent && (
+          <GalleryWrapper>{ImageGalleryComponent}</GalleryWrapper>
+        )}
         {Children.map(children, (child, idx) => (
           <SectionsContentWrapper
             onLayout={({
@@ -57,7 +57,7 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
           </SectionsContentWrapper>
         ))}
       </ScrollView>
-      {/* <StickyHeader id={id} title={title} tabs={tabs} /> */}
+      <StickyHeader id={id} title={title} tabs={tabs} />
     </Wrapper>
   );
 };
