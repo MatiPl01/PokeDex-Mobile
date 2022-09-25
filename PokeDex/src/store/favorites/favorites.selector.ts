@@ -8,6 +8,12 @@ export const selectFavoritePokemonIdsList = createSelector(
   ({ favoritesIdsList }) => favoritesIdsList
 );
 
+export const selectDisplayedFavoritePokemonIdsList = createSelector(
+  selectFavoritesState,
+  ({ displayedFavoritesIdsList }) => displayedFavoritesIdsList
+);
+
+
 export const selectPokemonIsFavourite = createSelector(
   [selectFavoritePokemonIdsList, (state: RootState, id: string) => id],
   (pokemonList, id) => pokemonList.indexOf(id) >= 0

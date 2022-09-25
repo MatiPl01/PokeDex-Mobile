@@ -70,10 +70,12 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
               cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
             }}
           >
-            <Stack.Screen name="Favorites" component={FavoritesScreen} />
-            <Stack.Screen name="Settings" component={SettingsScreen} />
-            <Stack.Screen name="Pokemon" component={PokemonScreen} />
-            <Stack.Screen name="Map" component={MapScreen} />
+            <Stack.Group>
+              <Stack.Screen name="Pokemon" component={PokemonScreen} />
+              <Stack.Screen name="Favorites" component={FavoritesScreen} />
+              <Stack.Screen name="Map" component={MapScreen} />
+              <Stack.Screen name="Settings" component={SettingsScreen} />
+            </Stack.Group>
           </Stack.Navigator>
         </SplashScreen>
       </ScreensInnerWrapper>
@@ -140,7 +142,8 @@ const DrawerNavigation: React.FC = () => (
         },
         drawerContentStyle: {
           flex: 1
-        }
+        },
+        unmountOnBlur: false
       }}
       drawerContent={DrawerContent}
     >
