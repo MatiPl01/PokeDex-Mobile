@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { useTheme } from 'styled-components';
-import { createAnimatedThemedStyles } from '@utils/reanimated';
+import { createAnimatedStyles } from '@utils/reanimated';
 import {
   useSharedValue,
   withRepeat,
@@ -17,25 +16,30 @@ const ANIMATION_DURATION = 1000; // Single animation duration (a part of the inf
 const DEFAULT_SPINNER_DIAMETER = 65;
 const DEFAULT_STROKE_WIDTH = 5;
 
-const useAnimatedCircleStyle = createAnimatedThemedStyles(theme => ({
-  svg: {
-    transform: [{ rotate: [0, 360] }]
-  },
-  circle: {
-    strokeDashoffset: [0.2, 0.4, 0.2].map(
-      percent => (1 - percent) * theme.size.lg * Math.PI
-    )
-  }
-}));
-
 type LoadingSpinnerProps = {
+  size?: number;
+  strokeWidth?: number;
   showOverlay?: boolean;
 };
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ showOverlay }) => {
-  const theme = useTheme();
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+  showOverlay,
+  strokeWidth = DEFAULT_STROKE_WIDTH,
+  size: diameter = DEFAULT_SPINNER_DIAMETER
+}) => {
+  const SPINNER_CIRCUMFERENCE = Math.PI * diameter;
+
   const animationProgress = useSharedValue(0);
-  const animatedCircleStyles = useAnimatedCircleStyle(theme)(animationProgress);
+  const animatedCircleStyles = createAnimatedStyles({
+    svg: {
+      transform: [{ rotate: [0, 360] }]
+    },
+    circle: {
+      strokeDashoffset: [0.2, 0.4, 0.2].map(
+        percent => (1 - percent) * SPINNER_CIRCUMFERENCE
+      )
+    }
+  })(animationProgress);
 
   useEffect(() => {
     animationProgress.value = withRepeat(

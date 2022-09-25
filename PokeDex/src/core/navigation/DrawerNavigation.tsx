@@ -21,6 +21,7 @@ import MapScreen from '@screens/map/MapScreen';
 import SettingsScreen from '@screens/settings/SettingsScreen';
 import { selectCurrentTheme } from '@store/theme/theme.selector';
 import { createAnimatedStyles } from '@utils/reanimated';
+import PokemonDetailsScreen from '@screens/pokemon-details/PokemonDetailsScreen';
 import Logo from '@assets/svg/logo.svg';
 import HamburgerIcon from './hamburger-icon/HamburgerIcon';
 import {
@@ -30,8 +31,16 @@ import {
   ScreensInnerWrapper
 } from './DrawerNavigation.styles';
 
+export type RootStackParamList = {
+  Pokemon: undefined;
+  PokemonDetails: { pokemonId: string };
+  Favorites: undefined;
+  Map: undefined;
+  Settings: undefined;
+};
+
 const Drawer = createDrawerNavigator();
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 const useAnimatedScreensStyles = createAnimatedStyles({
   outerWrapper: {
@@ -70,12 +79,14 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
               cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
             }}
           >
-            <Stack.Group>
-              <Stack.Screen name="Pokemon" component={PokemonScreen} />
-              <Stack.Screen name="Favorites" component={FavoritesScreen} />
-              <Stack.Screen name="Map" component={MapScreen} />
-              <Stack.Screen name="Settings" component={SettingsScreen} />
-            </Stack.Group>
+            <Stack.Screen name="Pokemon" component={PokemonScreen} />
+            <Stack.Screen
+              name="PokemonDetails"
+              component={PokemonDetailsScreen}
+            />
+            <Stack.Screen name="Favorites" component={FavoritesScreen} />
+            <Stack.Screen name="Map" component={MapScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
           </Stack.Navigator>
         </SplashScreen>
       </ScreensInnerWrapper>
