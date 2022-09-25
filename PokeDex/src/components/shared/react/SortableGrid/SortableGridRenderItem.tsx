@@ -1,9 +1,9 @@
 import React from 'react';
 import SortableGridItemWrapper, {
-  SortableGridItemProps
+  SortableGridItemWrapperProps
 } from './SortableGridItemWrapper';
 
-export type SortableGridRenderItemProps<T> = SortableGridItemProps & {
+export type SortableGridRenderItemProps<T> = SortableGridItemWrapperProps & {
   renderItem: (item: T, width: number, height: number) => JSX.Element;
   item: T;
 };

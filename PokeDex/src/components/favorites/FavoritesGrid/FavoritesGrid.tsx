@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Animated, {
   useSharedValue,
   withTiming,
@@ -7,11 +7,15 @@ import Animated, {
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
 import { API } from '@constants';
-import { selectFavoritePokemonIdsList } from '@store/favorites/favorites.selector';
+import {
+  selectDisplayedFavoritePokemonIdsList,
+  selectFavoritePokemonIdsList
+} from '@store/favorites/favorites.selector';
 import { fetchPokemonBatchByIdsAsync } from '@store/pokemon/pokemon.actions';
 import { selectPokemonStateListByIds } from '@store/pokemon/pokemon.selector';
 import {
   removePokemonFromFavorites,
+  setDisplayedFavoritePokemonIds,
   setFavoritePokemonIds
 } from '@store/favorites/favorites.actions';
 import { SinglePokemonState } from '@store/pokemon/pokemon.reducer';
@@ -22,6 +26,53 @@ import SortableGrid from '@components/shared/react/SortableGrid/SortableGrid';
 import FavoritesGridFooter from './FavoritesGridFooter';
 import NoFavoritePokemon from './NoFavoritePokemon';
 
+const INTERVAL = 200;
+const MAX_DELAY = 2000;
+
+const isValidPokemonState = (
+  item: SinglePokemonState | undefined,
+  id: string
+): item is SinglePokemonState => item?.id === id;
+
+const getDisplayedFavoritesStates = (
+  displayedFavoritesIds: string[],
+  favoritesStates: (SinglePokemonState | undefined)[]
+): SinglePokemonState[] => {
+  const displayedFavoritesStates: SinglePokemonState[] = [];
+
+  for (let i = 0; i < displayedFavoritesIds.length; i++) {
+    const item = favoritesStates[i];
+    if (!isValidPokemonState(item, displayedFavoritesIds[i])) break;
+    displayedFavoritesStates.push(item);
+  }
+
+  return displayedFavoritesStates;
+};
+
+type AnimationTimestamp = {
+  start: number;
+  delay: number;
+};
+
+const getAnimationTimestamp = (
+  animationTimestamps: Record<string, AnimationTimestamp>,
+  prevPokemonId: string | null
+): AnimationTimestamp => {
+  const currTime = new Date().getTime();
+  let delay: number;
+  if (!prevPokemonId) delay = 0;
+  else if (!animationTimestamps[prevPokemonId]) delay = MAX_DELAY;
+  else {
+    const elapsed = currTime - animationTimestamps[prevPokemonId].start;
+    delay = Math.max(0, Math.min(MAX_DELAY, INTERVAL - elapsed));
+  }
+
+  return {
+    start: currTime + delay,
+    delay
+  };
+};
+
 type FavoritesGridProps = {
   editable?: boolean;
 };
@@ -30,16 +81,17 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const favoritesIds = useSelector(selectFavoritePokemonIdsList);
-  const [displayedFavoritesIds, setDisplayedFavoritesIds] = useState<string[]>(
-    []
+  const displayedFavoritesIds = useSelector(
+    selectDisplayedFavoritePokemonIdsList
   );
   const favoritesStates = useSelector((rootState: RootState) =>
     selectPokemonStateListByIds(rootState, displayedFavoritesIds)
   );
-  const currDisplayedCountRef = useRef(0);
-  const prevDisplayedCountRef = useRef(0);
-  const remainingAnimationTime = useRef(0);
+  const animationTimestamps = useRef<Record<string, AnimationTimestamp>>({});
   const gridHeaderAnimationProgress = useSharedValue(0);
+  const [displayedFavoritesStates, setDisplayedFavoritesStates] = useState<
+    SinglePokemonState[]
+  >([]);
 
   const areAllDisplayed = favoritesIds.length === displayedFavoritesIds.length;
   const PADDING = theme.space.lg;
@@ -52,17 +104,18 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   };
 
   useEffect(() => {
-    if (!displayedFavoritesIds.length) return fetchNextFavorites();
-    setDisplayedFavoritesIds(
-      favoritesIds.slice(0, displayedFavoritesIds.length)
-    );
-  }, [favoritesIds]);
+    fetchNextFavorites();
+  }, []);
 
   useEffect(() => {
-    prevDisplayedCountRef.current = currDisplayedCountRef.current;
-    currDisplayedCountRef.current = displayedFavoritesIds.length;
-    dispatch(fetchPokemonBatchByIdsAsync(displayedFavoritesIds, false));
-  }, [displayedFavoritesIds]);
+    // Displayed favorites states will be an array of subsequent favorite Pokemon states
+    // If some Pokemon were fetched earlier and there is a gap between fetched Pokemon
+    // states, Pokemon that were fetched before will not be displayed until fetching
+    // Pokemon from a gap begins.
+    setDisplayedFavoritesStates(
+      getDisplayedFavoritesStates(displayedFavoritesIds, favoritesStates)
+    );
+  }, [favoritesStates]);
 
   useEffect(() => {
     gridHeaderAnimationProgress.value = withTiming(+editable, {
@@ -75,18 +128,28 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
     if (favoritesStates.length === favoritesIds.length) return;
     // Update displayed favorites ids only after favorites states were updated
     if (displayedFavoritesIds.length === favoritesStates.length) {
-      setDisplayedFavoritesIds([
+      const newDisplayedFavoritesIds = [
         ...displayedFavoritesIds,
         ...favoritesIds.slice(
           favoritesStates.length,
           favoritesStates.length + API.FETCH_FAVORITES_PER_BATCH
         )
-      ]);
+      ];
+      // Update the state and fetch new displayed favorite Pokemon
+      dispatch(setDisplayedFavoritePokemonIds(newDisplayedFavoritesIds));
+      dispatch(fetchPokemonBatchByIdsAsync(newDisplayedFavoritesIds, false));
     }
   };
 
   const updateFavoritesOrder = (data: SinglePokemonState[]) => {
-    dispatch(setFavoritePokemonIds(data.map(({ id }) => id)));
+    dispatch(
+      setFavoritePokemonIds([
+        // Update order of displayed favorite Pokemon
+        ...data.map(({ id }) => id),
+        // Add remaining favorite Pokemon ids (that were not displayed)
+        ...favoritesIds.slice(data.length)
+      ])
+    );
   };
 
   const handleFavoriteDelete = (id: string) => {
@@ -95,7 +158,7 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
 
   const renderItem = (
     {
-      item: { pokemon, isLoading },
+      item: { id: pokemonId, pokemon, isLoading },
       width
     }: {
       item: SinglePokemonState;
@@ -103,10 +166,14 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
     },
     index: number
   ) => {
-    const animationDelay = (index - prevDisplayedCountRef.current) * 250;
+    const timestamp = (animationTimestamps.current[pokemonId] =
+      getAnimationTimestamp(
+        animationTimestamps.current,
+        index > 0 ? favoritesIds[index - 1] : null
+      ));
 
     return (
-      <Animated.View entering={ZoomIn.duration(500).delay(animationDelay)}>
+      <Animated.View entering={ZoomIn.duration(500).delay(timestamp.delay)}>
         <FavoritePokemonCard
           pokemon={pokemon}
           isLoading={isLoading}
@@ -122,7 +189,7 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
 
   return (
     <SortableGrid<SinglePokemonState>
-      data={favoritesStates}
+      data={displayedFavoritesStates}
       keyExtractor={({ id }) => id}
       renderItem={renderItem}
       columnCount={2}

@@ -42,7 +42,7 @@ type AnimatedPosition = {
   y: SharedValue<number>;
 };
 
-export type SortableGridItemProps = PropsWithChildren<{
+export type SortableGridItemWrapperProps = PropsWithChildren<{
   itemKey: string;
   itemsOrder: SharedValue<Record<string, number>>;
   scrollY: SharedValue<number>;
@@ -57,7 +57,7 @@ export type SortableGridItemProps = PropsWithChildren<{
   onDragEnd: (newOrder: Record<string, number>) => void;
 }>;
 
-const SortableGridItem: React.FC<SortableGridItemProps> = ({
+const SortableGridItemWrapper: React.FC<SortableGridItemWrapperProps> = ({
   itemKey,
   itemsOrder,
   scrollY,
@@ -215,4 +215,4 @@ const SortableGridItem: React.FC<SortableGridItemProps> = ({
   );
 };
 
-export default React.memo(SortableGridItem);
+export default React.memo(SortableGridItemWrapper);

@@ -6,6 +6,11 @@ type SetFavorites = ActionWithPayload<
   string[]
 >;
 
+type SetDisplayedFavorites = ActionWithPayload<
+  FavoriteActionType.SET_DISPLAYED_FAVORITES,
+  string[]
+>;
+
 type AddToFavorites = ActionWithPayload<
   FavoriteActionType.ADD_TO_FAVORITES,
   string
@@ -18,11 +23,17 @@ type RemoveFromFavorites = ActionWithPayload<
 
 export type FavoritesAction =
   | SetFavorites
+  | SetDisplayedFavorites
   | AddToFavorites
   | RemoveFromFavorites;
 
 export const setFavoritePokemonIds = (pokemonIds: string[]): SetFavorites =>
   createAction(FavoriteActionType.SET_FAVORITES, pokemonIds);
+
+export const setDisplayedFavoritePokemonIds = (
+  pokemonIds: string[]
+): SetDisplayedFavorites =>
+  createAction(FavoriteActionType.SET_DISPLAYED_FAVORITES, pokemonIds);
 
 export const addPokemonToFavorites = (pokemonId: string): AddToFavorites =>
   createAction(FavoriteActionType.ADD_TO_FAVORITES, pokemonId);

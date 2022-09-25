@@ -13,7 +13,7 @@ import ReAnimated, {
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SIZE, API } from '@constants';
+import { SIZE } from '@constants';
 import { createAnimatedThemedStyle } from '@utils/reanimated';
 import {
   fetchNextPokemonBatchAsync,
@@ -197,4 +197,4 @@ const PokemonList: React.FC<PokemonListProps> = ({
   );
 };
 
-export default React.memo(PokemonList);
+export default PokemonList;

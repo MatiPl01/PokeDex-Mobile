@@ -18,7 +18,7 @@ const createSinglePokemonState = (id: string): SinglePokemonState => ({
 });
 
 export type PokemonState = {
-  readonly allPokemonList: SinglePokemonState[]; // list of all fetched Pokemon
+  readonly allPokemonList: (SinglePokemonState | undefined)[]; // list of all fetched Pokemon
   readonly displayedPokemonList: SinglePokemonState[]; // List of Pokemon that are currently displayed
   readonly error: Error | null; // Error that happened while fetching a list of pokemon
   readonly nextUrl: string | null; // Url to fetch next Pokemon list
@@ -35,8 +35,12 @@ const INITIAL_STATE: PokemonState = {
   areAllDisplayed: true
 };
 
+const isPokemonState = (
+  item?: SinglePokemonState
+): item is SinglePokemonState => !!item;
+
 const getUpdatedDisplayedPokemonList = (
-  allPokemonList: SinglePokemonState[],
+  allPokemonList: (SinglePokemonState | undefined)[],
   displayedPokemonList: SinglePokemonState[],
   ids: string[]
 ) => {
@@ -50,7 +54,8 @@ const getUpdatedDisplayedPokemonList = (
   // Store updated Pokemon states in the tempList (allPokemonList must have been updated before)
   ids.forEach(id => {
     const idx = idToIdx(id);
-    tempList[idx] = allPokemonList[idx];
+    const item = allPokemonList[idx];
+    if (isPokemonState(item)) tempList[idx] = item;
   });
 
   // Crate the new array of displayed pokemon maintaining the order of Pokemon
@@ -73,10 +78,13 @@ const getUpdatedPokemonData = (
 
   Object.entries(data).map(([id, pokemonData]) => {
     const idx = idToIdx(id);
-    allPokemonList[idx] = {
-      ...allPokemonList[idx],
-      ...pokemonData
-    };
+    const item = allPokemonList[idx];
+    if (isPokemonState(item)) {
+      allPokemonList[idx] = {
+        ...item,
+        ...pokemonData
+      };
+    }
   });
 
   return {
@@ -95,8 +103,10 @@ const handleFetchBatchStart = (
   state: PokemonState,
   { ids, updateDisplayed }: { ids: string[]; updateDisplayed: boolean }
 ): PokemonState => {
-  const allPokemonList = [...state.allPokemonList];
+  // Return the same state object if all Pokemon with the specified ids have already been fetched
+  if (ids.every(id => !!state.allPokemonList[idToIdx(id)])) return state;
 
+  const allPokemonList = [...state.allPokemonList];
   ids.forEach(id => {
     const idx = idToIdx(id);
     // Create single Pokemon states only for Pokemon that haven't been fetched before
@@ -175,10 +185,13 @@ const handleFetchBatchFailure = (
 const handleFetchSingleStart = (
   state: PokemonState,
   { id, updateDisplayed }: { id: string; updateDisplayed: boolean }
-): PokemonState => ({
-  ...handleFetchBatchStart(state, { ids: [id], updateDisplayed }),
-  isLoading: state.isLoading
-});
+): PokemonState =>
+  state.allPokemonList[idToIdx(id)]
+    ? state
+    : {
+        ...handleFetchBatchStart(state, { ids: [id], updateDisplayed }),
+        isLoading: state.isLoading
+      };
 
 const handleFetchSingleSuccess = (
   state: PokemonState,
@@ -247,7 +260,7 @@ const handleSetDisplayedPokemonWithIds = (
   ...state,
   displayedPokemonList: ids
     .map(id => state.allPokemonList[idToIdx(id)])
-    .filter(Boolean), // Display only Pokemon that have been fetched before
+    .filter(Boolean) as SinglePokemonState[], // Display only Pokemon that have been fetched before
   areAllDisplayed: false
 });
 

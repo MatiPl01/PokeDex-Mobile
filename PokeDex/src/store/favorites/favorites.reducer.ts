@@ -3,10 +3,12 @@ import { FavoritesAction } from './favorites.actions';
 
 export type FavoritesPokemonState = {
   readonly favoritesIdsList: string[];
+  readonly displayedFavoritesIdsList: string[];
 };
 
 const INITIAL_STATE: FavoritesPokemonState = {
-  favoritesIdsList: []
+  favoritesIdsList: [],
+  displayedFavoritesIdsList: []
 };
 
 const handleAddToFavorites = (
@@ -39,6 +41,8 @@ const favoritesReducer = (
   switch (action.type) {
     case FavoriteActionType.SET_FAVORITES:
       return { ...state, favoritesIdsList: action.payload };
+    case FavoriteActionType.SET_DISPLAYED_FAVORITES:
+      return { ...state, displayedFavoritesIdsList: action.payload };
     case FavoriteActionType.ADD_TO_FAVORITES:
       return handleAddToFavorites(state, action.payload);
     case FavoriteActionType.REMOVE_FROM_FAVORITES:
