@@ -6,14 +6,14 @@ export type HeaderTab = {
   anchor: number;
 };
 
-type StickyHeaderTabProps = HeaderTab & {
+type StickyHeaderTabProps = {
+  heading: string;
   onMeasurement: (width: number) => void;
   active?: boolean;
 };
 
 const StickyHeaderTab: React.FC<StickyHeaderTabProps> = ({
   heading,
-  anchor,
   onMeasurement,
   active = false
 }) => (
@@ -24,7 +24,7 @@ const StickyHeaderTab: React.FC<StickyHeaderTabProps> = ({
       }
     }) => onMeasurement(width)}
   >
-    <TabText active={true}>{heading}</TabText>
+    <TabText active={active}>{heading}</TabText>
   </TabWrapper>
 );
 

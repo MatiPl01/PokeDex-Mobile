@@ -1,12 +1,16 @@
 import React, { useState, useRef, Children, ReactElement } from 'react';
 import { ScrollView } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
 import { HeaderTab } from './StickyHeader/StickyHeaderTabs/StickyHeaderTab';
+import ScrollViewGallery from './ScrollViewGallery/ScrollViewGallery';
 import { ScrollViewSectionProps } from './ScrollViewSection/ScrollViewSection';
+import { GALLERY_HEIGHT } from './ScrollViewGallery/ScrollViewGallery.styles';
 import StickyHeader from './StickyHeader/StickyHeader';
 import {
   Wrapper,
-  GalleryWrapper,
-  SectionsContentWrapper
+  SectionContentWrapper,
+  SectionsContentWrapper,
+  TitlePlaceholder
 } from './StickyHeaderScrollView.styles';
 
 type StickyHeaderScrollViewProps = {
@@ -24,40 +28,67 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
   children,
   ImageGalleryComponent
 }) => {
-  const renderedTabsCount = useRef(0);
+  const renderedTabsIndexesRef = useRef<Set<number>>(new Set());
+  const scrollViewRef = useRef<ScrollView | null>(null);
   const [tabs, setTabs] = useState<HeaderTab[]>([]);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [activeTabIdx, setActiveTabIdx] = useState(0);
+  const scrollY = useSharedValue(0);
 
-  // Reset the rendered sections counter on every component rerender
-  renderedTabsCount.current = 0;
+  const scrollToIndex = (index: number) => {
+    setActiveTabIdx(index);
+    if (tabs[index]) scrollViewRef.current?.scrollTo({ y: tabs[index].anchor });
+  };
 
   return (
     <Wrapper>
-      <ScrollView scrollEventThrottle={1}>
+      <ScrollView
+        ref={scrollViewRef}
+        scrollEventThrottle={1}
+        onScroll={event => {
+          scrollY.value = event.nativeEvent.contentOffset.y;
+        }}
+      >
         {ImageGalleryComponent && (
-          <GalleryWrapper>{ImageGalleryComponent}</GalleryWrapper>
+          <ScrollViewGallery scrollY={scrollY}>
+            {ImageGalleryComponent}
+          </ScrollViewGallery>
         )}
-        {Children.map(children, (child, idx) => (
-          <SectionsContentWrapper
-            onLayout={({
-              nativeEvent: {
-                layout: { y: anchor }
-              }
-            }) => {
-              tabs[idx] = { heading: child.props.heading, anchor };
-              renderedTabsCount.current = renderedTabsCount.current + 1;
-              if (
-                !(children instanceof Array) ||
-                renderedTabsCount.current === children.length
-              ) {
-                setTabs([...tabs]);
-              }
-            }}
-          >
-            {child}
-          </SectionsContentWrapper>
-        ))}
+        <SectionsContentWrapper>
+          <TitlePlaceholder />
+          {Children.map(children, (child, idx) => (
+            <SectionContentWrapper
+              onLayout={({
+                nativeEvent: {
+                  layout: { y }
+                }
+              }) => {
+                tabs[idx] = {
+                  heading: child.props.heading,
+                  anchor: y + GALLERY_HEIGHT - headerHeight
+                };
+                renderedTabsIndexesRef.current.add(idx);
+                if (
+                  !(children instanceof Array) ||
+                  renderedTabsIndexesRef.current.size === children.length
+                ) {
+                  setTabs([...tabs]);
+                }
+              }}
+            >
+              {child}
+            </SectionContentWrapper>
+          ))}
+        </SectionsContentWrapper>
       </ScrollView>
-      <StickyHeader id={id} title={title} tabs={tabs} />
+      <StickyHeader
+        tabs={tabs}
+        title={title}
+        scrollY={scrollY}
+        scrollToIndex={scrollToIndex}
+        activeTabIndex={activeTabIdx}
+        setHeaderHeight={setHeaderHeight}
+      />
     </Wrapper>
   );
 };
