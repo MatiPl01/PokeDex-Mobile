@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
+import { DefaultTheme } from 'styled-components';
 import { Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
-import { createAnimatedThemedStyle } from '@utils/reanimated';
+import { createAnimatedParametrizedStyle } from '@utils/reanimated';
 import { ButtonWrapper, ButtonIcon } from './ScrollTopButton.styles';
 import { TouchableWrapper } from '@components/shared/styled/buttons';
 
-const useAnimatedShowButtonStyle = createAnimatedThemedStyle(theme => ({
-  right: [-theme.size.md, theme.space.lg]
-}));
+const useAnimatedShowButtonStyle =
+  createAnimatedParametrizedStyle<DefaultTheme>(theme => ({
+    right: [-theme.size.md, theme.space.lg]
+  }));
 
 type ScrollTopButtonProps = {
   isVisible: boolean;

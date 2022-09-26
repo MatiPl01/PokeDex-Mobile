@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Padding } from '@types';
 import { API } from '@constants';
-import { RootStackParamList } from '@core/navigation/DrawerNavigation';
+import { RootStackParamList } from '@core/navigation/Navigation';
 import { selectFavoritePokemonIdsList } from '@store/favorites/favorites.selector';
 import { fetchPokemonBatchByIdsAsync } from '@store/pokemon/pokemon.actions';
 import { selectPokemonStateListByIds } from '@store/pokemon/pokemon.selector';

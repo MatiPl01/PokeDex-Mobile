@@ -24,7 +24,7 @@ const StickyHeaderTab: React.FC<StickyHeaderTabProps> = ({
       }
     }) => onMeasurement(width)}
   >
-    <TabText active={active}>{heading}</TabText>
+    <TabText active={true}>{heading}</TabText>
   </TabWrapper>
 );
 

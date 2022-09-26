@@ -12,13 +12,13 @@ import ReAnimated, {
   withTiming
 } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTheme } from 'styled-components';
+import { DefaultTheme, useTheme } from 'styled-components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SIZE } from '@constants';
-import { RootStackParamList } from '@core/navigation/DrawerNavigation';
-import { createAnimatedThemedStyle } from '@utils/reanimated';
+import { RootStackParamList } from '@core/navigation/Navigation';
+import { createAnimatedParametrizedStyle } from '@utils/reanimated';
 import {
   fetchNextPokemonBatchAsync,
   refetchPokemonList
@@ -40,9 +40,10 @@ import {
   EmptyListFooter
 } from './PokemonList.styles';
 
-const useAnimatedCardListHeaderStyle = createAnimatedThemedStyle(theme => ({
-  paddingTop: [0, theme.size.md + theme.space.lg]
-}));
+const useAnimatedCardListHeaderStyle =
+  createAnimatedParametrizedStyle<DefaultTheme>(theme => ({
+    paddingTop: [0, theme.size.md + theme.space.lg]
+  }));
 
 type PokemonListProps = {
   isSearchBarOpen?: boolean;

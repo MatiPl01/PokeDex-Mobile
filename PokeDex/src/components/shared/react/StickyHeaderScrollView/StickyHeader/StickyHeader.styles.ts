@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components/native';
 
-export const HeaderWrapper = styled.View`
+export const HeaderWrapper = styled.View<{ statusBarHeight: number }>`
   position: absolute;
   top: 0;
   left: 0;
@@ -10,6 +10,8 @@ export const HeaderWrapper = styled.View`
     background-color: ${theme.color.background.primary};
     padding: ${theme.space.md}px;
   `};
+
+  padding-top: ${({ statusBarHeight }) => statusBarHeight}px;
 `;
 
 export const HeaderTitle = styled.Text`

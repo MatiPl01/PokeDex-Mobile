@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from 'styled-components';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '@core/navigation/DrawerNavigation';
+import { RootStackParamList } from '@core/navigation/Navigation';
 import { Separator } from '@components/shared/styled/layout';
 import {
   Wrapper,
