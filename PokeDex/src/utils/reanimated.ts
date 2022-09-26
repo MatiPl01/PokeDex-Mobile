@@ -299,30 +299,23 @@ export const createAnimatedStyles = (config: AnimatedStylesConfig) => {
 /**
  * Create animated style hook based on the themed config object
  *
- * @param themedConfig - config specifying animated properties and their value ranges
- *                       calculated based on the current config values
+ * @params             - object containing parameters used to create an animated style
  * @returns            - a hook that creates animated style when called with the theme
  *                       object and the animation progress value
  */
-export const createAnimatedThemedStyle = <T = void>(
-  themedConfig: (theme: DefaultTheme, customProp: T) => AnimatedStyleConfig
-) =>
-  memoizeOne((theme: DefaultTheme, customProps: T) =>
-    createAnimatedStyle(themedConfig(theme, customProps))
-  );
+export const createAnimatedParametrizedStyle = <T extends object>(
+  themedConfig: (params: T) => AnimatedStyleConfig
+) => memoizeOne((params: T) => createAnimatedStyle(themedConfig(params)));
 
 /**
  * Create multiple animated styles for multiple properties in the themed config object
  *
- * @param themedConfig - an object containing style names and themed config objects
+ * @params             - object containing parameters used to create an animated style
  * @returns            - an object containing animated styles
  */
-export const createAnimatedThemedStyles = <T = void>(
-  themedConfig: (theme: DefaultTheme, customProps: T) => AnimatedStylesConfig
-) =>
-  memoizeOne((theme: DefaultTheme, customProps: T) =>
-    createAnimatedStyles(themedConfig(theme, customProps))
-  );
+export const createAnimatedParametrizedStyles = <T extends object>(
+  themedConfig: (params: T) => AnimatedStylesConfig
+) => memoizeOne((params: T) => createAnimatedStyles(themedConfig(params)));
 
 /**
  * Create an object with animated properties

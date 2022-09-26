@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HeaderTab } from './StickyHeaderTabs/StickyHeaderTab';
 import StickyHeaderTabsPanel from './StickyHeaderTabs/StickyHeaderTabsPanel';
 import { HeaderWrapper, HeaderTitle } from './StickyHeader.styles';
@@ -10,8 +11,10 @@ type StickyHeaderProps = {
 };
 
 const StickyHeader: React.FC<StickyHeaderProps> = ({ title, tabs, id }) => {
+  const edges = useSafeAreaInsets();
+
   return (
-    <HeaderWrapper>
+    <HeaderWrapper statusBarHeight={edges.top}>
       <HeaderTitle>{title}</HeaderTitle>
       <StickyHeaderTabsPanel tabs={tabs} />
     </HeaderWrapper>

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
   withTiming,
@@ -28,7 +29,6 @@ import FavoritePokemonCard from '@components/favorites/FavoritePokemonCard/Favor
 import SortableGrid from '@components/shared/react/SortableGrid/SortableGrid';
 import FavoritesGridFooter from './FavoritesGridFooter';
 import NoFavoritePokemon from './NoFavoritePokemon';
-import { Pressable } from 'react-native';
 
 const isValidPokemonState = (
   item: SinglePokemonState | undefined,

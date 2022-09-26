@@ -12,7 +12,7 @@ import {
   withDelay,
   withTiming
 } from 'react-native-reanimated';
-import { useTheme } from 'styled-components';
+import { DefaultTheme, useTheme } from 'styled-components';
 import {
   getSearchSuggestions,
   SearchItem as SearchItemType,
@@ -20,7 +20,7 @@ import {
 } from '@utils/search';
 import {
   createAnimatedStyle,
-  createAnimatedThemedStyle
+  createAnimatedParametrizedStyle
 } from '@utils/reanimated';
 import {
   OuterWrapper,
@@ -46,15 +46,17 @@ const useAnimatedScrollTopIconStyle = createAnimatedStyle({
   opacity: [0, 1]
 });
 
-const useAnimatedWrapperRevealStyle = createAnimatedThemedStyle(theme => ({
-  top: [theme.size.md, theme.size.lg],
-  opacity: [0, 1]
-}));
+const useAnimatedWrapperRevealStyle =
+  createAnimatedParametrizedStyle<DefaultTheme>(theme => ({
+    top: [theme.size.md, theme.size.lg],
+    opacity: [0, 1]
+  }));
 
-const useAnimatedShowMoreFooterStyle = createAnimatedThemedStyle(theme => ({
-  height: [0, theme.size.md],
-  opacity: [0, 1]
-}));
+const useAnimatedShowMoreFooterStyle =
+  createAnimatedParametrizedStyle<DefaultTheme>(theme => ({
+    height: [0, theme.size.md],
+    opacity: [0, 1]
+  }));
 
 type SearchSuggestionsProps = {
   data: SearchItemType[];

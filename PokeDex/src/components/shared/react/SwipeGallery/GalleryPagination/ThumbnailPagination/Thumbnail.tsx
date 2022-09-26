@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useTheme } from 'styled-components';
+import { DefaultTheme, useTheme } from 'styled-components';
 import {
   Easing,
   useSharedValue,
@@ -7,14 +7,15 @@ import {
   withTiming
 } from 'react-native-reanimated';
 import GalleryImage from '@components/shared/react/SwipeGallery/GalleryImage/GalleryImage';
-import { createAnimatedThemedStyle } from '@utils/reanimated';
+import { createAnimatedParametrizedStyle } from '@utils/reanimated';
 import { ThumbnailWrapper } from './Thumbnail.styles';
 import { Position } from '@types';
 
-const useAnimatedAppearanceStyle = createAnimatedThemedStyle<{
+const useAnimatedAppearanceStyle = createAnimatedParametrizedStyle<{
+  theme: DefaultTheme;
   thumbnailSize: number;
   position: Position;
-}>((theme, { thumbnailSize, position }) => {
+}>(({ theme, thumbnailSize, position }) => {
   let translate;
   switch (position) {
     case 'top':
@@ -36,9 +37,10 @@ const useAnimatedAppearanceStyle = createAnimatedThemedStyle<{
   };
 });
 
-const useAnimatedActiveStyle = createAnimatedThemedStyle<{
+const useAnimatedActiveStyle = createAnimatedParametrizedStyle<{
+  theme: DefaultTheme;
   thumbnailSize: number;
-}>((theme, { thumbnailSize }) => ({
+}>(({ theme, thumbnailSize }) => ({
   borderWidth: [0, theme.space.sm],
   width: [thumbnailSize, 1.2 * thumbnailSize],
   height: [thumbnailSize, 1.2 * thumbnailSize]
@@ -65,11 +67,13 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   const appearanceAnimationProgress = useSharedValue(0);
   const activeAnimationProgress = useSharedValue(0);
 
-  const animatedAppearanceStyle = useAnimatedAppearanceStyle(theme, {
+  const animatedAppearanceStyle = useAnimatedAppearanceStyle({
+    theme,
     thumbnailSize: size,
     position
   })(appearanceAnimationProgress);
-  const animatedActiveStyle = useAnimatedActiveStyle(theme, {
+  const animatedActiveStyle = useAnimatedActiveStyle({
+    theme,
     thumbnailSize: size
   })(activeAnimationProgress);
 

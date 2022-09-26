@@ -10,16 +10,20 @@ type StickyHeaderTabsProps = {
 const StickyHeaderTabs: React.FC<StickyHeaderTabsProps> = ({
   tabs,
   onMeasurement
-}) => (
-  <TabsWrapper>
-    {tabs.map((tab, index) => (
-      <StickyHeaderTab
-        key={tab.anchor}
-        onMeasurement={onMeasurement.bind(null, index)}
-        {...tab}
-      />
-    ))}
-  </TabsWrapper>
-);
+}) => {
+  console.log('rerender');
 
-export default StickyHeaderTabs;
+  return (
+    <TabsWrapper>
+      {tabs.map((tab, index) => (
+        <StickyHeaderTab
+          key={tab.anchor}
+          onMeasurement={onMeasurement.bind(null, index)}
+          {...tab}
+        />
+      ))}
+    </TabsWrapper>
+  );
+};
+
+export default React.memo(StickyHeaderTabs);

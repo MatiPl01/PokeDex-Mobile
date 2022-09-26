@@ -1,7 +1,7 @@
 import React from 'react';
 import { Animated, Pressable } from 'react-native';
 import { Pokemon } from '@store/pokemon/pokemon.types';
-import { RootStackParamList } from '@core/navigation/DrawerNavigation';
+import { RootStackParamList } from '@core/navigation/Navigation';
 import { StackNavigationProp } from '@react-navigation/stack';
 import PokemonCard from '../PokemonCard/PokemonCard';
 

@@ -1,7 +1,5 @@
-import styled, { css } from 'styled-components/native';
-import LinearGradient from 'react-native-linear-gradient';
+import styled from 'styled-components/native';
 import { SIZE } from '@constants';
-import { PokemonType } from '@store/pokemon/pokemon.types';
 
 export const GALLERY_HEIGHT = SIZE.SCREEN.HEIGHT / 3;
 

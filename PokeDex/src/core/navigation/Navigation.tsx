@@ -29,7 +29,7 @@ import {
   DrawerContentView,
   DrawerWrapper,
   ScreensInnerWrapper
-} from './DrawerNavigation.styles';
+} from './Navigation.styles';
 
 export type RootStackParamList = {
   Pokemon: undefined;
@@ -64,7 +64,9 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
   return (
     <Animated.View style={animatedStyles.outerWrapper}>
       <ScreensInnerWrapper style={animatedStyles.innerWrapper}>
-        <SplashScreen menuToggle={<HamburgerIcon navigation={navigation} />}>
+        <SplashScreen
+          menuToggle={<HamburgerIcon navigation={navigation} />}
+        >
           <Stack.Navigator
             screenOptions={{
               headerTransparent: true,
@@ -136,7 +138,7 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
   );
 };
 
-const DrawerNavigation: React.FC = () => (
+const Navigation: React.FC = () => (
   <DrawerWrapper>
     <Drawer.Navigator
       initialRouteName="Pokemon"
@@ -163,4 +165,4 @@ const DrawerNavigation: React.FC = () => (
   </DrawerWrapper>
 );
 
-export default DrawerNavigation;
+export default Navigation;

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DrawerNavigation from '@core/navigation/DrawerNavigation';
+import Navigation from '@core/navigation/Navigation';
 import { StatusBar, useColorScheme } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
@@ -15,6 +15,7 @@ import { ThemeMode, ThemeName } from '@store/theme/theme.types';
 import { setFavoritePokemonIds } from '@store/favorites/favorites.actions';
 import { selectFavoritePokemonIdsList } from '@store/favorites/favorites.selector';
 import { catchAsync } from '@utils/errors';
+import { FullScreenProvider } from '@context/FullScreen.context';
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -66,10 +67,12 @@ const App: React.FC = () => {
         barStyle={`${themeMode === ThemeMode.LIGHT ? 'dark' : 'light'}-content`}
       />
       <SafeAreaProvider>
-        <StatusBar backgroundColor="transparent" translucent />
-        <NavigationContainer>
-          <DrawerNavigation />
-        </NavigationContainer>
+        <FullScreenProvider>
+          <StatusBar backgroundColor="transparent" translucent />
+          <NavigationContainer>
+            <Navigation />
+          </NavigationContainer>
+        </FullScreenProvider>
       </SafeAreaProvider>
     </ThemeProvider>
   );

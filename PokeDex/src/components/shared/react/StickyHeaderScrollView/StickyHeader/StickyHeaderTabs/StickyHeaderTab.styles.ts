@@ -11,6 +11,7 @@ export const TabWrapper = styled.View`
 
 export const TabText = styled.Text<{ active?: boolean }>`
   ${({ theme, active }) => css`
+    padding: 0 ${theme.space.md}px;
     color: ${active
       ? theme.color.background.primary
       : theme.color.text.primary};

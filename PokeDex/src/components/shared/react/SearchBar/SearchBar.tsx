@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TextInput } from 'react-native';
-import { useTheme } from 'styled-components';
+import { DefaultTheme, useTheme } from 'styled-components';
 import Animated, {
   useSharedValue,
   withTiming,
@@ -13,7 +13,7 @@ import { SIZE, ANIMATION } from '@constants';
 import {
   createAnimatedStyle,
   createAnimatedStyles,
-  createAnimatedThemedStyles
+  createAnimatedParametrizedStyles
 } from '@utils/reanimated';
 import { SearchItem, SearchSuggestionItem } from '@utils/search';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
@@ -58,39 +58,45 @@ const useAnimatedInputIconStyles = createAnimatedStyles({
   }
 });
 
-const useAnimatedFocusStyles = createAnimatedThemedStyles(theme => ({
-  wrapper: {
-    width: [SIZE.SCREEN.WIDTH - 2 * theme.space.lg, SIZE.SCREEN.WIDTH],
-    left: [theme.space.lg, 0],
-    top: [theme.space.lg, 0],
-    paddingTop: [(theme.size.lg - theme.size.md) / 2, 0],
-    paddingRight: [theme.size.lg / 2, 0]
-  },
-  inputWrapper: {
-    height: [theme.size.md, theme.size.lg]
-  },
-  input: {
-    borderRadius: [5, 0]
-  }
-}));
+const useAnimatedFocusStyles = createAnimatedParametrizedStyles<DefaultTheme>(
+  theme => ({
+    wrapper: {
+      width: [SIZE.SCREEN.WIDTH - 2 * theme.space.lg, SIZE.SCREEN.WIDTH],
+      left: [theme.space.lg, 0],
+      top: [theme.space.lg, 0],
+      paddingTop: [(theme.size.lg - theme.size.md) / 2, 0],
+      paddingRight: [theme.size.lg / 2, 0]
+    },
+    inputWrapper: {
+      height: [theme.size.md, theme.size.lg]
+    },
+    input: {
+      borderRadius: [5, 0]
+    }
+  })
+);
 
-const useToggleStyles = createAnimatedThemedStyles(theme => ({
-  wrapper: {
-    width: [0, SIZE.SCREEN.WIDTH - 2 * theme.space.lg]
-  },
-  button: {
-    right: [-theme.size.lg / 2, 0]
-  }
-}));
+const useToggleStyles = createAnimatedParametrizedStyles<DefaultTheme>(
+  theme => ({
+    wrapper: {
+      width: [0, SIZE.SCREEN.WIDTH - 2 * theme.space.lg]
+    },
+    button: {
+      right: [-theme.size.lg / 2, 0]
+    }
+  })
+);
 
-const useFocusButtonStyles = createAnimatedThemedStyles(theme => ({
-  button: {
-    backgroundColor: [theme.color.accent.primary, 'transparent']
-  },
-  icon: {
-    color: [theme.color.white, theme.color.text.primary]
-  }
-}));
+const useFocusButtonStyles = createAnimatedParametrizedStyles<DefaultTheme>(
+  theme => ({
+    button: {
+      backgroundColor: [theme.color.accent.primary, 'transparent']
+    },
+    icon: {
+      color: [theme.color.white, theme.color.text.primary]
+    }
+  })
+);
 
 type SearchBarProps = {
   data: SearchItem[];

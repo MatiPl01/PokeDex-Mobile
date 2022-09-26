@@ -1,92 +1,132 @@
 import React, { useEffect, PropsWithChildren } from 'react';
 import { useTheme, DefaultTheme } from 'styled-components';
-import { useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
+import {
+  Easing,
+  useSharedValue,
+  withDelay,
+  withTiming
+} from 'react-native-reanimated';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SIZE, ANIMATION } from '@constants';
 import {
   AnimatedStylesConfig,
-  createAnimatedThemedStyle,
-  createAnimatedThemedStyles
+  createAnimatedParametrizedStyle,
+  createAnimatedParametrizedStyles
 } from '@utils/reanimated';
+import { useFullScreenContext } from '@context/FullScreen.context';
 import PokeBall from '@assets/svg/poke-ball.svg';
 import Logo from '@assets/svg/logo.svg';
 import {
-  InnerWrapper,
+  Wrapper,
   Overlay,
   AbsoluteView,
   ContentContainer
 } from './SplashScreen.styles';
 
-const useAnimatedSplashScreenStyles = createAnimatedThemedStyles<EdgeInsets>(
-  (theme: DefaultTheme, edges: EdgeInsets) => {
-    const LOGO_BAR_HEIGHT = theme.size.lg;
-    const LOGO_BAR_PADDING_X = theme.space.sm;
-    const LOGO_BAR_PADDING_Y = theme.space.sm;
-    const POKE_BALL_SIZE = SIZE.SCREEN.WIDTH / 2;
-    const FINAL_POKE_BALL_SIZE = LOGO_BAR_HEIGHT - 2 * LOGO_BAR_PADDING_Y;
-    const FINAL_LOGO_HEIGHT = FINAL_POKE_BALL_SIZE;
-    const LOGO_HEIGHT = theme.size.xl;
+type Sizes = Record<
+  | 'LOGO_HEIGHT'
+  | 'LOGO_BAR_HEIGHT'
+  | 'LOGO_BAR_PADDING_X'
+  | 'LOGO_BAR_PADDING_Y'
+  | 'POKE_BALL_SIZE'
+  | 'MENU_TOGGLE_SIZE'
+  | 'FINAL_POKE_BALL_SIZE'
+  | 'FINAL_LOGO_HEIGHT',
+  number
+>;
 
-    const config: AnimatedStylesConfig = {
-      overlay: {
-        transform: [
-          { translateY: [0, -SIZE.SCREEN.HEIGHT + LOGO_BAR_HEIGHT + edges.top] }
-        ]
-      },
-      content: {
-        transform: [
-          { translateY: [SIZE.SCREEN.HEIGHT - LOGO_BAR_HEIGHT - edges.top, 0] }
-        ]
-      },
-      pokeBall: {
-        transform: [
-          {
-            translateX: [
-              0,
-              SIZE.SCREEN.WIDTH / 2 -
-                FINAL_POKE_BALL_SIZE / 2 -
-                LOGO_BAR_PADDING_X
-            ]
-          },
-          {
-            translateY: [
-              -POKE_BALL_SIZE / 2,
-              SIZE.SCREEN.HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
-            ]
-          },
-          {
-            scale: [1, FINAL_POKE_BALL_SIZE / POKE_BALL_SIZE]
-          }
-        ]
-      },
-      logo: {
-        transform: [
-          {
-            translateY: [
-              LOGO_HEIGHT / 2,
-              SIZE.SCREEN.HEIGHT / 2 + LOGO_BAR_PADDING_Y - edges.top
-            ]
-          },
-          {
-            scale: [1, FINAL_LOGO_HEIGHT / LOGO_HEIGHT]
-          }
-        ]
-      }
-    };
+const useAnimatedSplashScreenStyles = createAnimatedParametrizedStyles<{
+  sizes: Sizes;
+  edges: EdgeInsets;
+}>(({ sizes, edges }) => {
+  const config: AnimatedStylesConfig = {
+    overlay: {
+      transform: [
+        {
+          translateY: [
+            0,
+            -SIZE.SCREEN.HEIGHT + sizes.LOGO_BAR_HEIGHT + edges.top
+          ]
+        }
+      ]
+    },
+    content: {
+      transform: [
+        {
+          translateY: [
+            SIZE.SCREEN.HEIGHT - sizes.LOGO_BAR_HEIGHT - edges.top,
+            0
+          ]
+        }
+      ]
+    },
+    pokeBall: {
+      transform: [
+        {
+          translateX: [
+            0,
+            SIZE.SCREEN.WIDTH / 2 -
+              sizes.FINAL_POKE_BALL_SIZE / 2 -
+              sizes.LOGO_BAR_PADDING_X
+          ]
+        },
+        {
+          translateY: [
+            -sizes.POKE_BALL_SIZE / 2,
+            SIZE.SCREEN.HEIGHT / 2 + sizes.LOGO_BAR_PADDING_Y - edges.top
+          ]
+        },
+        {
+          scale: [1, sizes.FINAL_POKE_BALL_SIZE / sizes.POKE_BALL_SIZE]
+        }
+      ]
+    },
+    logo: {
+      transform: [
+        {
+          translateY: [
+            sizes.LOGO_HEIGHT / 2,
+            SIZE.SCREEN.HEIGHT / 2 + sizes.LOGO_BAR_PADDING_Y - edges.top
+          ]
+        },
+        {
+          scale: [1, sizes.FINAL_LOGO_HEIGHT / sizes.LOGO_HEIGHT]
+        }
+      ]
+    }
+  };
 
-    return config;
-  }
-);
+  return config;
+});
 
-const useAnimatedMenuToggleStyle = createAnimatedThemedStyle(
-  (theme: DefaultTheme) => ({
+const useAnimatedMenuToggleStyle =
+  createAnimatedParametrizedStyle<DefaultTheme>(theme => ({
     transform: [
       {
         translateX: [-theme.size.lg, theme.space.sm]
       }
     ]
-  })
-);
+  }));
+
+const useAnimatedFullScreenStyles = createAnimatedParametrizedStyles<{
+  sizes: Sizes;
+  edges: EdgeInsets;
+}>(({ sizes, edges }) => {
+  const headerHeight = sizes.LOGO_BAR_HEIGHT + edges.top;
+
+  return {
+    overlay: {
+      transform: [
+        {
+          translateY: [-SIZE.SCREEN.HEIGHT + headerHeight, -SIZE.SCREEN.HEIGHT]
+        }
+      ]
+    },
+    content: {
+      paddingTop: [headerHeight, 0]
+    }
+  };
+});
 
 type SplashScreenProps = PropsWithChildren<{
   menuToggle: React.ReactNode;
@@ -98,23 +138,45 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
 }) => {
   const theme = useTheme();
   const edges = useSafeAreaInsets();
+  const { isFullScreenEnabled } = useFullScreenContext();
+
   const LOGO_HEIGHT = theme.size.xl;
   const LOGO_BAR_HEIGHT = theme.size.lg;
+  const LOGO_BAR_PADDING_X = theme.space.sm;
   const LOGO_BAR_PADDING_Y = theme.space.sm;
   const POKE_BALL_SIZE = SIZE.SCREEN.WIDTH / 2;
   const MENU_TOGGLE_SIZE = theme.size.lg - 2 * theme.space.lg;
+  const FINAL_POKE_BALL_SIZE = LOGO_BAR_HEIGHT - 2 * LOGO_BAR_PADDING_Y;
+  const FINAL_LOGO_HEIGHT = FINAL_POKE_BALL_SIZE;
+
+  const sizes = {
+    LOGO_HEIGHT,
+    LOGO_BAR_HEIGHT,
+    LOGO_BAR_PADDING_X,
+    LOGO_BAR_PADDING_Y,
+    POKE_BALL_SIZE,
+    MENU_TOGGLE_SIZE,
+    FINAL_POKE_BALL_SIZE,
+    FINAL_LOGO_HEIGHT
+  };
 
   const splashScreenAnimationProgress = useSharedValue(0);
   const menuToggleAnimationProgress = useSharedValue(0);
+  const fullScreenAnimationProgress = useSharedValue(0);
 
-  const animatedSplashScreenStyles = useAnimatedSplashScreenStyles(
-    theme,
+  const animatedSplashScreenStyles = useAnimatedSplashScreenStyles({
+    sizes,
     edges
-  )(splashScreenAnimationProgress);
+  })(splashScreenAnimationProgress);
 
   const animatedMenuToggleStyle = useAnimatedMenuToggleStyle(theme)(
     menuToggleAnimationProgress
   );
+
+  const animatedFullScreenStyles = useAnimatedFullScreenStyles({
+    sizes,
+    edges
+  })(fullScreenAnimationProgress);
 
   useEffect(() => {
     splashScreenAnimationProgress.value = withDelay(
@@ -129,10 +191,25 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
     );
   }, []);
 
+  useEffect(() => {
+    fullScreenAnimationProgress.value = withTiming(+isFullScreenEnabled, {
+      duration: 1000,
+      easing: Easing.bezier(0.6, 0, 0.4, 1)
+    });
+  }, [isFullScreenEnabled]);
+
   return (
     <>
-      <InnerWrapper height={SIZE.SCREEN.HEIGHT}>
-        <Overlay style={animatedSplashScreenStyles.overlay}>
+      <Wrapper
+        height={SIZE.SCREEN.HEIGHT}
+        style={animatedFullScreenStyles.wrapper}
+      >
+        <Overlay
+          style={[
+            animatedSplashScreenStyles.overlay,
+            animatedFullScreenStyles.overlay
+          ]}
+        >
           <AbsoluteView style={animatedSplashScreenStyles.pokeBall}>
             <PokeBall height={POKE_BALL_SIZE} width={POKE_BALL_SIZE} />
           </AbsoluteView>
@@ -159,15 +236,13 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
         </Overlay>
         <ContentContainer
           style={[
-            {
-              paddingTop: LOGO_BAR_HEIGHT + edges.top
-            },
-            animatedSplashScreenStyles.content
+            animatedSplashScreenStyles.content,
+            animatedFullScreenStyles.content
           ]}
         >
           {children}
         </ContentContainer>
-      </InnerWrapper>
+      </Wrapper>
     </>
   );
 };

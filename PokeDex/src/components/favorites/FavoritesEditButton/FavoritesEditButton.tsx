@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useTheme } from 'styled-components';
+import { useTheme, DefaultTheme } from 'styled-components';
 import { useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import { ANIMATION } from '@constants';
 import {
   AnimatedStyleConfig,
   createAnimatedStyles,
-  createAnimatedThemedStyle
+  createAnimatedParametrizedStyle
 } from '@utils/reanimated';
 import { AnimatedIconWrapper } from '@components/shared/styled/icons';
 import { TouchableWrapper } from '@components/shared/styled/buttons';
@@ -16,22 +16,24 @@ const ANIMATION_CONFIG = {
   easing: Easing.bezier(0.4, 0, 0.9, 0.65)
 };
 
-const useAnimatedButtonStyle = createAnimatedThemedStyle(theme => {
-  const BUTTON_SIZE = theme.size.lg;
-  const CLOSED_BUTTON_SIZE = 2 * BUTTON_SIZE;
-  const BUTTON_OFFSET_TOP = theme.space.lg;
-  const BUTTON_OFFSET_RIGHT = theme.space.lg;
+const useAnimatedButtonStyle = createAnimatedParametrizedStyle<DefaultTheme>(
+  theme => {
+    const BUTTON_SIZE = theme.size.lg;
+    const CLOSED_BUTTON_SIZE = 2 * BUTTON_SIZE;
+    const BUTTON_OFFSET_TOP = theme.space.lg;
+    const BUTTON_OFFSET_RIGHT = theme.space.lg;
 
-  const config: AnimatedStyleConfig = {
-    width: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
-    height: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
-    paddingTop: [CLOSED_BUTTON_SIZE * 0.35, 0],
-    paddingRight: [CLOSED_BUTTON_SIZE * 0.35, 0],
-    top: [-CLOSED_BUTTON_SIZE / 2, BUTTON_OFFSET_TOP],
-    right: [-CLOSED_BUTTON_SIZE / 2, BUTTON_OFFSET_RIGHT]
-  };
-  return config;
-});
+    const config: AnimatedStyleConfig = {
+      width: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
+      height: [CLOSED_BUTTON_SIZE, BUTTON_SIZE],
+      paddingTop: [CLOSED_BUTTON_SIZE * 0.35, 0],
+      paddingRight: [CLOSED_BUTTON_SIZE * 0.35, 0],
+      top: [-CLOSED_BUTTON_SIZE / 2, BUTTON_OFFSET_TOP],
+      right: [-CLOSED_BUTTON_SIZE / 2, BUTTON_OFFSET_RIGHT]
+    };
+    return config;
+  }
+);
 
 const useAnimatedIconStyles = createAnimatedStyles({
   edit: {
