@@ -1,4 +1,3 @@
-import { DefaultTheme } from 'styled-components/native';
 import {
   interpolate,
   Extrapolate,
@@ -12,17 +11,21 @@ import memoizeOne from 'memoize-one';
 type InterpolationNumbers = readonly number[];
 type InterpolationStrings = readonly string[];
 type InterpolationRange = InterpolationNumbers | InterpolationStrings;
-type InterpolationValuesList = Record<string, InterpolationRange | undefined>[];
 
 type InterpolationRanges = {
   inputRange: InterpolationNumbers;
-  outputRange: InterpolationRange | InterpolationValuesList;
+  outputRange: InterpolationRange;
 };
 
 type InterpolationPropertyValue =
   | InterpolationRanges
   | InterpolationRange // default inputRange will be used
   | InterpolationValuesList; // default inputRange will be used
+
+type InterpolationValuesList = Record<
+  string,
+  InterpolationPropertyValue | undefined
+>[];
 
 export type AnimatedStyleConfig = Record<string, InterpolationPropertyValue>;
 

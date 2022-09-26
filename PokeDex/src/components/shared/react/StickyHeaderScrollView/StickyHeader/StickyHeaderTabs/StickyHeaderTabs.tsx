@@ -1,28 +1,60 @@
-import React from 'react';
+import React, { ComponentType, useRef, useEffect } from 'react';
+import { FlatList, FlatListProps, Pressable } from 'react-native';
+import { SIZE } from '@constants';
 import StickyHeaderTab, { HeaderTab } from './StickyHeaderTab';
-import { TabsWrapper } from './StickyHeaderTabs.styles';
+import { TabList } from './StickyHeaderTabs.styles';
 
 type StickyHeaderTabsProps = {
   tabs: HeaderTab[];
+  activeTabIndex: number;
   onMeasurement: (tabIndex: number, width: number) => void;
+  scrollToIndex: (index: number) => void;
+  setTabListRef: (ref: React.MutableRefObject<FlatList<any> | null>) => void;
 };
 
 const StickyHeaderTabs: React.FC<StickyHeaderTabsProps> = ({
   tabs,
-  onMeasurement
+  activeTabIndex,
+  scrollToIndex,
+  onMeasurement,
+  setTabListRef
 }) => {
-  console.log('rerender');
+  const tabListRef = useRef<FlatList | null>(null);
+
+  useEffect(() => {
+    setTabListRef(tabListRef);
+  }, []);
+
+  const renderItem = ({
+    item: tab,
+    index
+  }: {
+    item: HeaderTab;
+    index: number;
+  }) => (
+    <Pressable key={tab.anchor} onPress={() => scrollToIndex(index)}>
+      <StickyHeaderTab
+        onMeasurement={onMeasurement.bind(null, index)}
+        active={index === activeTabIndex}
+        {...tab}
+      />
+    </Pressable>
+  );
 
   return (
-    <TabsWrapper>
-      {tabs.map((tab, index) => (
-        <StickyHeaderTab
-          key={tab.anchor}
-          onMeasurement={onMeasurement.bind(null, index)}
-          {...tab}
-        />
-      ))}
-    </TabsWrapper>
+    <TabList<ComponentType<FlatListProps<HeaderTab>>>
+      ref={tabListRef}
+      // TODO - fix this data property
+      data={tabs.filter(Boolean)}
+      renderItem={renderItem}
+      // TODO - fix this key extractor
+      keyExtractor={item => item?.heading}
+      contentContainerStyle={{
+        paddingRight: SIZE.SCREEN.WIDTH
+      }}
+      showsHorizontalScrollIndicator={false}
+      horizontal
+    />
   );
 };
 
