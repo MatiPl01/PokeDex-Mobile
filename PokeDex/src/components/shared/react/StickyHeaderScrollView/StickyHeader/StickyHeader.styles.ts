@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
 
-export const HeaderWrapper = styled.View<{ statusBarHeight: number }>`
+export const HeaderWrapper = styled(Animated.View)<{ statusBarHeight: number }>`
   position: absolute;
   top: 0;
   left: 0;
@@ -9,7 +9,7 @@ export const HeaderWrapper = styled.View<{ statusBarHeight: number }>`
 
   ${({ theme }) => css`
     background-color: ${theme.color.background.primary};
-    padding: ${theme.space.md}px;
+    padding: ${theme.space.md}px 0;
   `};
 
   padding-top: ${({ statusBarHeight }) => statusBarHeight}px;
@@ -19,15 +19,6 @@ export const TitleWrapper = styled.View`
   ${({ theme }) => css`
     padding: ${theme.space.md}px ${theme.space.sm}px;
   `};
-`;
-
-export const Title = styled(Animated.Text)`
-  position: absolute;
-
-  ${({ theme }) => css`
-    color: ${theme.color.text.primary};
-    font-weight: ${theme.fontWeight.bold};
-  `}
 `;
 
 export const TitlePlaceholder = styled.View`

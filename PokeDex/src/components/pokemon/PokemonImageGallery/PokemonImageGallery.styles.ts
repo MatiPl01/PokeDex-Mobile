@@ -1,14 +1,27 @@
 import styled, { css } from 'styled-components/native';
 import LinearGradient from 'react-native-linear-gradient';
 import { PokemonType } from '@store/pokemon/pokemon.types';
-import { absoluteFill } from '@styles/shared';
+import { absoluteFill, flexCenter } from '@styles/shared';
+
+export const ImageWrapper = styled.View`
+  flex: 1;
+  ${flexCenter}
+`;
+
+export const ImageTextWrapper = styled.View<{ top: number }>`
+  ${({ theme, top }) => css`
+    height: ${theme.size.sm}px;
+    top: ${top + theme.space.lg}px;
+    margin-bottom: ${theme.space.xxl}px;
+    ${flexCenter};
+  `}
+`;
 
 export const ImageText = styled.Text`
   ${({ theme }) => css`
     color: ${theme.color.text.primary};
     font-weight: ${theme.fontWeight.bold};
     font-size: ${theme.fontSize.body}px;
-    margin: ${theme.space.lg}px;
     ${theme.shadow.text.soft.sm};
   `};
 `;
@@ -24,5 +37,6 @@ export const BackgroundGradient = styled(LinearGradient).attrs<{
   };
 })<{ pokemonType: PokemonType }>`
   opacity: 0.25;
+  transform: scale(1.1);
   ${absoluteFill};
 `;

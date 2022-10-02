@@ -1,12 +1,18 @@
 import React from 'react';
 import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Dimensions, Orientation } from '@types';
 import { PokemonImage, PokemonType } from '@store/pokemon/pokemon.types';
 import SwipeGallery, {
   GalleryPagination
 } from '@components/shared/react/SwipeGallery/SwipeGallery';
 import GalleryImage from '@components/shared/react/SwipeGallery/GalleryImage/GalleryImage';
-import { ImageText, BackgroundGradient } from './PokemonImageGallery.styles';
+import {
+  ImageText,
+  BackgroundGradient,
+  ImageWrapper,
+  ImageTextWrapper
+} from './PokemonImageGallery.styles';
 
 type PokemonImageGalleryProps = {
   images: PokemonImage[];
@@ -19,6 +25,7 @@ type PokemonImageGalleryProps = {
 // TODO - add fullscreen gallery mode
 const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
   const { pokemonType, ...restProps } = props;
+  const edges = useSafeAreaInsets();
 
   const renderImage = ({
     url,
@@ -29,16 +36,18 @@ const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
     dimensions: Dimensions;
     name?: string;
   }) => (
-    <>
-      <ImageText>{name}</ImageText>
+    <ImageWrapper>
+      <ImageTextWrapper top={edges.top}>
+        <ImageText>{name}</ImageText>
+      </ImageTextWrapper>
       <GalleryImage
         url={url}
         dimensions={{
-          height: 0.75 * dimensions.height,
+          height: 0.75 * (dimensions.height - edges.top),
           width: 0.9 * dimensions.width
         }}
       />
-    </>
+    </ImageWrapper>
   );
 
   return (

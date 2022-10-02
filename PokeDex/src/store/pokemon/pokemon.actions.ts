@@ -276,7 +276,7 @@ export const fetchNextPokemonBatchAsync: ActionCreator<
 export const fetchSinglePokemonByIdAsync: ActionCreator<
   ThunkAction<Promise<void>, PokemonState, void, PokemonAction>
 > =
-  (id: string, updateDisplayed = true) =>
+  (id: string, updateDisplayed = false) =>
   async (dispatch: Dispatch<PokemonAction>): Promise<void> => {
     // Don't fetch if there is already a Pokemon with the specific id in the store
     const allPokemonList = store.getState().pokemon.allPokemonList;

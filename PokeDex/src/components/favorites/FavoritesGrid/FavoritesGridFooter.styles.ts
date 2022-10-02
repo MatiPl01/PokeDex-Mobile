@@ -17,11 +17,11 @@ export const FooterText = styled.Text`
   max-width: ${0.9 * SIZE.SCREEN.WIDTH}px;
   width: 100%;
 
-  // TODO - code the same as below is repeated in multiple components. Refactor this code.
-  ${({ theme }) => css`
-    color: ${theme.color.text.primary};
-    font-weight: ${theme.fontWeight.medium};
-    line-height: ${theme.lineHeight.title}px;
-    font-size: ${theme.fontSize.title}px;
-  `}
+  ${({ theme }) =>
+    css`
+      color: ${theme.color.text.primary};
+      font-weight: ${theme.fontWeight.medium};
+      line-height: ${theme.lineHeight.title}px;
+      font-size: ${theme.fontSize.title}px;
+    `};
 `;

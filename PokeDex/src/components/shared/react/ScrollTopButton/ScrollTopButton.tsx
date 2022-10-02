@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { DefaultTheme } from 'styled-components';
+import { DefaultTheme } from 'styled-components/native';
 import { Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
 import { createAnimatedParametrizedStyle } from '@utils/reanimated';
