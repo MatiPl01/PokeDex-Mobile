@@ -8,21 +8,24 @@ export type HeaderTab = {
 
 type StickyHeaderTabProps = {
   heading: string;
-  onMeasurement: (width: number) => void;
+  onMeasurement?: (width: number) => void;
   active?: boolean;
 };
 
 const StickyHeaderTab: React.FC<StickyHeaderTabProps> = ({
   heading,
   onMeasurement,
-  active = false
+  active
 }) => (
   <TabWrapper
-    onLayout={({
-      nativeEvent: {
-        layout: { width }
-      }
-    }) => onMeasurement(width)}
+    onLayout={
+      onMeasurement &&
+      (({
+        nativeEvent: {
+          layout: { width }
+        }
+      }) => onMeasurement(width))
+    }
   >
     <TabText active={active}>{heading}</TabText>
   </TabWrapper>

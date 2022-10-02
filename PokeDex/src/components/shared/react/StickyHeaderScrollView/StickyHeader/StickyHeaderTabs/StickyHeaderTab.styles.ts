@@ -1,5 +1,5 @@
-import { flexCenter } from '@styles/shared';
 import styled, { css } from 'styled-components/native';
+import { flexCenter } from '@styles/shared';
 
 export const TabWrapper = styled.View`
   ${flexCenter};
@@ -12,10 +12,10 @@ export const TabWrapper = styled.View`
 export const TabText = styled.Text<{ active?: boolean }>`
   ${({ theme, active }) => css`
     padding: 0 ${theme.space.md}px;
-    color: ${active
-      ? theme.color.background.primary
-      : theme.color.text.primary};
     font-size: ${theme.fontSize.body}px;
     font-weight: ${theme.fontWeight.medium};
+    color: ${active
+      ? theme.color.text.primary
+      : theme.color.background.primary};
   `};
 `;
