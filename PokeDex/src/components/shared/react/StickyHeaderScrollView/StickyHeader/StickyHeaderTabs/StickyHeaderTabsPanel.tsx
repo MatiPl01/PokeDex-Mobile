@@ -1,15 +1,22 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import {
   SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue
 } from 'react-native-reanimated';
-import { calcActiveTabIdx } from './utils';
+import { useTheme } from 'styled-components';
+import {
+  calcActiveTabBackgroundWidth,
+  calcActiveTabIdx,
+  calcTabOffsets
+} from './utils';
 import StickyHeaderTabs from './StickyHeaderTabs';
 import StickyHeaderTab, { HeaderTab } from './StickyHeaderTab';
 import {
   ActiveTabBackground,
+  ActiveTabBackgroundMask,
+  ActiveTabTextMask,
   MaskedWrapper,
   TabListMask,
   Wrapper
@@ -28,65 +35,70 @@ const StickyHeaderTabsPanel: React.FC<StickyHeaderTabsPanelProps> = ({
   activeTabIndex,
   scrollToIndex
 }) => {
+  const theme = useTheme();
   const scrollX = useSharedValue(0);
-  const [tabWidths, setTabWidths] = useState<number[]>(
-    new Array(tabs.length).fill(0)
-  );
+  const activeTabBackgroundWidth = useSharedValue(0);
+  const tabOffsets = useSharedValue<number[]>([]);
+  const tabWidths = useSharedValue<number[]>(new Array(tabs.length).fill(0));
 
   const animatedTabsScrollStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: -scrollX.value }]
   }));
 
-  const updateTabWidth = useCallback((tabIndex: number, width: number) => {
-    tabWidths[tabIndex] = width;
-    setTabWidths([...tabWidths]);
-  }, []);
+  const animatedActiveTabBackgroundStyle = useAnimatedStyle(() => ({
+    width: activeTabBackgroundWidth.value
+  }));
+
+  useDerivedValue(() => {
+    if (!tabWidths.value.every(value => !!value)) return;
+    tabOffsets.value = calcTabOffsets(tabWidths.value, theme.space.lg);
+  }, [tabWidths]);
 
   useDerivedValue(() => {
     console.log({ scrollY, active: calcActiveTabIdx(scrollY.value, tabs) });
   }, [scrollY]);
 
+  useDerivedValue(() => {
+    activeTabBackgroundWidth.value = calcActiveTabBackgroundWidth(
+      scrollX.value,
+      tabWidths.value,
+      tabOffsets.value
+    );
+  }, [scrollX, tabOffsets]);
+
+  const updateTabWidth = useCallback((tabIndex: number, width: number) => {
+    tabWidths.value[tabIndex] = width;
+    tabWidths.value = [...tabWidths.value];
+  }, []);
+
   return (
     <Wrapper>
-      <ActiveTabBackground width={tabWidths[0]} />
+      <ActiveTabBackground style={animatedActiveTabBackgroundStyle} />
       <MaskedWrapper
         maskElement={
           <>
-            {/* <StickyHeaderTabs
-              tabs={tabs}
-              scrollX={scrollX}
-              onMeasurement={updateTabWidth}
-              scrollToIndex={scrollToIndex}
-              activeTabIndex={activeTabIndex}
-            /> */}
             <TabListMask style={animatedTabsScrollStyle}>
               {tabs.map(({ heading }) => (
                 <StickyHeaderTab key={heading} heading={heading} />
               ))}
             </TabListMask>
-            <ActiveTabBackground
-              width={tabWidths[0]}
-              style={{ backgroundColor: 'transparent' }}
-            />
+            <ActiveTabBackgroundMask style={animatedActiveTabBackgroundStyle} />
           </>
         }
       >
         <StickyHeaderTabs
           tabs={tabs}
           scrollX={scrollX}
+          tabWidths={tabWidths}
+          tabOffsets={tabOffsets}
           onMeasurement={updateTabWidth}
           scrollToIndex={scrollToIndex}
           activeTabIndex={activeTabIndex}
           active
         />
-        <ActiveTabBackground
+        <ActiveTabTextMask
           pointerEvents="none"
-          width={tabWidths[0]}
-          style={{
-            backgroundColor: 'black',
-            position: 'absolute',
-            zIndex: 1
-          }}
+          style={animatedActiveTabBackgroundStyle}
         />
       </MaskedWrapper>
     </Wrapper>

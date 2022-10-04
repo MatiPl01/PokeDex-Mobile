@@ -1,4 +1,4 @@
-import React, { ComponentType, useRef } from 'react';
+import React, { ComponentType, useRef, useState } from 'react';
 import { FlatList, FlatListProps, Pressable } from 'react-native';
 import {
   runOnJS,
@@ -6,13 +6,17 @@ import {
   useAnimatedScrollHandler,
   useDerivedValue
 } from 'react-native-reanimated';
+import { useTheme } from 'styled-components';
 import { SIZE } from '@constants';
 import StickyHeaderTab, { HeaderTab } from './StickyHeaderTab';
 import { TabList } from './StickyHeaderTabs.styles';
+import { calcActiveTabIdxOnTabsScroll } from './utils';
 
 type StickyHeaderTabsProps = {
   tabs: HeaderTab[];
   scrollX: SharedValue<number>;
+  tabWidths: SharedValue<number[]>;
+  tabOffsets: SharedValue<number[]>;
   activeTabIndex: SharedValue<number>;
   onMeasurement: (tabIndex: number, width: number) => void;
   scrollToIndex: (index: number) => void;
@@ -23,11 +27,15 @@ const StickyHeaderTabs: React.FC<StickyHeaderTabsProps> = ({
   tabs,
   active,
   scrollX,
+  tabWidths,
+  tabOffsets,
   activeTabIndex,
   scrollToIndex,
   onMeasurement
 }) => {
+  const theme = useTheme();
   const tabListRef = useRef<FlatList | null>(null);
+  const [tabListPadding, setTabListPadding] = useState(0);
 
   const handleScroll = useAnimatedScrollHandler({
     onScroll: event => {
@@ -35,10 +43,39 @@ const StickyHeaderTabs: React.FC<StickyHeaderTabsProps> = ({
     }
   });
 
+  // TODO - fix flatlist ref is null
   const scrollToTab = (tabIdx: number) => {
     if (tabIdx < tabs.length)
       tabListRef.current?.scrollToIndex({ index: tabIdx });
   };
+
+  const setActiveTab = (index: number) => {
+    activeTabIndex.value = index;
+    scrollToIndex(index);
+  };
+
+  useDerivedValue(() => {
+    if (activeTabIndex) runOnJS(scrollToTab)(activeTabIndex.value);
+  }, [activeTabIndex]);
+
+  useDerivedValue(() => {
+    if (!tabWidths.value.length) return;
+    const lastTabWidth = tabWidths.value[tabWidths.value.length - 1];
+    runOnJS(setTabListPadding)(
+      SIZE.SCREEN.WIDTH - lastTabWidth - theme.space.lg
+    );
+  }, [tabWidths]);
+
+  // useDerivedValue(() => {
+  //   const newActiveTabIdx = calcActiveTabIdxOnTabsScroll(
+  //     scrollX.value,
+  //     tabOffsets.value
+  //   );
+  //   console.log({ newActiveTabIdx, activeTabIndex });
+  //   if (newActiveTabIdx !== activeTabIndex.value)
+  //     runOnJS(scrollToIndex)(activeTabIndex.value);
+  //   activeTabIndex.value = newActiveTabIdx;
+  // }, [scrollX]);
 
   const renderItem = ({
     item: tab,
@@ -47,10 +84,7 @@ const StickyHeaderTabs: React.FC<StickyHeaderTabsProps> = ({
     item: HeaderTab;
     index: number;
   }) => (
-    <Pressable
-      key={tab.anchor}
-      onPress={scrollToIndex && (() => scrollToIndex(index))}
-    >
+    <Pressable key={tab.anchor} onPress={() => setActiveTab(index)}>
       <StickyHeaderTab
         onMeasurement={onMeasurement && onMeasurement.bind(null, index)}
         active={active}
@@ -58,10 +92,6 @@ const StickyHeaderTabs: React.FC<StickyHeaderTabsProps> = ({
       />
     </Pressable>
   );
-
-  useDerivedValue(() => {
-    if (activeTabIndex) runOnJS(scrollToTab)(activeTabIndex.value);
-  }, [activeTabIndex]);
 
   return (
     <TabList<ComponentType<FlatListProps<HeaderTab>>>
@@ -73,8 +103,9 @@ const StickyHeaderTabs: React.FC<StickyHeaderTabsProps> = ({
       // TODO - fix this key extractor
       keyExtractor={item => item?.heading}
       contentContainerStyle={{
-        paddingRight: SIZE.SCREEN.WIDTH
+        paddingRight: tabListPadding
       }}
+      onMomentumScrollEnd={() => scrollToTab(activeTabIndex.value)}
       showsHorizontalScrollIndicator={false}
       onScroll={handleScroll}
       horizontal
