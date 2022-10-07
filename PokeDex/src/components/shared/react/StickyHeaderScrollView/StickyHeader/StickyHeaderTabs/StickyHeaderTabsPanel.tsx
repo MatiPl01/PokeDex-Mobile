@@ -6,11 +6,7 @@ import {
   useSharedValue
 } from 'react-native-reanimated';
 import { useTheme } from 'styled-components';
-import {
-  calcActiveTabBackgroundWidth,
-  calcActiveTabIdx,
-  calcTabOffsets
-} from './utils';
+import { calcActiveTabBackgroundWidth, calcTabOffsets } from './utils';
 import StickyHeaderTabs from './StickyHeaderTabs';
 import StickyHeaderTab, { HeaderTab } from './StickyHeaderTab';
 import {
@@ -24,22 +20,19 @@ import {
 
 type StickyHeaderTabsPanelProps = {
   tabs: HeaderTab[];
-  scrollY: SharedValue<number>;
   activeTabIndex: SharedValue<number>;
-  scrollToIndex: (index: number) => void;
+  activeSectionIndex: SharedValue<number>;
+  updateActiveTabIndex: SharedValue<boolean>;
+  updateActiveSectionIndex: SharedValue<boolean>;
 };
 
-const StickyHeaderTabsPanel: React.FC<StickyHeaderTabsPanelProps> = ({
-  tabs,
-  scrollY,
-  activeTabIndex,
-  scrollToIndex
-}) => {
+const StickyHeaderTabsPanel: React.FC<StickyHeaderTabsPanelProps> = props => {
+  const { tabs, ...restProps } = props;
   const theme = useTheme();
-  const scrollX = useSharedValue(0);
   const activeTabBackgroundWidth = useSharedValue(0);
   const tabOffsets = useSharedValue<number[]>([]);
   const tabWidths = useSharedValue<number[]>(new Array(tabs.length).fill(0));
+  const scrollX = useSharedValue(0);
 
   const animatedTabsScrollStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: -scrollX.value }]
@@ -51,12 +44,13 @@ const StickyHeaderTabsPanel: React.FC<StickyHeaderTabsPanelProps> = ({
 
   useDerivedValue(() => {
     if (!tabWidths.value.every(value => !!value)) return;
-    tabOffsets.value = calcTabOffsets(tabWidths.value, theme.space.lg);
+    const newTabOffsets = calcTabOffsets(tabWidths.value, theme.space.lg);
+    if (
+      newTabOffsets.some((offset, index) => tabOffsets.value[index] !== offset)
+    ) {
+      tabOffsets.value = newTabOffsets;
+    }
   }, [tabWidths]);
-
-  useDerivedValue(() => {
-    console.log({ scrollY, active: calcActiveTabIdx(scrollY.value, tabs) });
-  }, [scrollY]);
 
   useDerivedValue(() => {
     activeTabBackgroundWidth.value = calcActiveTabBackgroundWidth(
@@ -64,7 +58,7 @@ const StickyHeaderTabsPanel: React.FC<StickyHeaderTabsPanelProps> = ({
       tabWidths.value,
       tabOffsets.value
     );
-  }, [scrollX, tabOffsets]);
+  }, [scrollX]);
 
   const updateTabWidth = useCallback((tabIndex: number, width: number) => {
     tabWidths.value[tabIndex] = width;
@@ -87,13 +81,12 @@ const StickyHeaderTabsPanel: React.FC<StickyHeaderTabsPanelProps> = ({
         }
       >
         <StickyHeaderTabs
+          {...restProps}
           tabs={tabs}
           scrollX={scrollX}
           tabWidths={tabWidths}
           tabOffsets={tabOffsets}
           onMeasurement={updateTabWidth}
-          scrollToIndex={scrollToIndex}
-          activeTabIndex={activeTabIndex}
           active
         />
         <ActiveTabTextMask

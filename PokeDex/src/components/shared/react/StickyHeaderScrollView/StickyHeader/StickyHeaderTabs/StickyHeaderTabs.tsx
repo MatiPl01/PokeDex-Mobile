@@ -1,16 +1,20 @@
-import React, { ComponentType, useRef, useState } from 'react';
-import { FlatList, FlatListProps, Pressable } from 'react-native';
+import React, { useRef, useState } from 'react';
 import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Pressable
+} from 'react-native';
+import Animated, {
   runOnJS,
   SharedValue,
   useAnimatedScrollHandler,
-  useDerivedValue
+  useDerivedValue,
 } from 'react-native-reanimated';
 import { useTheme } from 'styled-components';
 import { SIZE } from '@constants';
 import StickyHeaderTab, { HeaderTab } from './StickyHeaderTab';
-import { TabList } from './StickyHeaderTabs.styles';
 import { calcActiveTabIdxOnTabsScroll } from './utils';
+import { TabsScrollView } from './StickyHeaderTabs.styles';
 
 type StickyHeaderTabsProps = {
   tabs: HeaderTab[];
@@ -18,8 +22,10 @@ type StickyHeaderTabsProps = {
   tabWidths: SharedValue<number[]>;
   tabOffsets: SharedValue<number[]>;
   activeTabIndex: SharedValue<number>;
+  activeSectionIndex: SharedValue<number>;
+  updateActiveTabIndex: SharedValue<boolean>;
+  updateActiveSectionIndex: SharedValue<boolean>;
   onMeasurement: (tabIndex: number, width: number) => void;
-  scrollToIndex: (index: number) => void;
   active?: boolean;
 };
 
@@ -29,12 +35,14 @@ const StickyHeaderTabs: React.FC<StickyHeaderTabsProps> = ({
   scrollX,
   tabWidths,
   tabOffsets,
+  onMeasurement,
   activeTabIndex,
-  scrollToIndex,
-  onMeasurement
+  activeSectionIndex,
+  updateActiveTabIndex,
+  updateActiveSectionIndex
 }) => {
   const theme = useTheme();
-  const tabListRef = useRef<FlatList | null>(null);
+  const scrollViewRef = useRef<Animated.ScrollView | null>(null);
   const [tabListPadding, setTabListPadding] = useState(0);
 
   const handleScroll = useAnimatedScrollHandler({
@@ -43,20 +51,9 @@ const StickyHeaderTabs: React.FC<StickyHeaderTabsProps> = ({
     }
   });
 
-  // TODO - fix flatlist ref is null
-  const scrollToTab = (tabIdx: number) => {
-    if (tabIdx < tabs.length)
-      tabListRef.current?.scrollToIndex({ index: tabIdx });
+  const scrollToTab = (index: number) => {
+    scrollViewRef.current?.scrollTo({ x: tabOffsets.value[index] });
   };
-
-  const setActiveTab = (index: number) => {
-    activeTabIndex.value = index;
-    scrollToIndex(index);
-  };
-
-  useDerivedValue(() => {
-    if (activeTabIndex) runOnJS(scrollToTab)(activeTabIndex.value);
-  }, [activeTabIndex]);
 
   useDerivedValue(() => {
     if (!tabWidths.value.length) return;
@@ -66,51 +63,58 @@ const StickyHeaderTabs: React.FC<StickyHeaderTabsProps> = ({
     );
   }, [tabWidths]);
 
-  // useDerivedValue(() => {
-  //   const newActiveTabIdx = calcActiveTabIdxOnTabsScroll(
-  //     scrollX.value,
-  //     tabOffsets.value
-  //   );
-  //   console.log({ newActiveTabIdx, activeTabIndex });
-  //   if (newActiveTabIdx !== activeTabIndex.value)
-  //     runOnJS(scrollToIndex)(activeTabIndex.value);
-  //   activeTabIndex.value = newActiveTabIdx;
-  // }, [scrollX]);
+  useDerivedValue(() => {
+    runOnJS(scrollToTab)(activeTabIndex.value);
+  }, [activeTabIndex]);
 
-  const renderItem = ({
-    item: tab,
-    index
-  }: {
-    item: HeaderTab;
-    index: number;
-  }) => (
-    <Pressable key={tab.anchor} onPress={() => setActiveTab(index)}>
-      <StickyHeaderTab
-        onMeasurement={onMeasurement && onMeasurement.bind(null, index)}
-        active={active}
-        {...tab}
-      />
-    </Pressable>
-  );
+  const setActiveTabAndSection = (index: number) => {
+    updateActiveTabIndex.value = false;
+    activeSectionIndex.value = index;
+    activeTabIndex.value = index;
+  };
+
+  const handleScrollEnd = ({
+    nativeEvent: {
+      contentOffset: { x }
+    }
+  }: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (updateActiveSectionIndex.value) {
+      activeTabIndex.value = activeSectionIndex.value =
+        calcActiveTabIdxOnTabsScroll(x, tabOffsets.value);
+    }
+  };
 
   return (
-    <TabList<ComponentType<FlatListProps<HeaderTab>>>
-      ref={tabListRef}
+    <TabsScrollView
+      ref={scrollViewRef}
       scrollEventThrottle={1}
-      // TODO - fix this data property
-      data={tabs.filter(Boolean)}
-      renderItem={renderItem}
-      // TODO - fix this key extractor
-      keyExtractor={item => item?.heading}
       contentContainerStyle={{
         paddingRight: tabListPadding
       }}
-      onMomentumScrollEnd={() => scrollToTab(activeTabIndex.value)}
       showsHorizontalScrollIndicator={false}
       onScroll={handleScroll}
+      onScrollBeginDrag={() => {
+        updateActiveTabIndex.value = false;
+        updateActiveSectionIndex.value = true;
+      }}
+      onMomentumScrollEnd={handleScrollEnd}
+      decelerationRate={0.5}
       horizontal
-    />
+    >
+      {tabs.map((tab, index) => (
+        <Pressable
+          key={tab.anchor}
+          onPress={() => setActiveTabAndSection(index)}
+        >
+          <StickyHeaderTab
+            onMeasurement={onMeasurement && onMeasurement.bind(null, index)}
+            active={active}
+            {...tab}
+          />
+        </Pressable>
+      ))}
+    </TabsScrollView>
   );
 };
 
-export default React.memo(StickyHeaderTabs);
+export default StickyHeaderTabs;
