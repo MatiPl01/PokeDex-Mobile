@@ -64,9 +64,7 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
   return (
     <Animated.View style={animatedStyles.outerWrapper}>
       <ScreensInnerWrapper style={animatedStyles.innerWrapper}>
-        <SplashScreen
-          menuToggle={<HamburgerIcon navigation={navigation} />}
-        >
+        <SplashScreen menuToggle={<HamburgerIcon navigation={navigation} />}>
           <Stack.Navigator
             screenOptions={{
               headerTransparent: true,
@@ -141,7 +139,7 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = ({
 const Navigation: React.FC = () => (
   <DrawerWrapper>
     <Drawer.Navigator
-      initialRouteName="Pokemon"
+      initialRouteName="Screens"
       screenOptions={{
         headerShown: false,
         drawerType: 'slide',

@@ -11,19 +11,15 @@ import {
 
 type StickyHeaderProps = {
   tabs: HeaderTab[];
-  scrollY: SharedValue<number>;
   activeTabIndex: SharedValue<number>;
-  scrollToIndex: (index: number) => void;
+  activeSectionIndex: SharedValue<number>;
+  updateActiveTabIndex: SharedValue<boolean>;
+  updateActiveSectionIndex: SharedValue<boolean>;
   setHeaderHeight: (height: number) => void;
 };
 
-const StickyHeader: React.FC<StickyHeaderProps> = ({
-  tabs,
-  scrollY,
-  activeTabIndex,
-  scrollToIndex,
-  setHeaderHeight
-}) => {
+const StickyHeader: React.FC<StickyHeaderProps> = props => {
+  const { setHeaderHeight, ...restProps } = props;
   const edges = useSafeAreaInsets();
 
   return (
@@ -38,14 +34,9 @@ const StickyHeader: React.FC<StickyHeaderProps> = ({
       <TitleWrapper>
         <TitlePlaceholder />
       </TitleWrapper>
-      <StickyHeaderTabsPanel
-        tabs={tabs}
-        scrollY={scrollY}
-        scrollToIndex={scrollToIndex}
-        activeTabIndex={activeTabIndex}
-      />
+      <StickyHeaderTabsPanel {...restProps} />
     </HeaderWrapper>
   );
 };
 
-export default StickyHeader;
+export default React.memo(StickyHeader);

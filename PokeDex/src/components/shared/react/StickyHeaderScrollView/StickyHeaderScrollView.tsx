@@ -1,6 +1,9 @@
 import React, { useState, useRef, Children, ReactElement } from 'react';
 import Animated, {
+  runOnJS,
+  useAnimatedRef,
   useAnimatedScrollHandler,
+  useDerivedValue,
   useSharedValue
 } from 'react-native-reanimated';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +16,7 @@ import { HeaderTab } from './StickyHeader/StickyHeaderTabs/StickyHeaderTab';
 import ScrollViewGallery from './ScrollViewGallery/ScrollViewGallery';
 import { ScrollViewSectionProps } from './ScrollViewSection/ScrollViewSection';
 import StickyHeader from './StickyHeader/StickyHeader';
+import { calcActiveTabIdxOnSectionsScroll } from './StickyHeader/StickyHeaderTabs/utils';
 import { GALLERY_HEIGHT } from './ScrollViewGallery/ScrollViewGallery.styles';
 import {
   Wrapper,
@@ -104,7 +108,11 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
 
   const scrollY = useSharedValue(0);
   const activeTabIndex = useSharedValue(0);
-  const scrollViewRef = useRef<Animated.ScrollView | null>(null);
+  const activeSectionIndex = useSharedValue(-1);
+  const updateActiveTabIndex = useSharedValue(true);
+  const updateActiveSectionIndex = useSharedValue(true);
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
+
   const renderedTabsIndexesRef = useRef<Set<number>>(new Set());
 
   const [tabs, setTabs] = useState<HeaderTab[]>([]);
@@ -119,13 +127,22 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
   const handleScroll = useAnimatedScrollHandler({
     onScroll: event => {
       scrollY.value = event.contentOffset.y;
+      if (updateActiveTabIndex.value)
+        activeTabIndex.value = calcActiveTabIdxOnSectionsScroll(
+          scrollY.value,
+          tabs
+        );
     }
   });
 
-  const scrollToIndex = (index: number) => {
-    activeTabIndex.value = index;
-    if (tabs[index]) scrollViewRef.current?.scrollTo({ y: tabs[index].anchor });
+  const scrollToSection = (index: number) => {
+    if (tabs[index]?.anchor !== undefined)
+      scrollViewRef.current?.scrollTo({ y: tabs[index].anchor });
   };
+
+  useDerivedValue(() => {
+    runOnJS(scrollToSection)(activeSectionIndex.value);
+  }, [activeSectionIndex, tabs]);
 
   return (
     <Wrapper>
@@ -139,6 +156,11 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
         contentContainerStyle={{
           minHeight: SIZE.SCREEN.HEIGHT + headerHeight + edges.top
         }}
+        onScrollBeginDrag={() => {
+          updateActiveSectionIndex.value = false;
+          updateActiveTabIndex.value = true;
+        }}
+        onMomentumScrollEnd={() => (updateActiveSectionIndex.value = true)}
       >
         <ScrollViewGallery scrollY={scrollY}>
           {ImageGalleryComponent}
@@ -173,10 +195,11 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
       <StickyHeaderWrapper style={animatedScrollStyles.header}>
         <StickyHeader
           tabs={tabs}
-          scrollY={scrollY}
-          scrollToIndex={scrollToIndex}
           activeTabIndex={activeTabIndex}
           setHeaderHeight={setHeaderHeight}
+          activeSectionIndex={activeSectionIndex}
+          updateActiveTabIndex={updateActiveTabIndex}
+          updateActiveSectionIndex={updateActiveSectionIndex}
         />
       </StickyHeaderWrapper>
       <ContentTitle style={animatedScrollStyles.title}>{title}</ContentTitle>

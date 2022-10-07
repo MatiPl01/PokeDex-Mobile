@@ -1,7 +1,10 @@
 import { binarySearchGTE } from '@utils/algorithms';
 import { HeaderTab } from './StickyHeaderTab';
 
-export const calcActiveTabIdx = (scrollY: number, tabs: HeaderTab[]) => {
+export const calcActiveTabIdxOnSectionsScroll = (
+  scrollY: number,
+  tabs: HeaderTab[]
+) => {
   'worklet';
   return binarySearchGTE(tabs, scrollY, tab => tab.anchor);
 };
@@ -44,18 +47,8 @@ export const calcActiveTabBackgroundWidth = (
   const offsetAfter = tabOffsets[offsetBeforeIdx + 1];
   const scrollPercent = (scrollX - offsetBefore) / (offsetAfter - offsetBefore);
 
-  // console.log({
-  //   tabWidths,
-  //   tabOffsets,
-  //   offsetBefore,
-  //   offsetAfter,
-  //   scrollPercent
-  // });
-
   const prevWidth = tabWidths[offsetBeforeIdx];
   const nextWidth = tabWidths[offsetBeforeIdx + 1];
-
-  // console.log({ prevWidth, scrollX, offsetBefore });
 
   return nextWidth
     ? prevWidth + scrollPercent * (nextWidth - prevWidth)
