@@ -11,6 +11,21 @@ const INITIAL_STATE: FavoritesPokemonState = {
   displayedFavoritesIdsList: []
 };
 
+const handleSetFavoritesIds = (
+  state: FavoritesPokemonState,
+  favoritesIds: string[]
+): FavoritesPokemonState => {
+  const displayedFavoritesIdsSet = new Set(state.displayedFavoritesIdsList);
+
+  return {
+    ...state,
+    favoritesIdsList: favoritesIds,
+    displayedFavoritesIdsList: favoritesIds.filter(id =>
+      displayedFavoritesIdsSet.has(id)
+    )
+  };
+};
+
 const handleAddToFavorites = (
   state: FavoritesPokemonState,
   pokemonId: string
@@ -30,7 +45,12 @@ const handleRemoveFromFavorites = (
 
   return {
     ...state,
-    favoritesIdsList: state.favoritesIdsList.filter(id => !removedIdSet.has(id))
+    favoritesIdsList: state.favoritesIdsList.filter(
+      id => !removedIdSet.has(id)
+    ),
+    displayedFavoritesIdsList: state.displayedFavoritesIdsList.filter(
+      id => !removedIdSet.has(id)
+    )
   };
 };
 
@@ -40,7 +60,7 @@ const favoritesReducer = (
 ): FavoritesPokemonState => {
   switch (action.type) {
     case FavoriteActionType.SET_FAVORITES:
-      return { ...state, favoritesIdsList: action.payload };
+      return handleSetFavoritesIds(state, action.payload);
     case FavoriteActionType.SET_DISPLAYED_FAVORITES:
       return { ...state, displayedFavoritesIdsList: action.payload };
     case FavoriteActionType.ADD_TO_FAVORITES:

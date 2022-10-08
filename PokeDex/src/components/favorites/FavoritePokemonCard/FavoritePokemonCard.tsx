@@ -1,5 +1,11 @@
-import React, { useEffect } from 'react';
-import { useSharedValue, withTiming, Easing } from 'react-native-reanimated';
+import React from 'react';
+import {
+  useSharedValue,
+  withTiming,
+  Easing,
+  SharedValue,
+  useDerivedValue
+} from 'react-native-reanimated';
 import { createAnimatedStyle } from '@utils/reanimated';
 import { Pokemon, PokemonType } from '@store/pokemon/pokemon.types';
 import { TouchableWrapper } from '@components/shared/styled/buttons';
@@ -51,7 +57,7 @@ type FavoritePokemonCardProps = {
   pokemon: Pokemon | null;
   isLoading: boolean;
   width: number;
-  deletable?: boolean;
+  deletable?: SharedValue<boolean>;
   onDelete?: (id: string) => void;
 };
 
@@ -60,7 +66,7 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
   isLoading,
   width,
   onDelete,
-  deletable = false
+  deletable
 }) => {
   if (isLoading) return <FavoritePokemonCardSkeleton width={width} />;
   if (!pokemon) return null;
@@ -72,12 +78,16 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
     deleteButtonAnimationProgress
   );
 
-  useEffect(() => {
-    deleteButtonAnimationProgress.value = withTiming(+deletable, {
+  useDerivedValue(() => {
+    deleteButtonAnimationProgress.value = withTiming(+(deletable?.value || 0), {
       duration: 300,
       easing: Easing.bezier(0.4, 0, 0.9, 0.65)
     });
   }, [deletable]);
+
+  const handleDelete = () => {
+    if (deletable?.value && onDelete) onDelete(id);
+  };
 
   return (
     <CardWrapper>
@@ -108,7 +118,7 @@ const FavoritePokemonCard: React.FC<FavoritePokemonCardProps> = ({
       </CardFooter>
 
       <DeleteButtonWrapper style={animatedDeleteButtonStyle}>
-        <TouchableWrapper onPress={onDelete && (() => onDelete(id))}>
+        <TouchableWrapper onPress={handleDelete}>
           <DeleteButtonIcon />
         </TouchableWrapper>
       </DeleteButtonWrapper>

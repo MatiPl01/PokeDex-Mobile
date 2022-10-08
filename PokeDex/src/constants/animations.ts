@@ -15,5 +15,5 @@ export const DELAY = {
 };
 
 export const INTERVAL = {
-  FAVORITES_APPEAR: 100
+  FAVORITES_APPEAR: 75
 };

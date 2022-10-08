@@ -39,15 +39,17 @@ type SortableGridProps<T> = {
   GridFooterComponent?: GridComponent;
   onEndReachedThreshold?: number;
   onEndReached?: () => void;
+  onDragStart?: (item: T, index: number) => void;
   onDragEnd?: (data: T[]) => void;
 } & ({ itemHeight?: number } | { itemRatio?: number });
 
 const SortableGrid = <T extends object>({
   data,
-  keyExtractor,
   renderItem,
-  onDragEnd,
+  keyExtractor,
   onEndReached,
+  onDragStart,
+  onDragEnd,
   GridHeaderComponent,
   GridFooterComponent,
   rowGap = 0,
@@ -142,12 +144,18 @@ const SortableGrid = <T extends object>({
     return newData;
   };
 
+  const callOnDragStart = (itemKey: string) => {
+    const itemIdx = itemsOrder.value[itemKey];
+    onDragStart?.(data[itemIdx], itemIdx);
+  };
+
   const callOnDragEnd = (newOrder: Record<string, number>) => {
-    if (onDragEnd) onDragEnd(getNewData(newOrder));
+    onDragEnd?.(getNewData(newOrder));
   };
 
   const handleItemDragStart = useCallback((itemKey: string) => {
     'worklet';
+    runOnJS(callOnDragStart)(itemKey);
   }, []);
 
   const handleOrderChange = useCallback((itemKey: string, newOrder: number) => {
@@ -163,10 +171,13 @@ const SortableGrid = <T extends object>({
     itemsOrder.value = newItemsOrder.value;
   }, []);
 
-  const handleItemDragEnd = useCallback((newOrder: Record<string, number>) => {
-    'worklet';
-    runOnJS(callOnDragEnd)(newOrder);
-  }, []);
+  const handleItemDragEnd = useCallback(
+    (newOrder: Record<string, number>) => {
+      'worklet';
+      runOnJS(callOnDragEnd)(newOrder);
+    },
+    [data]
+  );
 
   const handleScroll = useAnimatedScrollHandler({
     onScroll: ({ contentOffset: { y } }) => {
@@ -216,32 +227,35 @@ const SortableGrid = <T extends object>({
       renderItemIdxRef.current += 1;
       return renderedItem;
     },
-    [editable]
+    []
   );
 
-  const renderGridItem = (item: T, index: number) => {
-    const key = keyExtractor(item, index);
+  const renderGridItem = useCallback(
+    (item: T, index: number) => {
+      const key = keyExtractor(item, index);
 
-    return (
-      <SortableGridRenderItem<T>
-        key={key}
-        itemKey={key}
-        gridConfig={config}
-        itemsOrder={itemsOrder}
-        scrollY={scrollY}
-        maxScroll={maxScroll}
-        editablePaddingTop={editablePaddingTop}
-        contentHeight={contentHeight}
-        scrollViewRef={scrollViewRef}
-        onDragStart={handleItemDragStart}
-        onDragEnd={handleItemDragEnd}
-        onOrderChange={handleOrderChange}
-        draggable={editable}
-        renderItem={memoizedRenderItem}
-        item={item}
-      />
-    );
-  };
+      return (
+        <SortableGridRenderItem<T>
+          key={key}
+          itemKey={key}
+          gridConfig={config}
+          itemsOrder={itemsOrder}
+          scrollY={scrollY}
+          maxScroll={maxScroll}
+          editablePaddingTop={editablePaddingTop}
+          contentHeight={contentHeight}
+          scrollViewRef={scrollViewRef}
+          onDragStart={handleItemDragStart}
+          onDragEnd={handleItemDragEnd}
+          onOrderChange={handleOrderChange}
+          draggable={editable}
+          renderItem={memoizedRenderItem}
+          item={item}
+        />
+      );
+    },
+    [editable]
+  );
 
   return (
     <Animated.ScrollView

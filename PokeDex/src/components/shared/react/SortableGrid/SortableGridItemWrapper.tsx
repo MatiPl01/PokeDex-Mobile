@@ -136,13 +136,21 @@ const SortableGridItemWrapper: React.FC<SortableGridItemWrapperProps> = ({
         x: itemPosition.x.value,
         y: itemPosition.y.value
       };
-      dropIndicatorPosition.x.value = itemPosition.x.value;
-      dropIndicatorPosition.y.value = itemPosition.y.value;
-      onDragStart(itemKey);
+
+      const dropPosition = getItemDropPosition(
+        {
+          x: itemPosition.x.value,
+          y: itemPosition.y.value
+        },
+        gridConfig.value
+      );
+      dropIndicatorPosition.x.value = dropPosition.x;
+      dropIndicatorPosition.y.value = dropPosition.y
     },
     onActive: ({ translationX, translationY }, ctx) => {
       // Drag
       if (!isDragging.value) {
+        onDragStart(itemKey);
         isDragging.value = true;
         itemAnimationProgress.value = withTiming(1, {
           duration: ANIMATION.DURATION.FAVORITES_MOVE

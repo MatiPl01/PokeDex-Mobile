@@ -7,12 +7,12 @@ import {
 } from './FavoritesGridFooter.styles';
 
 const FavoritesGridFooter: React.FC = () => (
-    <FooterWrapper>
-      <FooterText>Fetching favorite Pokemon...</FooterText>
-      <FooterLoaderWrapper>
-        <LoadingSpinner />
-      </FooterLoaderWrapper>
-    </FooterWrapper>
-  );
+  <FooterWrapper>
+    <FooterText>Fetching favorite Pokemon...</FooterText>
+    <FooterLoaderWrapper>
+      <LoadingSpinner />
+    </FooterLoaderWrapper>
+  </FooterWrapper>
+);
 
 export default FavoritesGridFooter;

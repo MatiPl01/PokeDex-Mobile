@@ -58,7 +58,7 @@ const StickyHeaderTabsPanel: React.FC<StickyHeaderTabsPanelProps> = props => {
       tabWidths.value,
       tabOffsets.value
     );
-  }, [scrollX]);
+  }, [scrollX, tabWidths]);
 
   const updateTabWidth = useCallback((tabIndex: number, width: number) => {
     tabWidths.value[tabIndex] = width;
