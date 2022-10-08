@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SearchItem } from '@utils/search';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '@core/navigation/Navigation';
 import SearchBar from '@components/shared/react/SearchBar/SearchBar';
 import PokemonList from '@components/pokemon/PokemonList/PokemonList';
 import { selectSearchItemsList } from '@store/search/search.selector';
@@ -12,6 +15,8 @@ import {
 
 const PokemonScreen: React.FC = () => {
   const dispatch = useDispatch();
+  const navigation =
+    useNavigation<StackNavigationProp<RootStackParamList, 'PokemonDetails'>>();
   // Data
   const searchItems = useSelector(selectSearchItemsList);
   // Component state
@@ -29,7 +34,7 @@ const PokemonScreen: React.FC = () => {
     if (items.length === 0) {
       dispatch(displayAllPokemon());
     } else if (items.length === 1) {
-      // TODO - display single Pokemon details screen when there is only one search result
+      navigation.push('PokemonDetails', { pokemonId: items[0].id });
     } else {
       // Display all suggested Pokemon cards
       dispatch(displayPokemonWithIds(items.map(({ id }) => id)));

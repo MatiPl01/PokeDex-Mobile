@@ -1,7 +1,7 @@
 import { API } from '@constants';
+import { idToIdx } from '@utils/data';
 import { Pokemon, PokemonActionType } from './pokemon.types';
 import { PokemonAction } from './pokemon.actions';
-import { idToIdx } from './pokemon.utils';
 
 export type SinglePokemonState = {
   readonly id: string;

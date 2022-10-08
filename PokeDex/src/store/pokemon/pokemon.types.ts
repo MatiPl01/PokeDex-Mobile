@@ -53,56 +53,108 @@ export type PokemonResponse = {
   id: string;
   name: string;
   sprites: {
+    back_default: string | null;
+    back_female: string | null;
+    back_shiny: string | null;
+    back_shiny_female: string | null;
+    front_default: string | null;
+    front_female: string | null;
+    front_shiny: string | null;
+    front_shiny_female: string | null;
     other: {
       dream_world: {
-        front_default: string;
+        front_default: string | null;
+        front_female: string | null;
       };
       home: {
-        front_default: string;
+        front_default: string | null;
+        front_female: string | null;
+        front_shiny: string | null;
+        front_shiny_female: string | null;
       };
       'official-artwork': {
-        front_default: string;
+        front_default: string | null;
       };
     };
-    front_default: string;
   };
   height: number;
   weight: number;
-  types: [
-    {
-      type: {
-        name: PokemonType;
-      };
-    }
-  ];
-  abilities: [
-    {
-      ability: {
-        name: string;
-      };
-    }
-  ];
-  stats: [
-    {
-      base_stat: number;
-      stat: {
-        name: string;
-      };
-    }
-  ];
+  base_experience: number;
+  types: {
+    type: {
+      name: PokemonType;
+    };
+  }[];
+  abilities: {
+    ability: {
+      name: string;
+    };
+  }[];
+  stats: {
+    base_stat: number;
+    stat: {
+      name: string;
+    };
+  }[];
+  held_items: {
+    item: {
+      name: string;
+      url: string;
+    };
+  }[];
+  moves: {
+    move: {
+      name: string;
+    };
+  }[];
+};
+
+export type PokemonStatName =
+  | 'hp'
+  | 'attack'
+  | 'defense'
+  | 'specialAttack'
+  | 'specialDefense'
+  | 'speed';
+
+export type PokemonImage = {
+  name?: string;
+  url: string;
+  extension: ImageExtension;
 };
 
 export type Pokemon = {
   id: string;
   name: string;
-  imageUrl: string | null;
-  imageExtension: ImageExtension | null;
   height: number;
   weight: number;
+  baseExperience: number;
+  images: PokemonImage[];
   types: PokemonType[];
   abilities: string[];
   stats: {
-    name: string;
+    name: PokemonStatName;
     value: number;
   }[];
+  items: {
+    name: string;
+    id: string;
+  }[];
+  moves: string[];
+};
+
+export type PokemonItemResponse = {
+  id: number;
+  cost: number;
+  name: string;
+  sprites: {
+    default: string;
+  };
+};
+
+export type PokemonItem = {
+  id: string;
+  imageUrl: string;
+  name: string;
+  cost: number;
 };

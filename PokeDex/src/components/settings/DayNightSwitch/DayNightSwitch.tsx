@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useTheme } from 'styled-components';
+import { DefaultTheme, useTheme } from 'styled-components';
 import { Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ThemeMode } from '@store/theme/theme.types';
 import { selectCurrentThemeMode } from '@store/theme/theme.selector';
-import { createAnimatedThemedStyles } from '@utils/reanimated';
+import { createAnimatedParametrizedStyles } from '@utils/reanimated';
 import { AnimatedIconWrapper } from '@components/shared/styled/icons';
 import {
   SwitchTextWrapper,
@@ -17,37 +17,41 @@ import {
   SunIcon
 } from './DayNightSwitch.styles';
 
-const useAnimatedSwitchStyles = createAnimatedThemedStyles(theme => {
-  return {
-    dayGradient: {
-      opacity: [1, 0]
-    },
-    nightGradient: {
-      opacity: [0, 1]
-    },
-    thumb: {
-      transform: [
-        { translateX: [0, theme.size.xl - theme.size.sm - 2 * theme.space.xs] }
-      ]
-    },
-    sunIcon: {
-      opacity: [1, 0],
-      transform: [{ scale: [1, 0.5] }]
-    },
-    moonIcon: {
-      opacity: [0, 1],
-      transform: [{ scale: [0.5, 1] }]
-    },
-    lightText: {
-      width: [theme.size.xl - theme.size.sm, 0],
-      opacity: [1, 0]
-    },
-    darkText: {
-      width: [0, theme.size.xl - theme.size.sm],
-      opacity: [0, 1]
-    }
-  };
-});
+const useAnimatedSwitchStyles = createAnimatedParametrizedStyles<DefaultTheme>(
+  theme => {
+    return {
+      dayGradient: {
+        opacity: [1, 0]
+      },
+      nightGradient: {
+        opacity: [0, 1]
+      },
+      thumb: {
+        transform: [
+          {
+            translateX: [0, theme.size.xl - theme.size.sm - 2 * theme.space.xs]
+          }
+        ]
+      },
+      sunIcon: {
+        opacity: [1, 0],
+        transform: [{ scale: [1, 0.5] }]
+      },
+      moonIcon: {
+        opacity: [0, 1],
+        transform: [{ scale: [0.5, 1] }]
+      },
+      lightText: {
+        width: [theme.size.xl - theme.size.sm, 0],
+        opacity: [1, 0]
+      },
+      darkText: {
+        width: [0, theme.size.xl - theme.size.sm],
+        opacity: [0, 1]
+      }
+    };
+  }
+);
 
 type DayNightSwitchProps = {
   onChange: (mode: ThemeMode) => void;

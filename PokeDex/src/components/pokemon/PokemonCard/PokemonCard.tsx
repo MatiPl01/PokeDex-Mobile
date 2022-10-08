@@ -68,7 +68,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
 
   if (isLoading) return <PokemonCardSkeleton />;
   if (!pokemon) return null;
-  const { id, name, types, imageUrl, imageExtension } = pokemon;
+  const { id, name, types, images } = pokemon;
 
   return (
     <CardWrapper>
@@ -94,8 +94,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, isLoading }) => {
         <PokemonCardImage
           width={MAX_IMAGE_WIDTH}
           height={MAX_IMAGE_HEIGHT}
-          extension={imageExtension}
-          imageUrl={imageUrl}
+          imageUrl={images[0]?.url || null}
           onLoadEnd={() => setIsImageLoading(false)}
         />
       </BackgroundWrapper>

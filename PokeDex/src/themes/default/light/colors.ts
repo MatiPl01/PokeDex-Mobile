@@ -13,5 +13,9 @@ export default {
     primary: color.white,
     secondary: color.gray.light[1],
     tertiary: color.gray.light[2]
+  },
+  green: {
+    primary: '#004400',
+    secondary: '#26cb4f'
   }
 };

@@ -10,4 +10,18 @@ export type Vector2D = {
   y: number;
 };
 
+export type Dimensions = {
+  width: number;
+  height: number;
+};
+
+export type Position = 'top' | 'bottom' | 'left' | 'right';
+
+export type Orientation = 'horizontal' | 'vertical';
+
+export type Image = {
+  name?: string;
+  url: string;
+};
+
 export * from './utils';

@@ -9,42 +9,19 @@
     "strict": true,
     "baseUrl": "./",
     "paths": {
-      "@assets/*": [
-        "assets/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@constants": [
-        "src/constants/index.ts"
-      ],
-      "@core/*": [
-        "src/core/*"
-      ],
-      "@screens/*": [
-        "src/screens/*"
-      ],
-      "@services/*": [
-        "src/services/*"
-      ],
-      "@store": [
-        "src/store/index.ts"
-      ],
-      "@store/*": [
-        "src/store/*"
-      ],
-      "@styles/*": [
-        "src/styles/*"
-      ],
-      "@themes/*": [
-        "src/themes/*"
-      ],
-      "@utils/*": [
-        "src/utils/*"
-      ],
-      "@types": [
-        "src/types/index.ts"
-      ]
+      "@assets/*": ["assets/*"],
+      "@components/*": ["src/components/*"],
+      "@constants": ["src/constants/index.ts"],
+      "@context/*": ["src/context/*"],
+      "@core/*": ["src/core/*"],
+      "@screens/*": ["src/screens/*"],
+      "@services/*": ["src/services/*"],
+      "@store": ["src/store/index.ts"],
+      "@store/*": ["src/store/*"],
+      "@styles/*": ["src/styles/*"],
+      "@themes/*": ["src/themes/*"],
+      "@utils/*": ["src/utils/*"],
+      "@types": ["src/types/index.ts"]
     },
     "typeRoots": ["src/@types", "node_modules/@types"],
     // "plugins": [

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
   withTiming,
@@ -6,7 +7,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
-import { API } from '@constants';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '@core/navigation/DrawerNavigation';
+import { useNavigation } from '@react-navigation/native';
+import { Padding } from '@types';
+import { ANIMATION, API } from '@constants';
 import {
   selectDisplayedFavoritePokemonIdsList,
   selectFavoritePokemonIdsList
@@ -19,15 +24,11 @@ import {
   setFavoritePokemonIds
 } from '@store/favorites/favorites.actions';
 import { SinglePokemonState } from '@store/pokemon/pokemon.reducer';
-import { Padding } from '@types';
 import { RootState } from '@store';
 import FavoritePokemonCard from '@components/favorites/FavoritePokemonCard/FavoritePokemonCard';
 import SortableGrid from '@components/shared/react/SortableGrid/SortableGrid';
 import FavoritesGridFooter from './FavoritesGridFooter';
 import NoFavoritePokemon from './NoFavoritePokemon';
-
-const INTERVAL = 200;
-const MAX_DELAY = 2000;
 
 const isValidPokemonState = (
   item: SinglePokemonState | undefined,
@@ -61,10 +62,17 @@ const getAnimationTimestamp = (
   const currTime = new Date().getTime();
   let delay: number;
   if (!prevPokemonId) delay = 0;
-  else if (!animationTimestamps[prevPokemonId]) delay = MAX_DELAY;
+  else if (!animationTimestamps[prevPokemonId])
+    delay = ANIMATION.DELAY.MAX_FAVORITES_APPEAR;
   else {
     const elapsed = currTime - animationTimestamps[prevPokemonId].start;
-    delay = Math.max(0, Math.min(MAX_DELAY, INTERVAL - elapsed));
+    delay = Math.max(
+      0,
+      Math.min(
+        ANIMATION.DELAY.MAX_FAVORITES_APPEAR,
+        ANIMATION.INTERVAL.FAVORITES_APPEAR - elapsed
+      )
+    );
   }
 
   return {
@@ -80,6 +88,8 @@ type FavoritesGridProps = {
 const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const navigation =
+    useNavigation<StackNavigationProp<RootStackParamList, 'PokemonDetails'>>();
   const favoritesIds = useSelector(selectFavoritePokemonIdsList);
   const displayedFavoritesIds = useSelector(
     selectDisplayedFavoritePokemonIdsList
@@ -174,13 +184,17 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({ editable = false }) => {
 
     return (
       <Animated.View entering={ZoomIn.duration(500).delay(timestamp.delay)}>
-        <FavoritePokemonCard
-          pokemon={pokemon}
-          isLoading={isLoading}
-          width={width}
-          deletable={editable}
-          onDelete={handleFavoriteDelete}
-        />
+        <Pressable
+          onPress={() => navigation.push('PokemonDetails', { pokemonId })}
+        >
+          <FavoritePokemonCard
+            pokemon={pokemon}
+            isLoading={isLoading}
+            width={width}
+            deletable={editable}
+            onDelete={handleFavoriteDelete}
+          />
+        </Pressable>
       </Animated.View>
     );
   };

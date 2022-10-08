@@ -28,6 +28,7 @@ type SortableGridProps<T> = {
     index: number
   ) => JSX.Element;
   keyExtractor: (item: T, index: number) => string;
+  scrollable?: boolean;
   columnCount?: number;
   padding?: Padding;
   rowGap?: number;
@@ -37,8 +38,8 @@ type SortableGridProps<T> = {
   GridHeaderComponent?: GridComponent;
   GridFooterComponent?: GridComponent;
   onEndReachedThreshold?: number;
-  onDragEnd?: (data: T[]) => void;
   onEndReached?: () => void;
+  onDragEnd?: (data: T[]) => void;
 } & ({ itemHeight?: number } | { itemRatio?: number });
 
 const SortableGrid = <T extends object>({
@@ -53,6 +54,7 @@ const SortableGrid = <T extends object>({
   columnGap = 0,
   columnCount = 1,
   editable = false,
+  scrollable = true,
   editablePaddingTop = 0,
   onEndReachedThreshold = 0,
   padding: desiredPadding = {},
@@ -245,6 +247,7 @@ const SortableGrid = <T extends object>({
     <Animated.ScrollView
       onScroll={handleScroll}
       ref={scrollViewRef}
+      scrollEnabled={scrollable}
       onLayout={measureScrollViewHeight}
     >
       {renderGridHeader()}
