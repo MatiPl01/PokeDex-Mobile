@@ -4,15 +4,19 @@ import Animated from 'react-native-reanimated';
 import { hexToRGBAlphaCSS } from '@utils/colors';
 import { flexCenter, absoluteFill } from '@styles/shared';
 
-export const SpinnerWrapper = styled.View<{ showOverlay?: boolean }>`
+export const SpinnerWrapper = styled.View<{
+  showOverlay?: boolean;
+  absolute?: boolean;
+}>`
   z-index: 1000;
-  ${absoluteFill};
   ${flexCenter};
 
   background-color: ${({ showOverlay, theme }) =>
     showOverlay
       ? hexToRGBAlphaCSS(theme.color.background.primary, 0.75)
       : 'transparent'};
+
+  ${({ absolute }) => absolute && absoluteFill};
 `;
 
 export const SpinnerSvg = styled(Animated.createAnimatedComponent(Svg)).attrs<{

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
-import { Route, useFocusEffect } from '@react-navigation/native';
-import { API } from '@constants';
+import { Route, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { API, SIZE } from '@constants';
 import { RootState } from '@store';
 import { fetchSinglePokemonByIdAsync } from '@store/pokemon/pokemon.actions';
 import { selectSinglePokemonStateById } from '@store/pokemon/pokemon.selector';
@@ -14,12 +14,16 @@ import PokemonItemsGrid from '@components/items/PokemonItemsGrid/PokemonItemsGri
 import StickyHeaderScrollView from '@components/shared/react/StickyHeaderScrollView/StickyHeaderScrollView';
 import ScrollViewSection from '@components/shared/react/StickyHeaderScrollView/ScrollViewSection/ScrollViewSection';
 import PokemonImageGallery from '@components/pokemon/PokemonImageGallery/PokemonImageGallery';
+import LoadingSpinner from '@components/shared/react/LoadingSpinner/LoadingSpinner';
+import RoundedButton from '@components/shared/react/RoundedButton/RoundedButton';
 import {
   ScreenWrapper,
   Row,
   SectionText,
   ProgressCircular,
-  ItemsGridWrapper
+  ItemsGridWrapper,
+  FullScreenCenterWrapper,
+  InfoText
 } from './PokemonDetailsScreen.styles';
 
 type PokemonDetailsScreenProps = {
@@ -31,6 +35,7 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
 }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const { enableFullScreen, disableFullScreen } = useFullScreenContext();
   // Data
   const pokemonId = route.params.pokemonId;
@@ -47,12 +52,26 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
     dispatch(fetchSinglePokemonByIdAsync(pokemonId));
   }, [pokemonId]);
 
-  // TODO - handle loading and errors
   if (!pokemonState) return null;
   const { pokemon, isLoading } = pokemonState;
 
-  if (isLoading) return <SectionText>Loading...</SectionText>;
-  if (!pokemon) return <SectionText>No pokemon</SectionText>;
+  if (isLoading)
+    return (
+      <FullScreenCenterWrapper>
+        <InfoText>Loading Pokemon data...</InfoText>
+        <LoadingSpinner size={SIZE.SCREEN.WIDTH / 3} absolute={false} />
+      </FullScreenCenterWrapper>
+    );
+
+  if (!pokemon)
+    return (
+      <FullScreenCenterWrapper>
+        <InfoText>Failed to load Pokemon with id #{pokemonId}</InfoText>
+        <RoundedButton onPress={() => navigation.goBack()}>
+          Return to the previous screen
+        </RoundedButton>
+      </FullScreenCenterWrapper>
+    );
 
   return (
     <ScreenWrapper>

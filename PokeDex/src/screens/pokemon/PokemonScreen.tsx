@@ -26,11 +26,6 @@ const PokemonScreen: React.FC = () => {
     fetchSearchItems();
   }, []);
 
-  // TODO - remove lines below
-  useEffect(() => {
-    navigation.push('PokemonDetails', { pokemonId: '264' });
-  }, []);
-
   const fetchSearchItems = () => {
     dispatch(fetchSearchItemsAsync());
   };

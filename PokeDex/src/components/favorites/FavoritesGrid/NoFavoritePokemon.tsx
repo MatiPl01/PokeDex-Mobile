@@ -4,12 +4,11 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@core/navigation/Navigation';
 import { Separator } from '@components/shared/styled/layout';
+import RoundedButton from '@components/shared/react/RoundedButton/RoundedButton';
 import {
   Wrapper,
   TextPrimary,
-  TextSecondary,
-  Button,
-  ButtonText
+  TextSecondary
 } from './NoFavoritePokemon.styles';
 
 const NoFavoritePokemon: React.FC = () => {
@@ -25,9 +24,9 @@ const NoFavoritePokemon: React.FC = () => {
         To search for Pokemon click the button below
       </TextSecondary>
       <Separator height={theme.space.xl} />
-      <Button onPress={() => navigation.push('Pokemon')}>
-        <ButtonText>Find favorite Pokemon</ButtonText>
-      </Button>
+      <RoundedButton onPress={() => navigation.push('Pokemon')}>
+        Find favorite Pokemon
+      </RoundedButton>
     </Wrapper>
   );
 };

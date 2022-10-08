@@ -20,12 +20,14 @@ type LoadingSpinnerProps = {
   size?: number;
   strokeWidth?: number;
   showOverlay?: boolean;
+  absolute?: boolean;
 };
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   showOverlay,
   strokeWidth = DEFAULT_STROKE_WIDTH,
-  size: diameter = DEFAULT_SPINNER_DIAMETER
+  size: diameter = DEFAULT_SPINNER_DIAMETER,
+  absolute = true
 }) => {
   const SPINNER_CIRCUMFERENCE = Math.PI * diameter;
 
@@ -52,7 +54,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   }, []);
 
   return (
-    <SpinnerWrapper showOverlay={showOverlay}>
+    <SpinnerWrapper showOverlay={showOverlay} absolute={absolute}>
       <SpinnerSvg style={animatedCircleStyles.svg} diameter={diameter}>
         <SpinnerCircle
           style={animatedCircleStyles.circle}

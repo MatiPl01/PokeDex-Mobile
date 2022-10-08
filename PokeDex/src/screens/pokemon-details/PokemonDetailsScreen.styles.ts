@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components/native';
+import { absoluteFill, flexCenter } from '@styles/shared';
 import DefaultProgressCircular from '@components/shared/react/ProgressCircular/ProgressCircular';
 
 export const ScreenWrapper = styled.View`
@@ -28,4 +29,18 @@ export const ProgressCircular = styled(DefaultProgressCircular).attrs(
 
 export const ItemsGridWrapper = styled.View`
   margin: ${({ theme }) => `0 -${theme.space.lg}px`};
+`;
+
+export const FullScreenCenterWrapper = styled.View`
+  ${absoluteFill};
+  ${flexCenter};
+`;
+
+export const InfoText = styled.Text`
+  ${({ theme }) => css`
+    color: ${theme.color.text.primary};
+    font-size: ${theme.fontSize.title}px;
+    font-weight: ${theme.fontWeight.bold};
+    margin-bottom: ${theme.space.xl}px;
+  `}
 `;

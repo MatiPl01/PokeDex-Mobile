@@ -95,67 +95,67 @@ const pokemonDataTransform = ({
   moves
 }: PokemonResponse): Pokemon => {
   const images = [
-      {
-        name: 'Dream world - front default',
-        url: sprites.other.dream_world.front_default
-      },
-      {
-        name: 'Dream world - front female',
-        url: sprites.other.dream_world.front_female
-      },
-      {
-        name: 'Home - front default',
-        url: sprites.other.home.front_default
-      },
-      {
-        name: 'Home - front female',
-        url: sprites.other.home.front_female
-      },
-      {
-        name: 'Home - front shiny',
-        url: sprites.other.home.front_shiny
-      },
-      {
-        name: 'Home - front shiny female',
-        url: sprites.other.home.front_shiny_female
-      },
-      {
-        name: 'Official artwork - front default',
-        url: sprites.other['official-artwork'].front_default
-      },
-      {
-        name: 'Back default',
-        url: sprites.back_default
-      },
-      {
-        name: 'Back female',
-        url: sprites.back_female
-      },
-      {
-        name: 'Back shiny',
-        url: sprites.back_shiny
-      },
-      {
-        name: 'Back shiny female',
-        url: sprites.back_shiny_female
-      },
-      {
-        name: 'Front default',
-        url: sprites.front_default
-      },
-      {
-        name: 'Front female',
-        url: sprites.front_female
-      },
-      {
-        name: 'Front shiny',
-        url: sprites.front_shiny
-      },
-      {
-        name: 'Front shiny female',
-        url: sprites.front_shiny_female
-      }
-    ].filter(({ url }) => !!url) as PokemonImage[];
+    {
+      name: 'Dream world - front default',
+      url: sprites.other.dream_world.front_default
+    },
+    {
+      name: 'Dream world - front female',
+      url: sprites.other.dream_world.front_female
+    },
+    {
+      name: 'Home - front default',
+      url: sprites.other.home.front_default
+    },
+    {
+      name: 'Home - front female',
+      url: sprites.other.home.front_female
+    },
+    {
+      name: 'Home - front shiny',
+      url: sprites.other.home.front_shiny
+    },
+    {
+      name: 'Home - front shiny female',
+      url: sprites.other.home.front_shiny_female
+    },
+    {
+      name: 'Official artwork - front default',
+      url: sprites.other['official-artwork'].front_default
+    },
+    {
+      name: 'Back default',
+      url: sprites.back_default
+    },
+    {
+      name: 'Back female',
+      url: sprites.back_female
+    },
+    {
+      name: 'Back shiny',
+      url: sprites.back_shiny
+    },
+    {
+      name: 'Back shiny female',
+      url: sprites.back_shiny_female
+    },
+    {
+      name: 'Front default',
+      url: sprites.front_default
+    },
+    {
+      name: 'Front female',
+      url: sprites.front_female
+    },
+    {
+      name: 'Front shiny',
+      url: sprites.front_shiny
+    },
+    {
+      name: 'Front shiny female',
+      url: sprites.front_shiny_female
+    }
+  ].filter(({ url }) => !!url) as PokemonImage[];
 
   return {
     id: String(id),
@@ -165,7 +165,7 @@ const pokemonDataTransform = ({
     weight,
     baseExperience: base_experience,
     types: types.map(({ type }) => type.name),
-    abilities: abilities.map(({ ability }) => ability.name),
+    abilities: abilities.map(({ ability }) => ability.name).sort(),
     stats: stats.map(({ base_stat, stat }) => ({
       name: kebabCaseToCamelCase(stat.name) as PokemonStatName,
       value: base_stat
@@ -174,7 +174,7 @@ const pokemonDataTransform = ({
       name,
       id: getIdFromUrl(url)
     })),
-    moves: moves.map(({ move: { name } }) => name)
+    moves: moves.map(({ move: { name } }) => name).sort()
   };
 };
 
