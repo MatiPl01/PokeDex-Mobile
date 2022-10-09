@@ -56,7 +56,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const dispatch = useDispatch();
   const edges = useSafeAreaInsets();
   const navigation =
-    useNavigation<StackNavigationProp<RootStackParamList, 'PokemonDetails'>>();
+    useNavigation<StackNavigationProp<RootStackParamList, 'FullScreenStack'>>();
   const cardListRef = useRef<FlatList | null>(null);
   const LOGO_BAR_HEIGHT = theme.size.lg;
   const LIST_CONTAINER_HEIGHT = SIZE.SCREEN.HEIGHT - LOGO_BAR_HEIGHT;
@@ -148,7 +148,12 @@ const PokemonList: React.FC<PokemonListProps> = ({
       >
         <Pressable
           key={pokemonId}
-          onPress={() => navigation.push('PokemonDetails', { pokemonId })}
+          onPress={() =>
+            navigation.navigate('FullScreenStack', {
+              screen: 'PokemonDetails',
+              params: { pokemonId }
+            })
+          }
         >
           <PokemonCard pokemon={pokemon} isLoading={isLoading} />
         </Pressable>

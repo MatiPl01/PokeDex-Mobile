@@ -1,11 +1,6 @@
 import React, { useEffect, PropsWithChildren } from 'react';
 import { useTheme, DefaultTheme } from 'styled-components';
-import {
-  Easing,
-  useSharedValue,
-  withDelay,
-  withTiming
-} from 'react-native-reanimated';
+import { useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SIZE, ANIMATION } from '@constants';
 import {
@@ -13,7 +8,6 @@ import {
   createAnimatedParametrizedStyle,
   createAnimatedParametrizedStyles
 } from '@utils/reanimated';
-import { useFullScreenContext } from '@context/FullScreen.context';
 import PokeBall from '@assets/svg/poke-ball.svg';
 import Logo from '@assets/svg/logo.svg';
 import {
@@ -108,26 +102,6 @@ const useAnimatedMenuToggleStyle =
     ]
   }));
 
-const useAnimatedFullScreenStyles = createAnimatedParametrizedStyles<{
-  sizes: Sizes;
-  edges: EdgeInsets;
-}>(({ sizes, edges }) => {
-  const headerHeight = sizes.LOGO_BAR_HEIGHT + edges.top;
-
-  return {
-    overlay: {
-      transform: [
-        {
-          translateY: [-SIZE.SCREEN.HEIGHT + headerHeight, -SIZE.SCREEN.HEIGHT]
-        }
-      ]
-    },
-    content: {
-      paddingTop: [headerHeight, 0]
-    }
-  };
-});
-
 type SplashScreenProps = PropsWithChildren<{
   menuToggle: React.ReactNode;
 }>;
@@ -138,7 +112,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
 }) => {
   const theme = useTheme();
   const edges = useSafeAreaInsets();
-  const { isFullScreenEnabled } = useFullScreenContext();
 
   const LOGO_HEIGHT = theme.size.xl;
   const LOGO_BAR_HEIGHT = theme.size.lg;
@@ -162,7 +135,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
 
   const splashScreenAnimationProgress = useSharedValue(0);
   const menuToggleAnimationProgress = useSharedValue(0);
-  const fullScreenAnimationProgress = useSharedValue(0);
 
   const animatedSplashScreenStyles = useAnimatedSplashScreenStyles({
     sizes,
@@ -172,11 +144,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
   const animatedMenuToggleStyle = useAnimatedMenuToggleStyle(theme)(
     menuToggleAnimationProgress
   );
-
-  const animatedFullScreenStyles = useAnimatedFullScreenStyles({
-    sizes,
-    edges
-  })(fullScreenAnimationProgress);
 
   useEffect(() => {
     splashScreenAnimationProgress.value = withDelay(
@@ -191,24 +158,11 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
     );
   }, []);
 
-  useEffect(() => {
-    fullScreenAnimationProgress.value = withTiming(+isFullScreenEnabled, {
-      duration: 1000,
-      easing: Easing.bezier(0.6, 0, 0.4, 1)
-    });
-  }, [isFullScreenEnabled]);
-
   return (
     <>
-      <Wrapper
-        height={SIZE.SCREEN.HEIGHT}
-        style={animatedFullScreenStyles.wrapper}
-      >
+      <Wrapper height={SIZE.SCREEN.HEIGHT}>
         <Overlay
-          style={[
-            animatedSplashScreenStyles.overlay,
-            animatedFullScreenStyles.overlay
-          ]}
+          style={animatedSplashScreenStyles.overlay}
         >
           <AbsoluteView style={animatedSplashScreenStyles.pokeBall}>
             <PokeBall height={POKE_BALL_SIZE} width={POKE_BALL_SIZE} />
@@ -217,7 +171,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
             <Logo height={LOGO_HEIGHT} width={SIZE.SCREEN.WIDTH} />
           </AbsoluteView>
           <AbsoluteView
-            style={[
+            style={[ 
               {
                 height: MENU_TOGGLE_SIZE,
                 width: MENU_TOGGLE_SIZE,
@@ -235,10 +189,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
           </AbsoluteView>
         </Overlay>
         <ContentContainer
-          style={[
-            animatedSplashScreenStyles.content,
-            animatedFullScreenStyles.content
-          ]}
+          style={animatedSplashScreenStyles.content}
+          headerHeight={sizes.LOGO_BAR_HEIGHT + edges.top}
         >
           {children}
         </ContentContainer>

@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Route, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { Route, useNavigation } from '@react-navigation/native';
 import { ANIMATION, API, SIZE } from '@constants';
 import { RootState } from '@store';
 import { fetchSinglePokemonByIdAsync } from '@store/pokemon/pokemon.actions';
 import { selectSinglePokemonStateById } from '@store/pokemon/pokemon.selector';
-import { useFullScreenContext } from '@context/FullScreen.context';
 import { Separator } from '@components/shared/styled/layout';
 import PokemonTypeBadge from '@components/pokemon/PokemonTypeBadge/PokemonTypeBadge';
 import PokemonStats from '@components/pokemon/PokemonStats/PokemonStats';
@@ -38,18 +37,12 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
   const dispatch = useDispatch();
   const edges = useSafeAreaInsets();
   const navigation = useNavigation();
-  const { enableFullScreen, disableFullScreen } = useFullScreenContext();
   // Data
   const pokemonId = route.params.pokemonId;
   const pokemonState = useSelector((rootState: RootState) =>
     selectSinglePokemonStateById(rootState, pokemonId)
   );
-
-  useFocusEffect(() => {
-    enableFullScreen();
-    return disableFullScreen;
-  });
-
+  
   useEffect(() => {
     dispatch(fetchSinglePokemonByIdAsync(pokemonId));
   }, [pokemonId]);
