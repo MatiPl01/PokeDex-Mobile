@@ -1,10 +1,11 @@
-import React, { ComponentType, useEffect, useRef } from 'react';
+import React, { ComponentType, useRef } from 'react';
 import {
   FlatList,
   FlatListProps,
   ListRenderItem,
   Pressable
 } from 'react-native';
+import { SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { DefaultTheme, useTheme } from 'styled-components';
 import { Dimensions, Image, Position } from '@types';
 import { Separator } from '@components/shared/styled/layout';
@@ -25,14 +26,14 @@ const getThumbnailSize = (theme: DefaultTheme, size?: PaginationSize) => {
 };
 
 type ThumbnailPaginationProps = {
-  activeImageIndex: number;
+  activeImageIndex: SharedValue<number>;
   images: Image[];
   position: Position;
   dimensions: Dimensions;
   scrollToIndex: (index: number) => void;
   onSwipeStart: () => void;
   onSwipeEnd: () => void;
-  visible?: boolean;
+  visible?: SharedValue<boolean>;
   size?: PaginationSize;
 };
 
@@ -44,7 +45,7 @@ const ThumbnailPagination: React.FC<ThumbnailPaginationProps> = ({
   scrollToIndex,
   onSwipeStart,
   onSwipeEnd,
-  visible = true,
+  visible = useSharedValue(true),
   size = 'medium'
 }) => {
   const theme = useTheme();
@@ -58,10 +59,10 @@ const ThumbnailPagination: React.FC<ThumbnailPaginationProps> = ({
     ? { horizontal: true, showsHorizontalScrollIndicator: false }
     : { showsVerticalScrollIndicator: false };
 
-  useEffect(() => {
+  useDerivedValue(() => {
     const offset =
       LIST_PADDING +
-      activeImageIndex * (thumbnailSize + LIST_GAP) +
+      activeImageIndex.value * (thumbnailSize + LIST_GAP) +
       thumbnailSize / 2 -
       (isHorizontal ? dimensions.width / 2 : dimensions.height / 2);
     listRef.current?.scrollToOffset({ offset });

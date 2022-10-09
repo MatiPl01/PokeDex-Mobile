@@ -17,3 +17,7 @@ export const DELAY = {
 export const INTERVAL = {
   FAVORITES_APPEAR: 75
 };
+
+export const TIMEOUT = {
+  PAGINATION_TOGGLE: 1500
+};

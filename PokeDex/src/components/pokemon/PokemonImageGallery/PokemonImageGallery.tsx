@@ -1,10 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Dimensions, Orientation } from '@types';
-import { PokemonImage, PokemonType } from '@store/pokemon/pokemon.types';
+import { Dimensions } from '@types';
+import { PokemonType } from '@store/pokemon/pokemon.types';
 import SwipeGallery, {
-  GalleryPagination
+  SwipeGalleryProps
 } from '@components/shared/react/SwipeGallery/SwipeGallery';
 import GalleryImage from '@components/shared/react/SwipeGallery/GalleryImage/GalleryImage';
 import {
@@ -14,15 +14,19 @@ import {
   ImageTextWrapper
 } from './PokemonImageGallery.styles';
 
-type PokemonImageGalleryProps = {
-  images: PokemonImage[];
+type PokemonImageGalleryProps = Pick<
+  SwipeGalleryProps,
+  | 'images'
+  | 'paginationSettings'
+  | 'scrollDirection'
+  | 'enableFullScreen'
+  | 'fullScreenSettings'
+  | 'scrollY'
+  | 'overlayStyle'
+> & {
   pokemonType: PokemonType;
-  pagination?: GalleryPagination;
-  scrollDirection?: Orientation;
-  paginationHideTimeout?: number;
 };
 
-// TODO - add fullscreen gallery mode
 const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
   const { pokemonType, ...restProps } = props;
   const edges = useSafeAreaInsets();
@@ -50,12 +54,19 @@ const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
     </ImageWrapper>
   );
 
+  const renderBackground = () => (
+    <BackgroundGradient pokemonType={pokemonType} colors={[]} />
+  );
+
   return (
     <View style={{ flex: 1 }}>
-      <BackgroundGradient pokemonType={pokemonType} colors={[]} />
-      <SwipeGallery renderImage={renderImage} {...restProps} />
+      <SwipeGallery
+        renderImage={renderImage}
+        renderBackground={renderBackground}
+        {...restProps}
+      />
     </View>
   );
 };
 
-export default PokemonImageGallery;
+export default React.memo(PokemonImageGallery);

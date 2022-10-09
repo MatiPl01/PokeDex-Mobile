@@ -1,15 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { DefaultTheme, useTheme } from 'styled-components';
 import {
   Easing,
+  runOnJS,
+  SharedValue,
+  useDerivedValue,
   useSharedValue,
   withDelay,
   withTiming
 } from 'react-native-reanimated';
+import { Position } from '@types';
 import GalleryImage from '@components/shared/react/SwipeGallery/GalleryImage/GalleryImage';
 import { createAnimatedParametrizedStyle } from '@utils/reanimated';
 import { ThumbnailWrapper } from './Thumbnail.styles';
-import { Position } from '@types';
 
 const useAnimatedAppearanceStyle = createAnimatedParametrizedStyle<{
   theme: DefaultTheme;
@@ -50,9 +53,9 @@ type ThumbnailProps = {
   url: string;
   size: number;
   index: number;
-  activeIndex: number;
   position: Position;
-  visible?: boolean;
+  visible: SharedValue<boolean>;
+  activeIndex: SharedValue<number>;
 };
 
 const Thumbnail: React.FC<ThumbnailProps> = ({
@@ -77,21 +80,29 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
     thumbnailSize: size
   })(activeAnimationProgress);
 
-  useEffect(() => {
+  const animateThumbnailAppearance = (isVisible: boolean) => {
     appearanceAnimationProgress.value = withDelay(
-      Math.abs(activeIndex - index) * 100,
-      withTiming(+!!visible, {
+      Math.abs(activeIndex.value - index) * 100,
+      withTiming(+isVisible, {
         duration: 500,
         easing: Easing.bezier(0.62, -0.41, 0.34, 1.5)
       })
     );
-  }, [visible]);
+  };
 
-  useEffect(() => {
-    activeAnimationProgress.value = withTiming(+(index === activeIndex), {
+  const animateThumbnailActivity = (isActive: boolean) => {
+    activeAnimationProgress.value = withTiming(+isActive, {
       duration: 200,
       easing: Easing.bezier(0.4, 0, 0.9, 0.65)
     });
+  };
+
+  useDerivedValue(() => {
+    runOnJS(animateThumbnailAppearance)(visible.value);
+  }, [visible]);
+
+  useDerivedValue(() => {
+    runOnJS(animateThumbnailActivity)(index === activeIndex.value);
   }, [index, activeIndex]);
 
   return (
