@@ -7,7 +7,9 @@ export const Wrapper = styled(Animated.View)<{ height: number }>`
   height: ${({ height }) => `${height}px`};
 `;
 
-export const Overlay = styled(Animated.View)`
+export const Overlay = styled(Animated.View)<{
+  fullScreen?: boolean;
+}>`
   height: 100%;
   z-index: 100;
   overflow: hidden;
@@ -19,8 +21,9 @@ export const AbsoluteView = styled(Animated.View)`
   position: absolute;
 `;
 
-export const ContentContainer = styled(AbsoluteView)`
+export const ContentContainer = styled(AbsoluteView)<{ headerHeight: number }>`
   width: 100%;
   height: 100%;
   z-index: 0;
+  top: ${({ headerHeight }) => headerHeight}px;
 `;

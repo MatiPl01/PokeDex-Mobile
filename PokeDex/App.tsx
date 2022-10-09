@@ -15,7 +15,6 @@ import { ThemeMode, ThemeName } from '@store/theme/theme.types';
 import { setFavoritePokemonIds } from '@store/favorites/favorites.actions';
 import { selectFavoritePokemonIdsList } from '@store/favorites/favorites.selector';
 import { catchAsync } from '@utils/errors';
-import { FullScreenProvider } from '@context/FullScreen.context';
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -67,12 +66,10 @@ const App: React.FC = () => {
         barStyle={`${themeMode === ThemeMode.LIGHT ? 'dark' : 'light'}-content`}
       />
       <SafeAreaProvider>
-        <FullScreenProvider>
-          <StatusBar backgroundColor="transparent" translucent />
-          <NavigationContainer>
-            <Navigation />
-          </NavigationContainer>
-        </FullScreenProvider>
+        <StatusBar backgroundColor="transparent" translucent />
+        <NavigationContainer>
+          <Navigation />
+        </NavigationContainer>
       </SafeAreaProvider>
     </ThemeProvider>
   );

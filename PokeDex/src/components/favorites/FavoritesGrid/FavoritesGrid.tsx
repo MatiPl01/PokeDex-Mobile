@@ -110,7 +110,7 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigation =
-    useNavigation<StackNavigationProp<RootStackParamList, 'PokemonDetails'>>();
+    useNavigation<StackNavigationProp<RootStackParamList, 'FullScreenStack'>>();
   const favoritesIds = useSelector(selectFavoritePokemonIdsList);
   const displayedFavoritesIds = useSelector(
     selectDisplayedFavoritePokemonIdsList
@@ -227,7 +227,10 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({
         <Pressable
           onPress={() => {
             if (!isCardBeingDragged.value)
-              navigation.push('PokemonDetails', { pokemonId });
+              navigation.navigate('FullScreenStack', {
+                screen: 'PokemonDetails',
+                params: { pokemonId }
+              });
           }}
         >
           <FavoritePokemonCard

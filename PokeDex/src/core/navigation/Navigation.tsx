@@ -1,6 +1,8 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { PropsWithChildren } from 'react';
+import { View } from 'react-native';
+import { useTheme } from 'styled-components';
 import Animated, { SharedValue } from 'react-native-reanimated';
+import { SIZE } from '@constants';
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
@@ -19,7 +21,6 @@ import PokemonScreen from '@screens/pokemon/PokemonScreen';
 import FavoritesScreen from '@screens/favorites/FavoritesScreen';
 import MapScreen from '@screens/map/MapScreen';
 import SettingsScreen from '@screens/settings/SettingsScreen';
-import { selectCurrentTheme } from '@store/theme/theme.selector';
 import { createAnimatedStyles } from '@utils/reanimated';
 import PokemonDetailsScreen from '@screens/pokemon-details/PokemonDetailsScreen';
 import Logo from '@assets/svg/logo.svg';
@@ -30,17 +31,28 @@ import {
   DrawerWrapper,
   ScreensInnerWrapper
 } from './Navigation.styles';
+import { NavigatorScreenParams } from '@react-navigation/native';
 
-export type RootStackParamList = {
+export type HeaderStackParamList = {
   Pokemon: undefined;
-  PokemonDetails: { pokemonId: string };
   Favorites: undefined;
   Map: undefined;
   Settings: undefined;
 };
 
+export type FullScreenParamList = {
+  PokemonDetails: { pokemonId: string };
+};
+
+export type RootStackParamList = {
+  HeaderStack: NavigatorScreenParams<HeaderStackParamList>;
+  FullScreenStack: NavigatorScreenParams<FullScreenParamList>;
+};
+
 const Drawer = createDrawerNavigator();
-const Stack = createStackNavigator<RootStackParamList>();
+const RootStack = createStackNavigator<RootStackParamList>();
+const HeaderStack = createStackNavigator<HeaderStackParamList>();
+const FullScreenStack = createStackNavigator<FullScreenParamList>();
 
 const useAnimatedScreensStyles = createAnimatedStyles({
   outerWrapper: {
@@ -52,43 +64,87 @@ const useAnimatedScreensStyles = createAnimatedStyles({
   }
 });
 
-type ScreensProps = {
+type ScreensProps = PropsWithChildren<{
   navigation: DrawerNavigationHelpers;
+}>;
+
+const HeaderStackScreens: React.FC<ScreensProps> = ({ navigation }) => {
+  const theme = useTheme();
+
+  return (
+    <SplashScreen menuToggle={<HamburgerIcon navigation={navigation} />}>
+      <HeaderStack.Navigator
+        screenOptions={{
+          headerTitle: '',
+          headerTransparent: true,
+          cardOverlayEnabled: false,
+          cardStyle: {
+            backgroundColor: theme.color.background.secondary
+          },
+          presentation: 'card',
+          gestureEnabled: false,
+          headerLeft: () => null,
+          cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
+        }}
+      >
+        <HeaderStack.Screen name="Pokemon" component={PokemonScreen} />
+        <HeaderStack.Screen name="Favorites" component={FavoritesScreen} />
+        <HeaderStack.Screen name="Map" component={MapScreen} />
+        <HeaderStack.Screen name="Settings" component={SettingsScreen} />
+      </HeaderStack.Navigator>
+    </SplashScreen>
+  );
 };
 
-const Screens: React.FC<ScreensProps> = ({ navigation }) => {
-  const theme = useSelector(selectCurrentTheme);
+const FullScreenStackScreens: React.FC<ScreensProps> = () => {
+  const theme = useTheme();
+
+  return (
+    <FullScreenStack.Navigator
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: false,
+        cardStyle: {
+          backgroundColor: theme.color.background.tertiary
+        }
+      }}
+    >
+      <FullScreenStack.Screen
+        name="PokemonDetails"
+        component={PokemonDetailsScreen}
+      />
+    </FullScreenStack.Navigator>
+  );
+};
+
+const RootStackScreens: React.FC<ScreensProps> = () => {
+  const theme = useTheme();
   const progress = useDrawerProgress() as Readonly<SharedValue<number>>;
   const animatedStyles = useAnimatedScreensStyles(progress);
 
   return (
     <Animated.View style={animatedStyles.outerWrapper}>
       <ScreensInnerWrapper style={animatedStyles.innerWrapper}>
-        <SplashScreen menuToggle={<HamburgerIcon navigation={navigation} />}>
-          <Stack.Navigator
+        <View style={{ height: SIZE.SCREEN.HEIGHT }}>
+          <RootStack.Navigator
             screenOptions={{
-              headerTransparent: true,
-              headerTitle: '',
-              cardOverlayEnabled: false,
-              cardStyle: {
-                backgroundColor: theme.color.background.secondary
-              },
-              presentation: 'card',
+              headerShown: false,
               gestureEnabled: false,
-              headerLeft: () => null,
-              cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
+              cardStyle: {
+                backgroundColor: theme.color.background.tertiary
+              }
             }}
           >
-            <Stack.Screen name="Pokemon" component={PokemonScreen} />
-            <Stack.Screen
-              name="PokemonDetails"
-              component={PokemonDetailsScreen}
+            <RootStack.Screen
+              name="HeaderStack"
+              component={HeaderStackScreens}
             />
-            <Stack.Screen name="Favorites" component={FavoritesScreen} />
-            <Stack.Screen name="Map" component={MapScreen} />
-            <Stack.Screen name="Settings" component={SettingsScreen} />
-          </Stack.Navigator>
-        </SplashScreen>
+            <RootStack.Screen
+              name="FullScreenStack"
+              component={FullScreenStackScreens}
+            />
+          </RootStack.Navigator>
+        </View>
       </ScreensInnerWrapper>
     </Animated.View>
   );
@@ -97,9 +153,9 @@ const Screens: React.FC<ScreensProps> = ({ navigation }) => {
 const DrawerContent: React.FC<DrawerContentComponentProps> = ({
   navigation
 }) => {
-  const theme = useSelector(selectCurrentTheme);
-  const labelStyle = { marginLeft: -16, color: theme.color.text.primary };
+  const theme = useTheme();
   const iconProps = { size: 20, color: theme.color.text.primary };
+  const labelStyle = { marginLeft: -16, color: theme.color.text.primary };
 
   return (
     <DrawerContentView
@@ -158,7 +214,7 @@ const Navigation: React.FC = () => (
       }}
       drawerContent={DrawerContent}
     >
-      <Drawer.Screen name="Screens" component={Screens} />
+      <Drawer.Screen name="Root" component={RootStackScreens} />
     </Drawer.Navigator>
   </DrawerWrapper>
 );

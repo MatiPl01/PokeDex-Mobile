@@ -78,7 +78,7 @@ const FullScreenGallery: React.FC<FullScreenGalleryProps> = ({
   );
 
   const activeImageIndex = useSharedValue(0);
-  const isPaginationVisible = useSharedValue(true);
+  const isPaginationVisible = useSharedValue(false);
   const visibilityAnimationProgress = useSharedValue(0);
   const imagesVisibilityAnimationProgress = useSharedValue(0);
 
@@ -100,6 +100,7 @@ const FullScreenGallery: React.FC<FullScreenGalleryProps> = ({
         easing: Easing.bezier(0.6, 0, 0.4, 1)
       })
     );
+    isPaginationVisible.value = visible;
   }, [visible]);
 
   const scrollToIndex = (index: number) => {

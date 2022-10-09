@@ -16,7 +16,7 @@ import {
 const PokemonScreen: React.FC = () => {
   const dispatch = useDispatch();
   const navigation =
-    useNavigation<StackNavigationProp<RootStackParamList, 'PokemonDetails'>>();
+    useNavigation<StackNavigationProp<RootStackParamList, 'FullScreenStack'>>();
   // Data
   const searchItems = useSelector(selectSearchItemsList);
   // Component state
@@ -34,7 +34,10 @@ const PokemonScreen: React.FC = () => {
     if (items.length === 0) {
       dispatch(displayAllPokemon());
     } else if (items.length === 1) {
-      navigation.push('PokemonDetails', { pokemonId: items[0].id });
+      navigation.push('FullScreenStack', {
+        screen: 'PokemonDetails',
+        params: { pokemonId: items[0].id }
+      });
     } else {
       // Display all suggested Pokemon cards
       dispatch(displayPokemonWithIds(items.map(({ id }) => id)));

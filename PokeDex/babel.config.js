@@ -18,7 +18,6 @@ module.exports = {
           '@assets': './assets',
           '@components': './src/components',
           "@constants": './src/constants/index.ts',
-          "@context": './src/context',
           '@core': './src/core',
           '@screens': './src/screens',
           '@services': './src/services',
