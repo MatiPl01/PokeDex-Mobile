@@ -19,10 +19,8 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SIZE } from '@constants';
 import { Corner, Dimensions, Image, Orientation, Position } from '@types';
 import { createAnimatedParametrizedStyles } from '@utils/reanimated';
-import GalleryImage from './GalleryImage/GalleryImage';
-import ThumbnailPagination from './GalleryPagination/ThumbnailPagination/ThumbnailPagination';
-import { PaginationSize } from './GalleryPagination/shared';
-import FullScreenGallery from './FullScreenGallery/FullScreenGallery';
+import GalleryImage from '../GalleryImage/GalleryImage';
+import FullScreenGallery from '../FullScreenGallery/FullScreenGallery';
 import {
   FullsScreenButton,
   GalleryWrapper,
@@ -32,49 +30,17 @@ import {
   GalleryOverlay,
   FullScreenIcon
 } from './SwipeGallery.styles';
-
-type GalleryPaginationType = 'thumbnail';
-
-export type GalleryPaginationSettings = {
-  position: Position;
-  type: GalleryPaginationType;
-  timeout?: number;
-  size?: PaginationSize;
-};
-
-const renderPagination = (
-  activeImageIndex: SharedValue<number>,
-  scrollToIndex: (index: number) => void,
-  onSwipeStart: () => void,
-  onSwipeEnd: () => void,
-  { type: paginationType, ...restPaginationProps }: GalleryPaginationSettings,
-  dimensions: Dimensions,
-  visible: SharedValue<boolean>,
-  images: Image[]
-): React.ReactNode => {
-  const props = {
-    activeImageIndex,
-    scrollToIndex,
-    onSwipeStart,
-    onSwipeEnd,
-    dimensions,
-    visible,
-    ...restPaginationProps
-  };
-
-  switch (paginationType) {
-    case 'thumbnail':
-      return <ThumbnailPagination images={images} {...props} />;
-  }
-};
+import GalleryPagination, { PaginationSettings } from '../GalleryPagination';
 
 export type FullScreenSettings = {
   buttonCorner?: Corner;
-  paginationSettings?: GalleryPaginationSettings; // TODO - maybe add a possibility to change pagination in the fullscreen mode
+  pagination?: PaginationSettings; // TODO - maybe add a possibility to change pagination in the fullscreen mode
 };
 
 const renderFullScreenButton = (
+  images: Image[],
   fullScreenButtonCorner?: Corner,
+  paginationSettings?: PaginationSettings,
   paginationPosition?: Position
 ) => {
   const [isFullScreenMode, setIsFullScreenMode] = useState(false);
@@ -100,11 +66,16 @@ const renderFullScreenButton = (
     <>
       <FullsScreenButton
         corner={corner}
-        onPress={() => setIsFullScreenMode(!isFullScreenMode)}
+        onPress={() => setIsFullScreenMode(true)}
       >
         <FullScreenIcon />
       </FullsScreenButton>
-      <FullScreenGallery visible={isFullScreenMode} />
+      <FullScreenGallery
+        images={images}
+        visible={isFullScreenMode}
+        paginationSettings={paginationSettings}
+        onClose={() => setIsFullScreenMode(false)}
+      />
     </>
   );
 };
@@ -142,7 +113,7 @@ const useAnimatedPullStyles = createAnimatedParametrizedStyles<{
 export type SwipeGalleryProps = {
   images: Image[];
   scrollDirection?: Orientation;
-  paginationSettings?: GalleryPaginationSettings;
+  paginationSettings?: PaginationSettings;
   enableFullScreen?: boolean;
   fullScreenSettings?: FullScreenSettings;
   overlayStyle?: StyleProp<ViewStyle>;
@@ -189,9 +160,10 @@ const SwipeGallery: React.FC<SwipeGalleryProps> = ({
     if (!paginationSettings?.timeout) return;
     if (paginationTimeoutRef.current)
       clearTimeout(paginationTimeoutRef.current);
-    paginationTimeoutRef.current = setTimeout(() => {
-      isPaginationVisible.value = false;
-    }, paginationSettings.timeout);
+    if (!swiping)
+      paginationTimeoutRef.current = setTimeout(() => {
+        isPaginationVisible.value = false;
+      }, paginationSettings.timeout);
   };
 
   useDerivedValue(() => {
@@ -259,28 +231,30 @@ const SwipeGallery: React.FC<SwipeGalleryProps> = ({
             initialNumToRender={1}
             showsHorizontalScrollIndicator={false}
             horizontal={scrollDirection === 'horizontal'}
-            
             pagingEnabled
           />
         </Animated.View>
 
         <GalleryOverlayWrapper style={overlayStyle}>
           <GalleryOverlay>
-            {paginationSettings &&
-              renderPagination(
-                activeImageIndex,
-                scrollToIndex,
-                () => (isSwiping.value = true),
-                () => (isSwiping.value = false),
-                paginationSettings,
-                dimensions,
-                isPaginationVisible,
-                images
-              )}
+            {paginationSettings && (
+              <GalleryPagination
+                activeImageIndex={activeImageIndex}
+                scrollToIndex={scrollToIndex}
+                onSwipeStart={() => (isSwiping.value = true)}
+                onSwipeEnd={() => (isSwiping.value = false)}
+                paginationSettings={paginationSettings}
+                dimensions={dimensions}
+                visible={isPaginationVisible}
+                images={images}
+              />
+            )}
 
             {enableFullScreen &&
               renderFullScreenButton(
+                images,
                 fullScreenSettings?.buttonCorner,
+                fullScreenSettings?.pagination || paginationSettings,
                 paginationSettings?.position
               )}
           </GalleryOverlay>

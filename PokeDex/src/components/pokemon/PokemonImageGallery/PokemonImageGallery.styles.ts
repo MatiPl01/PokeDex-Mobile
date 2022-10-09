@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components/native';
+import Animated from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
 import { PokemonType } from '@store/pokemon/pokemon.types';
 import { absoluteFill, flexCenter } from '@styles/shared';
@@ -26,7 +27,9 @@ export const ImageText = styled.Text`
   `};
 `;
 
-export const BackgroundGradient = styled(LinearGradient).attrs<{
+export const BackgroundGradient = styled(
+  Animated.createAnimatedComponent(LinearGradient)
+).attrs<{
   pokemonType: PokemonType;
 }>(({ theme, pokemonType }) => {
   const typeColors = theme.color.pokemon.type[pokemonType];

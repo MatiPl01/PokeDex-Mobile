@@ -83,7 +83,7 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
         ImageGalleryComponent={
           <PokemonImageGallery
             images={pokemon.images}
-            pokemonType={pokemon.types[0]}
+            pokemonTypes={pokemon.types}
             paginationSettings={{
               type: 'thumbnail',
               size: 'small',
@@ -92,6 +92,13 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
             }}
             overlayStyle={{
               paddingTop: edges.top + theme.space.lg
+            }}
+            fullScreenSettings={{
+              pagination: {
+                type: 'thumbnail',
+                size: 'medium',
+                position: 'bottom'
+              }
             }}
             enableFullScreen
           />

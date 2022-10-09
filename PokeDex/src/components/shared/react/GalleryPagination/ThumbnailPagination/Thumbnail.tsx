@@ -10,7 +10,7 @@ import {
   withTiming
 } from 'react-native-reanimated';
 import { Position } from '@types';
-import GalleryImage from '@components/shared/react/SwipeGallery/GalleryImage/GalleryImage';
+import GalleryImage from '@components/shared/react/GalleryImage/GalleryImage';
 import { createAnimatedParametrizedStyle } from '@utils/reanimated';
 import { ThumbnailWrapper } from './Thumbnail.styles';
 
@@ -103,7 +103,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
 
   useDerivedValue(() => {
     runOnJS(animateThumbnailActivity)(index === activeIndex.value);
-  }, [index, activeIndex]);
+  }, [activeIndex]);
 
   return (
     <ThumbnailWrapper

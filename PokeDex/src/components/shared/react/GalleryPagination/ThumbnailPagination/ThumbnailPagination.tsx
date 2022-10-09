@@ -5,7 +5,12 @@ import {
   ListRenderItem,
   Pressable
 } from 'react-native';
-import { SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import {
+  runOnJS,
+  SharedValue,
+  useDerivedValue,
+  useSharedValue
+} from 'react-native-reanimated';
 import { DefaultTheme, useTheme } from 'styled-components';
 import { Dimensions, Image, Position } from '@types';
 import { Separator } from '@components/shared/styled/layout';
@@ -31,8 +36,8 @@ type ThumbnailPaginationProps = {
   position: Position;
   dimensions: Dimensions;
   scrollToIndex: (index: number) => void;
-  onSwipeStart: () => void;
-  onSwipeEnd: () => void;
+  onSwipeStart?: () => void;
+  onSwipeEnd?: () => void;
   visible?: SharedValue<boolean>;
   size?: PaginationSize;
 };
@@ -59,14 +64,18 @@ const ThumbnailPagination: React.FC<ThumbnailPaginationProps> = ({
     ? { horizontal: true, showsHorizontalScrollIndicator: false }
     : { showsVerticalScrollIndicator: false };
 
-  useDerivedValue(() => {
+  const scrollToThumbnail = (index: number) => {
     const offset =
       LIST_PADDING +
-      activeImageIndex.value * (thumbnailSize + LIST_GAP) +
+      index * (thumbnailSize + LIST_GAP) +
       thumbnailSize / 2 -
       (isHorizontal ? dimensions.width / 2 : dimensions.height / 2);
     listRef.current?.scrollToOffset({ offset });
-  }, [activeImageIndex]);
+  };
+
+  useDerivedValue(() => {
+    runOnJS(scrollToThumbnail)(activeImageIndex.value);
+  }, [activeImageIndex, dimensions]);
 
   const renderItem: ListRenderItem<Image> = ({ item: { url }, index }) => (
     <Pressable onPress={() => scrollToIndex(index)}>
