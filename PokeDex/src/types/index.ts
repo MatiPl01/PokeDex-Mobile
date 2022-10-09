@@ -19,6 +19,8 @@ export type Position = 'top' | 'bottom' | 'left' | 'right';
 
 export type Orientation = 'horizontal' | 'vertical';
 
+export type Corner = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+
 export type Image = {
   name?: string;
   url: string;

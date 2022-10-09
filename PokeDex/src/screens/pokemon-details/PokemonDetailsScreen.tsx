@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Route, useFocusEffect, useNavigation } from '@react-navigation/native';
-import { API, SIZE } from '@constants';
+import { ANIMATION, API, SIZE } from '@constants';
 import { RootState } from '@store';
 import { fetchSinglePokemonByIdAsync } from '@store/pokemon/pokemon.actions';
 import { selectSinglePokemonStateById } from '@store/pokemon/pokemon.selector';
@@ -35,6 +36,7 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
 }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const edges = useSafeAreaInsets();
   const navigation = useNavigation();
   const { enableFullScreen, disableFullScreen } = useFullScreenContext();
   // Data
@@ -81,13 +83,24 @@ const PokemonDetailsScreen: React.FC<PokemonDetailsScreenProps> = ({
         ImageGalleryComponent={
           <PokemonImageGallery
             images={pokemon.images}
-            pokemonType={pokemon.types[0]}
-            paginationHideTimeout={1500}
-            pagination={{
+            pokemonTypes={pokemon.types}
+            paginationSettings={{
               type: 'thumbnail',
+              size: 'small',
               position: 'bottom',
-              size: 'small'
+              timeout: ANIMATION.TIMEOUT.PAGINATION_TOGGLE
             }}
+            overlayStyle={{
+              paddingTop: edges.top + theme.space.lg
+            }}
+            fullScreenSettings={{
+              pagination: {
+                type: 'thumbnail',
+                size: 'medium',
+                position: 'bottom'
+              }
+            }}
+            enableFullScreen
           />
         }
       >

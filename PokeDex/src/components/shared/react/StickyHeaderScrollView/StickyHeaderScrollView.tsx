@@ -1,6 +1,7 @@
 import React, { useState, useRef, Children, ReactElement } from 'react';
 import Animated, {
   runOnJS,
+  SharedValue,
   useAnimatedRef,
   useAnimatedScrollHandler,
   useDerivedValue,
@@ -13,7 +14,6 @@ import { useNavigation } from '@react-navigation/native';
 import { SIZE } from '@constants';
 import { createAnimatedParametrizedStyles } from '@utils/reanimated';
 import { HeaderTab } from './StickyHeader/StickyHeaderTabs/StickyHeaderTab';
-import ScrollViewGallery from './ScrollViewGallery/ScrollViewGallery';
 import { ScrollViewSectionProps } from './ScrollViewSection/ScrollViewSection';
 import StickyHeader from './StickyHeader/StickyHeader';
 import { calcActiveTabIdxOnSectionsScroll } from './StickyHeader/StickyHeaderTabs/utils';
@@ -28,6 +28,7 @@ import {
   BackButtonIcon,
   BackButton
 } from './StickyHeaderScrollView.styles';
+import ScrollViewGallery from './ScrollViewGallery/ScrollViewGallery';
 
 const useAnimatedScrollStyles = createAnimatedParametrizedStyles<{
   theme: DefaultTheme;
@@ -92,7 +93,7 @@ type StickyHeaderScrollViewProps = {
   children:
     | ReactElement<ScrollViewSectionProps>
     | ReactElement<ScrollViewSectionProps>[];
-  ImageGalleryComponent: React.ReactNode;
+  ImageGalleryComponent: React.ReactElement<{ scrollY: SharedValue<number> }>;
   id?: string;
 };
 
@@ -112,7 +113,6 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
   const updateActiveTabIndex = useSharedValue(true);
   const updateActiveSectionIndex = useSharedValue(true);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
-
   const renderedTabsIndexesRef = useRef<Set<number>>(new Set());
 
   const [tabs, setTabs] = useState<HeaderTab[]>([]);

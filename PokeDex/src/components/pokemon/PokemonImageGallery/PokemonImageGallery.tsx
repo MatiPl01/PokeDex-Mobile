@@ -1,12 +1,14 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Dimensions, Orientation } from '@types';
-import { PokemonImage, PokemonType } from '@store/pokemon/pokemon.types';
+import { Dimensions } from '@types';
+import { SIZE } from '@constants';
+import { PokemonType } from '@store/pokemon/pokemon.types';
+import { createAnimatedStyle } from '@utils/reanimated';
 import SwipeGallery, {
-  GalleryPagination
+  SwipeGalleryProps
 } from '@components/shared/react/SwipeGallery/SwipeGallery';
-import GalleryImage from '@components/shared/react/SwipeGallery/GalleryImage/GalleryImage';
+import GalleryImage from '@components/shared/react/GalleryImage/GalleryImage';
 import {
   ImageText,
   BackgroundGradient,
@@ -14,18 +16,31 @@ import {
   ImageTextWrapper
 } from './PokemonImageGallery.styles';
 
-type PokemonImageGalleryProps = {
-  images: PokemonImage[];
-  pokemonType: PokemonType;
-  pagination?: GalleryPagination;
-  scrollDirection?: Orientation;
-  paginationHideTimeout?: number;
+const useAnimatedGradientStyle = createAnimatedStyle({
+  opacity: {
+    inputRange: [-SIZE.SCREEN.HEIGHT / 3, 0],
+    outputRange: [0, 1]
+  }
+});
+
+type PokemonImageGalleryProps = Pick<
+  SwipeGalleryProps,
+  | 'images'
+  | 'paginationSettings'
+  | 'scrollDirection'
+  | 'enableFullScreen'
+  | 'fullScreenSettings'
+  | 'scrollY'
+  | 'overlayStyle'
+> & {
+  pokemonTypes: PokemonType[];
 };
 
-// TODO - add fullscreen gallery mode
 const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
-  const { pokemonType, ...restProps } = props;
+  const { pokemonTypes, scrollY, ...restProps } = props;
   const edges = useSafeAreaInsets();
+
+  const animatedGradientStyle = scrollY && useAnimatedGradientStyle(scrollY);
 
   const renderImage = ({
     url,
@@ -50,12 +65,30 @@ const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
     </ImageWrapper>
   );
 
+  const renderBackground = () =>
+    pokemonTypes.length === 1 ? (
+      <BackgroundGradient pokemonType={pokemonTypes[0]} colors={[]} />
+    ) : (
+      <>
+        <BackgroundGradient
+          pokemonType={pokemonTypes[0]}
+          colors={[]}
+          style={animatedGradientStyle}
+        />
+        <BackgroundGradient pokemonType={pokemonTypes[1]} colors={[]} />
+      </>
+    );
+
   return (
     <View style={{ flex: 1 }}>
-      <BackgroundGradient pokemonType={pokemonType} colors={[]} />
-      <SwipeGallery renderImage={renderImage} {...restProps} />
+      <SwipeGallery
+        scrollY={scrollY}
+        renderImage={renderImage}
+        renderBackground={renderBackground}
+        {...restProps}
+      />
     </View>
   );
 };
 
-export default PokemonImageGallery;
+export default React.memo(PokemonImageGallery);
