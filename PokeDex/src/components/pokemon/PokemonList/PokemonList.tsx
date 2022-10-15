@@ -17,7 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SIZE } from '@constants';
-import { RootStackParamList } from '@core/navigation/Navigation';
+import { RootStackParamList } from '@core/Navigation/Navigation';
 import { createAnimatedParametrizedStyle } from '@utils/reanimated';
 import {
   fetchNextPokemonBatchAsync,

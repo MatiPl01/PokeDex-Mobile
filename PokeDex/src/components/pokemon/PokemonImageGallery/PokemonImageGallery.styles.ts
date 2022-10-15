@@ -18,18 +18,22 @@ export const ImageTextWrapper = styled.View<{ top: number }>`
   `}
 `;
 
-export const ImageText = styled.Text`
-  ${({ theme }) => css`
+export const ImageText = styled.Text<{ size?: 'small' | 'large' }>`
+  ${({ theme, size }) => css`
     color: ${theme.color.text.primary};
     font-weight: ${theme.fontWeight.bold};
-    font-size: ${theme.fontSize.body}px;
+    font-size: ${size === 'large'
+      ? theme.fontSize.title
+      : theme.fontSize.body}px;
     ${theme.shadow.text.soft.sm};
   `};
 `;
 
-export const BackgroundGradient = styled(
-  Animated.createAnimatedComponent(LinearGradient)
-).attrs<{
+export const AnimatedGradientWrapper = styled(Animated.View)`
+  ${absoluteFill};
+`;
+
+export const BackgroundGradient = styled(LinearGradient).attrs<{
   pokemonType: PokemonType;
 }>(({ theme, pokemonType }) => {
   const typeColors = theme.color.pokemon.type[pokemonType];

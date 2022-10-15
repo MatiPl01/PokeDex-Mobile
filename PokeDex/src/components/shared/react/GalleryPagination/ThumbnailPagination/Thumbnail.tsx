@@ -108,7 +108,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   return (
     <ThumbnailWrapper
       size={size}
-      style={[animatedActiveStyle, animatedAppearanceStyle]}
+      style={[animatedAppearanceStyle, animatedActiveStyle]}
     >
       <GalleryImage
         url={url}

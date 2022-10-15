@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SearchItem } from '@utils/search';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '@core/navigation/Navigation';
+import { RootStackParamList } from '@core/Navigation/Navigation';
 import SearchBar from '@components/shared/react/SearchBar/SearchBar';
 import PokemonList from '@components/pokemon/PokemonList/PokemonList';
 import { selectSearchItemsList } from '@store/search/search.selector';
@@ -34,7 +34,7 @@ const PokemonScreen: React.FC = () => {
     if (items.length === 0) {
       dispatch(displayAllPokemon());
     } else if (items.length === 1) {
-      navigation.push('FullScreenStack', {
+      navigation.navigate('FullScreenStack', {
         screen: 'PokemonDetails',
         params: { pokemonId: items[0].id }
       });

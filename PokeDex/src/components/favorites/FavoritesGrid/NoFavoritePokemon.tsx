@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from 'styled-components';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { HeaderStackParamList } from '@core/navigation/Navigation';
+import { HeaderStackParamList } from '@core/Navigation/Navigation';
 import { Separator } from '@components/shared/styled/layout';
 import RoundedButton from '@components/shared/react/RoundedButton/RoundedButton';
 import {

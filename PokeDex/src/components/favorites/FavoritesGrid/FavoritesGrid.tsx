@@ -9,7 +9,7 @@ import Animated, {
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '@core/navigation/Navigation';
+import { RootStackParamList } from '@core/Navigation/Navigation';
 import { useNavigation } from '@react-navigation/native';
 import { Padding } from '@types';
 import { ANIMATION, API } from '@constants';

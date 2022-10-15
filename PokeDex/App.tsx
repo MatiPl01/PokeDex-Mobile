@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Navigation from '@core/navigation/Navigation';
+import Navigation from '@core/Navigation/Navigation';
 import { StatusBar, useColorScheme } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
@@ -14,7 +14,7 @@ import { setThemeName, setThemeMode } from '@store/theme/theme.actions';
 import { ThemeMode, ThemeName } from '@store/theme/theme.types';
 import { setFavoritePokemonIds } from '@store/favorites/favorites.actions';
 import { selectFavoritePokemonIdsList } from '@store/favorites/favorites.selector';
-import { catchAsync } from '@utils/errors';
+import { catchThrowAsync } from '@utils/errors';
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -32,7 +32,7 @@ const App: React.FC = () => {
     AsyncStorage.setItem('@favorites', JSON.stringify(favoritesIdsList));
   }, [favoritesIdsList]);
 
-  const loadThemeSettings = catchAsync(async () => {
+  const loadThemeSettings = catchThrowAsync(async () => {
     const themeName = await AsyncStorage.getItem('@theme-name');
     const themeMode = await AsyncStorage.getItem('@theme-mode');
 
@@ -52,7 +52,7 @@ const App: React.FC = () => {
     }
   });
 
-  const loadFavouritePokemonIds = catchAsync(async () => {
+  const loadFavouritePokemonIds = catchThrowAsync(async () => {
     const favouritePokemonIds = await AsyncStorage.getItem('@favorites');
     if (favouritePokemonIds)
       dispatch(setFavoritePokemonIds(JSON.parse(favouritePokemonIds)));

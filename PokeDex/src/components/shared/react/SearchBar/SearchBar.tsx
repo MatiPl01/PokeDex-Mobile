@@ -8,7 +8,6 @@ import Animated, {
   Easing
 } from 'react-native-reanimated';
 // TODO - debug this app on an actual device and calculate the number of suggestions based on the available space after the keyboard is displayed
-// import { useKeyboard } from '@react-native-community/hooks';
 import { SIZE, ANIMATION } from '@constants';
 import {
   createAnimatedStyle,

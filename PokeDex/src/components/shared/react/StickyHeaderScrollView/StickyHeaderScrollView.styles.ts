@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components/native';
 import { Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import { SIZE } from '@constants';
 
 export const Wrapper = styled.View`
   flex: 1;
@@ -35,6 +36,15 @@ export const ContentTitle = styled(Animated.Text)`
 export const StickyHeaderWrapper = styled(Animated.View)`
   position: absolute;
   width: 100%;
+`;
+
+export const FavoritesButtonWrapper = styled.View`
+  position: absolute;
+
+  ${({ theme }) => css`
+    top: ${theme.space.lg + theme.space.sm}px;
+    right: ${theme.space.lg}px;
+  `}
 `;
 
 export const BackButton = styled(Animated.createAnimatedComponent(Pressable))<{
