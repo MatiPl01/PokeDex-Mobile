@@ -9,9 +9,9 @@ export const selectAllPokemonList = createSelector(
   ({ allPokemonList }) => allPokemonList // this array can have empty slots
 );
 
-export const selectDisplayedPokemonList = createSelector(
+export const selectDisplayedPokemonStates = createSelector(
   selectPokemonState,
-  ({ displayedPokemonList }) => displayedPokemonList
+  ({ displayedPokemonStates }) => displayedPokemonStates
 );
 
 export const selectSinglePokemonStateById = createSelector(

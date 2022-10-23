@@ -86,6 +86,7 @@ const HeaderStackScreens: React.FC<ScreensProps> = ({ navigation }) => {
           headerLeft: () => null,
           cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
         }}
+        initialRouteName="Pokemon"
       >
         <HeaderStack.Screen name="Pokemon" component={PokemonScreen} />
         <HeaderStack.Screen name="Favorites" component={FavoritesScreen} />
@@ -134,6 +135,7 @@ const RootStackScreens: React.FC<ScreensProps> = () => {
                 backgroundColor: theme.color.background.tertiary
               }
             }}
+            initialRouteName="HeaderStack"
           >
             <RootStack.Screen
               name="HeaderStack"

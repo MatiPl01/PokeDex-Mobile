@@ -19,7 +19,8 @@ const createSinglePokemonState = (id: string): SinglePokemonState => ({
 
 export type PokemonState = {
   readonly allPokemonList: (SinglePokemonState | undefined)[]; // list of all fetched Pokemon
-  readonly displayedPokemonList: SinglePokemonState[]; // List of Pokemon that are currently displayed
+  readonly pokemonToDisplayIds: string[]; // List of ids of Pokemon that will be displayed
+  readonly displayedPokemonStates: SinglePokemonState[]; // List of fetched Pokemon states from the pokemonToDisplayIds array
   readonly error: Error | null; // Error that happened while fetching a list of pokemon
   readonly nextUrl: string | null; // Url to fetch next Pokemon list
   readonly isLoading: boolean; // Indicates that single Pokemon or Pokemon list is being fetched
@@ -28,7 +29,8 @@ export type PokemonState = {
 
 const INITIAL_STATE: PokemonState = {
   allPokemonList: [],
-  displayedPokemonList: [],
+  pokemonToDisplayIds: [],
+  displayedPokemonStates: [],
   error: null,
   nextUrl: `${API.URL}/pokemon?offset=0&limit=${API.FETCH_POKEMON_PER_BATCH}`,
   isLoading: false,
@@ -41,13 +43,13 @@ const isPokemonState = (
 
 const getUpdatedDisplayedPokemonList = (
   allPokemonList: (SinglePokemonState | undefined)[],
-  displayedPokemonList: SinglePokemonState[],
+  displayedPokemonStates: SinglePokemonState[],
   ids: string[]
 ) => {
   const tempList: SinglePokemonState[] = [];
 
   // Rewrite currently displayed Pokemon
-  displayedPokemonList.forEach(
+  displayedPokemonStates.forEach(
     pokemonState => (tempList[idToIdx(pokemonState.id)] = pokemonState)
   );
 
@@ -61,7 +63,7 @@ const getUpdatedDisplayedPokemonList = (
   // Crate the new array of displayed pokemon maintaining the order of Pokemon
   const newIdSet = new Set(ids);
   const resultsList: SinglePokemonState[] = [];
-  displayedPokemonList.forEach(({ id }) => {
+  displayedPokemonStates.forEach(({ id }) => {
     if (!newIdSet.has(id)) resultsList.push(tempList[idToIdx(id)]);
   });
   ids.forEach(id => resultsList.push(tempList[idToIdx(id)]));
@@ -89,13 +91,13 @@ const getUpdatedPokemonData = (
 
   return {
     allPokemonList,
-    displayedPokemonList: updateDisplayed
+    displayedPokemonStates: updateDisplayed
       ? getUpdatedDisplayedPokemonList(
           allPokemonList,
-          state.displayedPokemonList,
+          state.displayedPokemonStates,
           updateIdsOrder
         )
-      : state.displayedPokemonList
+      : state.displayedPokemonStates
   };
 };
 
@@ -117,13 +119,13 @@ const handleFetchBatchStart = (
   return {
     ...state,
     allPokemonList,
-    displayedPokemonList: updateDisplayed
+    displayedPokemonStates: updateDisplayed
       ? getUpdatedDisplayedPokemonList(
           allPokemonList,
-          state.displayedPokemonList,
+          state.displayedPokemonStates,
           ids
         )
-      : state.displayedPokemonList,
+      : state.displayedPokemonStates,
     isLoading: true
   };
 };
@@ -238,31 +240,44 @@ const handleFetchNextPokemonUrlsFailure = (
 ): PokemonState => ({ ...state, isLoading: false, error });
 
 const handleDisplayAllPokemon = (state: PokemonState): PokemonState => {
-  const displayedPokemonList: SinglePokemonState[] = [];
+  const displayedPokemonStates: SinglePokemonState[] = [];
 
   // Display only pokemon that have no empty slots between
   for (const pokemonState of state.allPokemonList) {
     if (!pokemonState) break;
-    displayedPokemonList.push(pokemonState);
+    displayedPokemonStates.push(pokemonState);
   }
 
   return {
     ...state,
-    displayedPokemonList,
+    displayedPokemonStates,
+    pokemonToDisplayIds: [],
     areAllDisplayed: true
   };
 };
 
 const handleSetDisplayedPokemonWithIds = (
   state: PokemonState,
-  ids: string[]
-): PokemonState => ({
-  ...state,
-  displayedPokemonList: ids
-    .map(id => state.allPokemonList[idToIdx(id)])
-    .filter(Boolean) as SinglePokemonState[], // Display only Pokemon that have been fetched before
-  areAllDisplayed: false
-});
+  { ids, setDisplayedStates }: { ids: string[]; setDisplayedStates?: boolean }
+): PokemonState => {
+  const displayedPokemonStates: SinglePokemonState[] = [];
+
+  if (setDisplayedStates) {
+    for (const id of ids) {
+      // Display only consecutive Pokemon that have been fetched before
+      const pokemonState = state.allPokemonList[idToIdx(id)];
+      if (!pokemonState) break;
+      displayedPokemonStates.push(pokemonState);
+    }
+  }
+
+  return {
+    ...state,
+    displayedPokemonStates,
+    pokemonToDisplayIds: ids,
+    areAllDisplayed: false
+  };
+};
 
 const pokemonReducer = (
   state = INITIAL_STATE,

@@ -193,6 +193,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
     <OuterWrapper
       style={[animatedWrapperRevealStyle, animatedShowMoreWrapperStyle]}
       itemCount={Math.min(suggestions.length, limit)}
+      pointerEvents={isRevealed ? 'auto' : 'none'}
     >
       <SuggestionList
         ref={flatListRef}
