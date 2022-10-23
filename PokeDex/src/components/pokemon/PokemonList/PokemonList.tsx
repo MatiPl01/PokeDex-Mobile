@@ -17,14 +17,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SIZE } from '@constants';
-import { RootStackParamList } from '@core/navigation/Navigation';
+import { RootStackParamList } from '@core/Navigation/Navigation';
 import { createAnimatedParametrizedStyle } from '@utils/reanimated';
 import {
   fetchNextPokemonBatchAsync,
   refetchPokemonList
 } from '@store/pokemon/pokemon.actions';
 import {
-  selectDisplayedPokemonList,
+  selectDisplayedPokemonStates,
   selectPokemonAreAllDisplayed,
   selectPokemonReachedEnd
 } from '@store/pokemon/pokemon.selector';
@@ -33,12 +33,14 @@ import { Separator } from '@components/shared/styled/layout';
 import ScrollTopButton from '@components/shared/react/ScrollTopButton/ScrollTopButton';
 import PokemonCard from '../PokemonCard/PokemonCard';
 import PokemonListFooter from './PokemonListFooter';
+import PokemonListEmptyComponent from './PokemonListEmptyComponent';
 import { CARD_HEIGHT } from '../PokemonCard/PokemonCard.styles';
 import {
   CardListWrapper,
   CardList,
   EmptyListFooter
 } from './PokemonList.styles';
+import { selectSearchValue } from '@store/search/search.selector';
 
 const useAnimatedCardListHeaderStyle =
   createAnimatedParametrizedStyle<DefaultTheme>(theme => ({
@@ -63,9 +65,10 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const LIST_SEPARATOR_HEIGHT = theme.space.xl;
   const LIST_ITEM_HEIGHT = CARD_HEIGHT + LIST_SEPARATOR_HEIGHT;
   // Data
-  const pokemonList = useSelector(selectDisplayedPokemonList);
+  const pokemonList = useSelector(selectDisplayedPokemonStates);
   const reachedEnd = useSelector(selectPokemonReachedEnd);
   const areAllDisplayed = useSelector(selectPokemonAreAllDisplayed);
+  const searchValue = useSelector(selectSearchValue);
   // Animated values
   const scrollY = useRef(new Animated.Value(0)).current;
   const cardListHeaderAnimationProgress = useSharedValue(0);
@@ -166,7 +169,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
   );
 
   const renderFooter = () =>
-    areAllDisplayed ? (
+    areAllDisplayed && !searchValue ? (
       <PokemonListFooter reachedEnd={reachedEnd} />
     ) : (
       <EmptyListFooter />
@@ -181,7 +184,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
         data={pokemonList}
         keyExtractor={(item: SinglePokemonState) => item.id}
         renderItem={renderItem}
-        onEndReached={areAllDisplayed ? loadMorePokemon : undefined}
+        onEndReached={loadMorePokemon}
         onViewableItemsChanged={handleVisibleCardsChange}
         onEndReachedThreshold={1}
         scrollEventThrottle={16}
@@ -191,6 +194,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
         windowSize={41}
         ListFooterComponent={renderFooter}
         ListHeaderComponent={renderHeader}
+        ListEmptyComponent={PokemonListEmptyComponent}
         ItemSeparatorComponent={renderSeparator}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],

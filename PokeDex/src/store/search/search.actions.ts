@@ -7,6 +7,15 @@ import { SearchItem } from '@utils/search';
 import { SearchState } from './search.reducer';
 import { SearchActionType } from './search.types';
 
+type SetSearchValue = ActionWithPayload<
+  SearchActionType.SET_SEARCH_VALUE,
+  string
+>;
+
+type OpenSearchBar = Action<SearchActionType.OPEN_SEARCHBAR>;
+
+type CloseSearchBar = Action<SearchActionType.CLOSE_SEARCHBAR>;
+
 type FetchSearchItemsStart = Action<SearchActionType.FETCH_SEARCH_ITEMS_START>;
 
 type FetchSearchItemsSuccess = ActionWithPayload<
@@ -20,6 +29,9 @@ type FetchSearchItemsFailure = ActionWithPayload<
 >;
 
 export type SearchAction =
+  | SetSearchValue
+  | OpenSearchBar
+  | CloseSearchBar
   | FetchSearchItemsStart
   | FetchSearchItemsSuccess
   | FetchSearchItemsFailure;
@@ -34,6 +46,15 @@ const fetchSearchItemsSuccess = (
 
 const fetchSearchItemsFailure = (error: Error): FetchSearchItemsFailure =>
   createAction(SearchActionType.FETCH_SEARCH_ITEMS_FAILURE, error);
+
+export const setSearchPokemonValue = (value: string): SetSearchValue =>
+  createAction(SearchActionType.SET_SEARCH_VALUE, value);
+
+export const openSearchBar = (): OpenSearchBar =>
+  createAction(SearchActionType.OPEN_SEARCHBAR);
+
+export const closeSearchBar = (): CloseSearchBar =>
+  createAction(SearchActionType.CLOSE_SEARCHBAR);
 
 export const fetchSearchItemsAsync: ActionCreator<
   ThunkAction<Promise<void>, SearchState, void, SearchAction>

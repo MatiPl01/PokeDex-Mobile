@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View } from 'react-native';
+import { useTheme } from 'styled-components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Dimensions } from '@types';
 import { SIZE } from '@constants';
 import { PokemonType } from '@store/pokemon/pokemon.types';
-import { createAnimatedStyle } from '@utils/reanimated';
+import { createAnimatedStyles } from '@utils/reanimated';
 import SwipeGallery, {
   SwipeGalleryProps
 } from '@components/shared/react/SwipeGallery/SwipeGallery';
@@ -13,13 +14,22 @@ import {
   ImageText,
   BackgroundGradient,
   ImageWrapper,
-  ImageTextWrapper
+  ImageTextWrapper,
+  AnimatedGradientWrapper
 } from './PokemonImageGallery.styles';
 
-const useAnimatedGradientStyle = createAnimatedStyle({
-  opacity: {
-    inputRange: [-SIZE.SCREEN.HEIGHT / 3, 0],
-    outputRange: [0, 1]
+const useAnimatedGradientStyles = createAnimatedStyles({
+  primary: {
+    opacity: {
+      inputRange: [-SIZE.SCREEN.HEIGHT / 4, 0],
+      outputRange: [0, 1]
+    }
+  },
+  secondary: {
+    opacity: {
+      inputRange: [-SIZE.SCREEN.HEIGHT / 4, 0],
+      outputRange: [1, 0]
+    }
   }
 });
 
@@ -37,47 +47,83 @@ type PokemonImageGalleryProps = Pick<
 };
 
 const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
-  const { pokemonTypes, scrollY, ...restProps } = props;
+  /* eslint-disable  react/prop-types */
+  const { pokemonTypes, scrollY, fullScreenSettings, ...restProps } = props;
+  const theme = useTheme();
   const edges = useSafeAreaInsets();
 
-  const animatedGradientStyle = scrollY && useAnimatedGradientStyle(scrollY);
+  const animatedGradientStyles = scrollY && useAnimatedGradientStyles(scrollY);
 
-  const renderImage = ({
-    url,
-    dimensions,
-    name
-  }: {
-    url: string;
-    dimensions: Dimensions;
-    name?: string;
-  }) => (
-    <ImageWrapper>
-      <ImageTextWrapper top={edges.top}>
-        <ImageText>{name}</ImageText>
-      </ImageTextWrapper>
-      <GalleryImage
-        url={url}
-        dimensions={{
-          height: 0.75 * (dimensions.height - edges.top),
-          width: 0.9 * dimensions.width
-        }}
-      />
-    </ImageWrapper>
+  const renderImage = useCallback(
+    ({
+      url,
+      dimensions,
+      name
+    }: {
+      url: string;
+      dimensions: Dimensions;
+      name?: string;
+    }) => (
+      <ImageWrapper>
+        <ImageTextWrapper top={edges.top}>
+          <ImageText>{name}</ImageText>
+        </ImageTextWrapper>
+        <GalleryImage
+          url={url}
+          dimensions={{
+            height: 0.75 * (dimensions.height - edges.top),
+            width: 0.9 * dimensions.width
+          }}
+        />
+      </ImageWrapper>
+    ),
+    []
   );
 
-  const renderBackground = () =>
-    pokemonTypes.length === 1 ? (
-      <BackgroundGradient pokemonType={pokemonTypes[0]} colors={[]} />
-    ) : (
-      <>
-        <BackgroundGradient
-          pokemonType={pokemonTypes[0]}
-          colors={[]}
-          style={animatedGradientStyle}
+  const renderFullScreenImage = useCallback(
+    ({
+      url,
+      dimensions,
+      name
+    }: {
+      url: string;
+      dimensions: Dimensions;
+      name?: string;
+    }) => (
+      <ImageWrapper>
+        <ImageTextWrapper top={theme.space.sm}>
+          <ImageText size="large" inverse>
+            {name}
+          </ImageText>
+        </ImageTextWrapper>
+        <GalleryImage
+          url={url}
+          dimensions={{
+            width: dimensions.width - 2 * theme.space.lg,
+            height: dimensions.height - 2 * theme.space.xxl
+          }}
         />
-        <BackgroundGradient pokemonType={pokemonTypes[1]} colors={[]} />
-      </>
-    );
+      </ImageWrapper>
+    ),
+    []
+  );
+
+  const renderBackground = useCallback(
+    () =>
+      pokemonTypes.length === 1 ? (
+        <BackgroundGradient pokemonType={pokemonTypes[0]} colors={[]} />
+      ) : (
+        <>
+          <AnimatedGradientWrapper style={animatedGradientStyles?.primary}>
+            <BackgroundGradient pokemonType={pokemonTypes[0]} colors={[]} />
+          </AnimatedGradientWrapper>
+          <AnimatedGradientWrapper style={animatedGradientStyles?.secondary}>
+            <BackgroundGradient pokemonType={pokemonTypes[1]} colors={[]} />
+          </AnimatedGradientWrapper>
+        </>
+      ),
+    [pokemonTypes]
+  );
 
   return (
     <View style={{ flex: 1 }}>
@@ -85,6 +131,10 @@ const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
         scrollY={scrollY}
         renderImage={renderImage}
         renderBackground={renderBackground}
+        fullScreenSettings={{
+          renderImage: renderFullScreenImage,
+          ...fullScreenSettings
+        }}
         {...restProps}
       />
     </View>

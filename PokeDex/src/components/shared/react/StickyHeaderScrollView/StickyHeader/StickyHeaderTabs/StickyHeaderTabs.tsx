@@ -8,7 +8,7 @@ import Animated, {
   runOnJS,
   SharedValue,
   useAnimatedScrollHandler,
-  useDerivedValue,
+  useDerivedValue
 } from 'react-native-reanimated';
 import { useTheme } from 'styled-components';
 import { SIZE } from '@constants';

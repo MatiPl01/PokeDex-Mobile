@@ -99,18 +99,22 @@ const useFocusButtonStyles = createAnimatedParametrizedStyles<DefaultTheme>(
 );
 
 type SearchBarProps = {
+  value: string;
   data: SearchItem[];
-  onSearchSubmit: (items: SearchItem[]) => void;
+  onSearchChange: (value: string) => void;
+  onSearchSubmit: (searchValue: string, items: SearchItem[]) => void;
+  open?: boolean;
   suggestionsLimit?: number;
   showSuggestions?: boolean;
-  onSearchChange?: (value: string) => void;
   onSearchBarOpen?: () => void;
   onSearchBarClose?: () => void;
   onSearchFetchRequest?: () => void;
 };
 
 const SearchBar: React.FC<SearchBarProps> = ({
+  value,
   data,
+  open,
   suggestionsLimit,
   showSuggestions,
   onSearchChange,
@@ -124,7 +128,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
   // Component state
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
   const [displayEraseIcon, setDisplayEraseIcon] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState<
     SearchSuggestionItem[]
@@ -156,6 +159,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
   }, []);
 
   useEffect(() => {
+    if (open !== undefined) setIsOpen(open);
+  }, [open]);
+
+  useEffect(() => {
     toggleProgress.value = withTiming(+isOpen, {
       duration: 500,
       easing: Easing.bezier(0.6, 0, 0.3, 1)
@@ -176,8 +183,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   }, [isFocused]);
 
   useEffect(() => {
-    setDisplayEraseIcon(Boolean(searchValue) && isFocused);
-  }, [searchValue, isFocused]);
+    setDisplayEraseIcon(!!value && isFocused);
+  }, [value, isFocused]);
 
   useEffect(() => {
     animateEraseIcon();
@@ -197,8 +204,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const handleButtonPress = () => {
-    if (searchValue) {
-      setSearchValue('');
+    if (value) {
+      onSearchChange('');
       if (!isFocused) toggleSearchBar();
     } else {
       toggleSearchBar();
@@ -215,8 +222,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const handleInputChange = (value: string) => {
-    setSearchValue(value);
-    if (onSearchChange) onSearchChange(value);
+    onSearchChange(value);
   };
 
   const handleSuggestionsChange = (items: SearchSuggestionItem[]) => {
@@ -224,12 +230,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const handleSuggestionSelect = (item: SearchItem) => {
-    setSearchValue(item.value);
-    onSearchSubmit([item]);
+    onSearchChange(item.value);
+    onSearchSubmit(value, [item]);
   };
 
   const handleSubmit = () => {
-    onSearchSubmit(searchSuggestions.map(({ item }) => item));
+    onSearchSubmit(
+      value,
+      searchSuggestions.map(({ item }) => item)
+    );
   };
 
   return (
@@ -285,7 +294,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           onBlur={() => setIsFocused(false)} // TODO - maybe need a fix in Android (seems to be closing the suggestions bar after pressing outside the textInput)
           onChangeText={handleInputChange}
           onSubmitEditing={handleSubmit}
-          value={searchValue}
+          value={value}
           ref={textInputRef}
         />
       </InputWrapper>
@@ -293,8 +302,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
       {showSuggestions && (
         <SearchSuggestions
           data={data}
-          searchValue={searchValue}
-          isRevealed={isFocused && Boolean(searchValue)}
+          searchValue={value}
+          isRevealed={isFocused && !!value}
           limit={suggestionsLimit}
           onSelect={handleSuggestionSelect}
           onSuggestionsChange={handleSuggestionsChange}

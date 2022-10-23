@@ -14,9 +14,10 @@ import {
   CardStyleInterpolators,
   createStackNavigator
 } from '@react-navigation/stack';
+import { NavigatorScreenParams } from '@react-navigation/native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import SplashScreen from '@core/splash-screen/SplashScreen';
+import SplashScreen from '@core/SplashScreen/SplashScreen';
 import PokemonScreen from '@screens/pokemon/PokemonScreen';
 import FavoritesScreen from '@screens/favorites/FavoritesScreen';
 import MapScreen from '@screens/map/MapScreen';
@@ -24,14 +25,13 @@ import SettingsScreen from '@screens/settings/SettingsScreen';
 import { createAnimatedStyles } from '@utils/reanimated';
 import PokemonDetailsScreen from '@screens/pokemon-details/PokemonDetailsScreen';
 import Logo from '@assets/svg/logo.svg';
-import HamburgerIcon from './hamburger-icon/HamburgerIcon';
+import HamburgerIcon from './HamburgerIcon/HamburgerIcon';
 import {
   FINAL_SCREEN_SCALE,
   DrawerContentView,
   DrawerWrapper,
   ScreensInnerWrapper
 } from './Navigation.styles';
-import { NavigatorScreenParams } from '@react-navigation/native';
 
 export type HeaderStackParamList = {
   Pokemon: undefined;
@@ -86,6 +86,7 @@ const HeaderStackScreens: React.FC<ScreensProps> = ({ navigation }) => {
           headerLeft: () => null,
           cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
         }}
+        initialRouteName="Pokemon"
       >
         <HeaderStack.Screen name="Pokemon" component={PokemonScreen} />
         <HeaderStack.Screen name="Favorites" component={FavoritesScreen} />
@@ -134,6 +135,7 @@ const RootStackScreens: React.FC<ScreensProps> = () => {
                 backgroundColor: theme.color.background.tertiary
               }
             }}
+            initialRouteName="HeaderStack"
           >
             <RootStack.Screen
               name="HeaderStack"

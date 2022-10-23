@@ -18,6 +18,8 @@ import { ScrollViewSectionProps } from './ScrollViewSection/ScrollViewSection';
 import StickyHeader from './StickyHeader/StickyHeader';
 import { calcActiveTabIdxOnSectionsScroll } from './StickyHeader/StickyHeaderTabs/utils';
 import { GALLERY_HEIGHT } from './ScrollViewGallery/ScrollViewGallery.styles';
+import ScrollViewGallery from './ScrollViewGallery/ScrollViewGallery';
+import AddToFavoritesButton from '../AddToFavoritesButton/AddToFavoritesButton';
 import {
   Wrapper,
   SectionContentWrapper,
@@ -26,9 +28,9 @@ import {
   StickyHeaderWrapper,
   ContentTitlePlaceholder,
   BackButtonIcon,
-  BackButton
+  BackButton,
+  FavoritesButtonWrapper
 } from './StickyHeaderScrollView.styles';
-import ScrollViewGallery from './ScrollViewGallery/ScrollViewGallery';
 
 const useAnimatedScrollStyles = createAnimatedParametrizedStyles<{
   theme: DefaultTheme;
@@ -83,18 +85,17 @@ const useAnimatedScrollStyles = createAnimatedParametrizedStyles<{
         inputRange: [-SIZE.SCREEN.HEIGHT, 0],
         outputRange: [-SIZE.SCREEN.HEIGHT, 0]
       }
-    },
-    backButton: {}
+    }
   };
 });
 
 type StickyHeaderScrollViewProps = {
+  id: string;
   title: string;
   children:
     | ReactElement<ScrollViewSectionProps>
     | ReactElement<ScrollViewSectionProps>[];
   ImageGalleryComponent: React.ReactElement<{ scrollY: SharedValue<number> }>;
-  id?: string;
 };
 
 const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
@@ -147,7 +148,7 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
   return (
     <Wrapper>
       <BackButton onPress={() => navigation.goBack()} top={edges.top}>
-        <BackButtonIcon style={animatedScrollStyles.BackButtonIcon} />
+        <BackButtonIcon />
       </BackButton>
       <Animated.ScrollView
         ref={scrollViewRef}
@@ -167,29 +168,34 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
         </ScrollViewGallery>
         <SectionsContentWrapper>
           <ContentTitlePlaceholder />
-          {Children.map(children, (child, idx) => (
-            <SectionContentWrapper
-              onLayout={({
-                nativeEvent: {
-                  layout: { y }
-                }
-              }) => {
-                tabs[idx] = {
-                  heading: child.props.heading,
-                  anchor: y + GALLERY_HEIGHT - headerHeight
-                };
-                renderedTabsIndexesRef.current.add(idx);
-                if (
-                  !(children instanceof Array) ||
-                  renderedTabsIndexesRef.current.size === children.length
-                ) {
-                  setTabs([...tabs]);
-                }
-              }}
-            >
-              {child}
-            </SectionContentWrapper>
-          ))}
+          <FavoritesButtonWrapper>
+            <AddToFavoritesButton pokemonId={id} size={theme.size.sm} />
+          </FavoritesButtonWrapper>
+          {headerHeight
+            ? Children.map(children, (child, idx) => (
+                <SectionContentWrapper
+                  onLayout={({
+                    nativeEvent: {
+                      layout: { y }
+                    }
+                  }) => {
+                    tabs[idx] = {
+                      heading: child.props.heading,
+                      anchor: y + GALLERY_HEIGHT - headerHeight
+                    };
+                    renderedTabsIndexesRef.current.add(idx);
+                    if (
+                      !(children instanceof Array) ||
+                      renderedTabsIndexesRef.current.size === children.length
+                    ) {
+                      setTabs([...tabs]);
+                    }
+                  }}
+                >
+                  {child}
+                </SectionContentWrapper>
+              ))
+            : null}
         </SectionsContentWrapper>
       </Animated.ScrollView>
       <StickyHeaderWrapper style={animatedScrollStyles.header}>

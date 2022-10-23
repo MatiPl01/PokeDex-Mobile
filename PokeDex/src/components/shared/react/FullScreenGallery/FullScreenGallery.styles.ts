@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components/native';
-import { TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import { SIZE } from '@constants';
@@ -24,9 +24,7 @@ export const ImageWrapper = styled.View`
   height: ${SIZE.SCREEN.HEIGHT}px;
 `;
 
-export const CloseButton = styled(
-  Animated.createAnimatedComponent(TouchableOpacity)
-)`
+export const CloseButton = styled(Animated.createAnimatedComponent(Pressable))`
   position: absolute;
   z-index: 1;
 

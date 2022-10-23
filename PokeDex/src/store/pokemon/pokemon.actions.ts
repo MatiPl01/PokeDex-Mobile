@@ -85,7 +85,7 @@ type DisplayAllPokemon = Action<PokemonActionType.DISPLAY_ALL_POKEMON>;
 
 type SetDisplayedPokemonWithIds = ActionWithPayload<
   PokemonActionType.SET_DISPLAYED_POKEMON_WIDTH_IDS,
-  string[]
+  { ids: string[]; loadedStatesCount?: number }
 >;
 
 export type PokemonAction =
@@ -174,9 +174,13 @@ const resetPokemonState = (): ResetPokemonState =>
   createAction(PokemonActionType.RESET_POKEMON_STATE);
 
 const setDisplayedPokemonWithIds = (
-  ids: string[]
+  ids: string[],
+  setDisplayedStates?: boolean
 ): SetDisplayedPokemonWithIds =>
-  createAction(PokemonActionType.SET_DISPLAYED_POKEMON_WIDTH_IDS, ids);
+  createAction(PokemonActionType.SET_DISPLAYED_POKEMON_WIDTH_IDS, {
+    ids,
+    setDisplayedStates
+  });
 
 export const displayAllPokemon = (): DisplayAllPokemon =>
   createAction(PokemonActionType.DISPLAY_ALL_POKEMON);
@@ -184,17 +188,24 @@ export const displayAllPokemon = (): DisplayAllPokemon =>
 export const displayPokemonWithIds: ActionCreator<
   ThunkAction<Promise<void>, PokemonState, void, PokemonAction>
 > =
-  (ids: string[]) =>
+  (ids: string[], fetchAllAtOnce = true) =>
   async (
     dispatch: Dispatch<
       | PokemonAction
       | ThunkAction<Promise<void>, PokemonState, void, PokemonAction>
     >
   ): Promise<void> => {
-    // Display Pokemon that have been already fetched
-    dispatch(setDisplayedPokemonWithIds(ids));
-    // Fetch remaining Pokemon
-    dispatch(fetchPokemonBatchByIdsAsync(ids));
+    if (fetchAllAtOnce) {
+      // Display Pokemon that have been already fetched
+      dispatch(setDisplayedPokemonWithIds(ids));
+      // Fetch remaining Pokemon
+      dispatch(fetchPokemonBatchByIdsAsync(ids));
+    } else {
+      // Display Pokemon that have been already fetched
+      dispatch(setDisplayedPokemonWithIds(ids, false));
+      // Fetch next Pokemon batch
+      dispatch(fetchNextPokemonBatchAsync());
+    }
   };
 
 export const fetchPokemonBatchByIdsAsync: ActionCreator<
@@ -208,6 +219,11 @@ export const fetchPokemonBatchByIdsAsync: ActionCreator<
     const pokemonToFetchIds = ids.filter(
       id => fetchedPokemonList[idToIdx(id)]?.isLoading
     );
+
+    if (!pokemonToFetchIds.length) {
+      dispatch(fetchBatchSuccess({}, ids, updateDisplayed));
+      return;
+    }
 
     // Fetch next pokemon data
     const pokemonMap: Record<string, Pokemon> = {};
@@ -252,24 +268,35 @@ export const fetchNextPokemonBatchAsync: ActionCreator<
       | ThunkAction<Promise<void>, PokemonState, void, PokemonAction>
     >
   ): Promise<void> => {
-    const { nextUrl } = store.getState().pokemon;
-    if (!nextUrl) return;
+    const pokemonState = store.getState().pokemon;
+    let pokemonIds: string[] = [];
 
-    // Fetch next pokemon urls
-    let pokemonUrls: string[] = [];
-    try {
-      dispatch(fetchNextUrlsStart());
-      const res = await fetchPokemonList(nextUrl);
-      pokemonUrls = res.results.map(({ url }) => url);
-      dispatch(fetchNextUrlsSuccess(res.next));
-    } catch (err) {
-      console.error(err);
-      dispatch(fetchNextUrlsFailure(err as Error));
-      return;
+    // Fetch next Pokemon using the nextUrl if all Pokemon are displayed
+    if (pokemonState.areAllDisplayed) {
+      const { nextUrl } = pokemonState;
+      if (!nextUrl) return;
+      try {
+        // Fetch next pokemon urls
+        dispatch(fetchNextUrlsStart());
+        const res = await fetchPokemonList(nextUrl);
+        const pokemonUrls = res.results.map(({ url }) => url);
+        dispatch(fetchNextUrlsSuccess(res.next));
+        pokemonIds = pokemonUrls.map(getIdFromUrl);
+      } catch (err) {
+        console.error(err);
+        dispatch(fetchNextUrlsFailure(err as Error));
+        return;
+      }
+      // Otherwise, fetch next Pokemon part from pokemonToDisplayIds
+    } else {
+      const { pokemonToDisplayIds, displayedPokemonStates } = pokemonState;
+      pokemonIds = pokemonToDisplayIds.slice(
+        displayedPokemonStates.length,
+        displayedPokemonStates.length + API.FETCH_POKEMON_PER_BATCH
+      );
     }
 
     // Fetch next pokemon data
-    const pokemonIds = pokemonUrls.map(getIdFromUrl);
     dispatch(fetchPokemonBatchByIdsAsync(pokemonIds));
   };
 

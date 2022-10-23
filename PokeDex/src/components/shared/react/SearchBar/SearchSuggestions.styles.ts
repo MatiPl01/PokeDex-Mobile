@@ -75,7 +75,7 @@ export const ScrollTopButton = styled(Animated.View)`
   ${({ theme }) => css`
     bottom: ${theme.space.md}px;
     right: ${theme.space.md}px;
-    
+
     width: ${theme.size.md - 2 * theme.space.md}px;
     height: ${theme.size.md - 2 * theme.space.md}px;
     border-radius: ${theme.size.md - 2 * theme.space.md}px;

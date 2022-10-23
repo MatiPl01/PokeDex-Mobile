@@ -1,4 +1,10 @@
-import React, { ComponentType, useEffect, useMemo, useRef } from 'react';
+import React, {
+  ComponentType,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import {
   FlatList,
   FlatListProps,
@@ -9,14 +15,18 @@ import {
 } from 'react-native';
 import Animated, {
   Easing,
+  SharedValue,
   useSharedValue,
   withDelay,
   withTiming
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from '@types';
-import { SIZE } from '@constants';
+import { ANIMATION, SIZE } from '@constants';
 import { createAnimatedStyle, createAnimatedStyles } from '@utils/reanimated';
+import GalleryPagination, { PaginationSettings } from '../GalleryPagination';
+import { RenderImageFunction } from '../SwipeGallery/SwipeGallery';
+import GalleryImage from '../GalleryImage/GalleryImage';
 import {
   CloseButton,
   CloseIcon,
@@ -25,8 +35,6 @@ import {
   ImageWrapper,
   OuterWrapper
 } from './FullScreenGallery.styles';
-import GalleryImage from '../GalleryImage/GalleryImage';
-import GalleryPagination, { PaginationSettings } from '../GalleryPagination';
 
 const useAnimatedModalVisibilityStyles = createAnimatedStyles({
   wrapper: {
@@ -54,20 +62,21 @@ const useAnimatedImagesVisibilityStyle = createAnimatedStyle({
 export type FullScreenGalleryProps = {
   images: Image[];
   visible: boolean;
+  activeImageIndex: SharedValue<number>;
   onClose: () => void;
-  renderImage?: (data: { url: string; name?: string }) => JSX.Element;
+  renderImage?: RenderImageFunction;
   paginationSettings?: PaginationSettings;
 };
 
 const FullScreenGallery: React.FC<FullScreenGalleryProps> = ({
   images,
   visible,
-  paginationSettings,
   onClose,
-  renderImage
+  renderImage,
+  activeImageIndex,
+  paginationSettings
 }) => {
   const edges = useSafeAreaInsets();
-  const listRef = useRef<FlatList | null>(null);
 
   const imageDimensions = useMemo(
     () => ({
@@ -77,7 +86,7 @@ const FullScreenGallery: React.FC<FullScreenGalleryProps> = ({
     []
   );
 
-  const activeImageIndex = useSharedValue(0);
+  const [flatList, setFlatList] = useState<FlatList | null>(null);
   const isPaginationVisible = useSharedValue(false);
   const visibilityAnimationProgress = useSharedValue(0);
   const imagesVisibilityAnimationProgress = useSharedValue(0);
@@ -103,8 +112,12 @@ const FullScreenGallery: React.FC<FullScreenGalleryProps> = ({
     isPaginationVisible.value = visible;
   }, [visible]);
 
+  useEffect(() => {
+    if (flatList) scrollToIndex(activeImageIndex.value);
+  }, [flatList]);
+
   const scrollToIndex = (index: number) => {
-    listRef.current?.scrollToIndex({ index });
+    flatList?.scrollToIndex({ index });
     activeImageIndex.value = Math.min(Math.max(index, 0), images.length - 1);
   };
 
@@ -120,10 +133,14 @@ const FullScreenGallery: React.FC<FullScreenGalleryProps> = ({
     );
   };
 
+  const listRef = useCallback((flatList: FlatList) => {
+    setFlatList(flatList);
+  }, []);
+
   const renderItem: ListRenderItem<Image> = ({ item: { name, url } }) => (
     <ImageWrapper>
       {renderImage ? (
-        renderImage({ url, name })
+        renderImage({ url, name, dimensions: imageDimensions })
       ) : (
         <GalleryImage url={url} dimensions={imageDimensions} />
       )}
@@ -149,6 +166,11 @@ const FullScreenGallery: React.FC<FullScreenGalleryProps> = ({
               renderItem={renderItem}
               initialNumToRender={1}
               showsHorizontalScrollIndicator={false}
+              onScrollToIndexFailed={({ index }) => {
+                setTimeout(() => {
+                  flatList?.scrollToIndex({ index });
+                }, ANIMATION.TIMEOUT.FULLSCREEN_GALLERY_SCROLL_RETRY);
+              }}
               onMomentumScrollEnd={updateActiveImage}
               horizontal
               pagingEnabled

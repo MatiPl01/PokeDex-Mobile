@@ -25,5 +25,5 @@ export const ContentContainer = styled(AbsoluteView)<{ headerHeight: number }>`
   width: 100%;
   height: 100%;
   z-index: 0;
-  top: ${({ headerHeight }) => headerHeight}px;
+  padding-top: ${({ headerHeight }) => headerHeight}px;
 `;

@@ -116,6 +116,7 @@ declare module 'styled-components/native' {
     md: number;
     lg: number;
     xl: number;
+    xxl: number;
   };
 
   export type ThemeLineHeights = {

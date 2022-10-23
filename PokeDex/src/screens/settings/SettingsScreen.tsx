@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeName, ThemeMode } from '@store/theme/theme.types';
 import { setThemeName, setThemeMode } from '@store/theme/theme.actions';
-import { catchAsync } from '@utils/errors';
+import { catchThrowAsync } from '@utils/errors';
 import {
   SettingsRow,
   SettingsSection,
@@ -20,11 +20,11 @@ import ThemeSelector from '@components/settings/ThemeSelector/ThemeSelector';
 const SettingsScreen: React.FC = () => {
   const dispatch = useDispatch();
 
-  const saveThemeMode = catchAsync(async (themeMode: ThemeMode) => {
+  const saveThemeMode = catchThrowAsync(async (themeMode: ThemeMode) => {
     await AsyncStorage.setItem('@theme-mode', themeMode);
   });
 
-  const saveThemeName = catchAsync(async (themeName: ThemeName) => {
+  const saveThemeName = catchThrowAsync(async (themeName: ThemeName) => {
     await AsyncStorage.setItem('@theme-name', themeName);
   });
 

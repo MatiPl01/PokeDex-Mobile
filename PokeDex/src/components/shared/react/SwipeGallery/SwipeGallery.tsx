@@ -32,16 +32,26 @@ import {
 } from './SwipeGallery.styles';
 import GalleryPagination, { PaginationSettings } from '../GalleryPagination';
 
+export type RenderImageFunction = (data: {
+  url: string;
+  dimensions: Dimensions;
+  name?: string;
+}) => JSX.Element;
+
 export type FullScreenSettings = {
   buttonCorner?: Corner;
-  pagination?: PaginationSettings; // TODO - maybe add a possibility to change pagination in the fullscreen mode
+  pagination?: PaginationSettings;
+  renderImage?: RenderImageFunction;
 };
 
 const renderFullScreenButton = (
   images: Image[],
+  activeImageIndex: SharedValue<number>,
+  renderImage?: RenderImageFunction,
   fullScreenButtonCorner?: Corner,
   paginationSettings?: PaginationSettings,
-  paginationPosition?: Position
+  paginationPosition?: Position,
+  onFullScreenClose?: () => void
 ) => {
   const [isFullScreenMode, setIsFullScreenMode] = useState(false);
 
@@ -73,8 +83,13 @@ const renderFullScreenButton = (
       <FullScreenGallery
         images={images}
         visible={isFullScreenMode}
+        activeImageIndex={activeImageIndex}
         paginationSettings={paginationSettings}
-        onClose={() => setIsFullScreenMode(false)}
+        renderImage={renderImage}
+        onClose={() => {
+          setIsFullScreenMode(false);
+          onFullScreenClose?.();
+        }}
       />
     </>
   );
@@ -118,11 +133,7 @@ export type SwipeGalleryProps = {
   fullScreenSettings?: FullScreenSettings;
   overlayStyle?: StyleProp<ViewStyle>;
   scrollY?: SharedValue<number>;
-  renderImage?: (data: {
-    url: string;
-    dimensions: Dimensions;
-    name?: string;
-  }) => JSX.Element;
+  renderImage?: RenderImageFunction;
   renderBackground?: () => JSX.Element;
 };
 
@@ -206,6 +217,10 @@ const SwipeGallery: React.FC<SwipeGalleryProps> = ({
     updateActiveImage(event);
   };
 
+  const handleFullScreenClose = () => {
+    scrollToIndex(activeImageIndex.value);
+  };
+
   const renderItem: ListRenderItem<Image> = ({ item: { name, url } }) => (
     <ImageWrapper width={dimensions.width} height={dimensions.height}>
       {renderImage ? (
@@ -253,9 +268,12 @@ const SwipeGallery: React.FC<SwipeGalleryProps> = ({
             {enableFullScreen &&
               renderFullScreenButton(
                 images,
+                activeImageIndex,
+                fullScreenSettings?.renderImage,
                 fullScreenSettings?.buttonCorner,
                 fullScreenSettings?.pagination || paginationSettings,
-                paginationSettings?.position
+                paginationSettings?.position,
+                handleFullScreenClose
               )}
           </GalleryOverlay>
         </GalleryOverlayWrapper>

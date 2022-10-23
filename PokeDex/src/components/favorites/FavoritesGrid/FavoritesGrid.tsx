@@ -9,7 +9,7 @@ import Animated, {
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '@core/navigation/Navigation';
+import { RootStackParamList } from '@core/Navigation/Navigation';
 import { useNavigation } from '@react-navigation/native';
 import { Padding } from '@types';
 import { ANIMATION, API } from '@constants';
@@ -139,8 +139,7 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({
 
   useEffect(() => {
     prevFavoritesIds.current = getPrevFavoritesIds(favoritesIds);
-    if (displayedFavoritesIds.length < favoritesIds.length)
-      fetchNextFavorites();
+    if (!areAllDisplayed) fetchNextFavorites();
   }, [favoritesIds]);
 
   useEffect(() => {
@@ -186,12 +185,15 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({
   };
 
   const updateFavoritesOrder = (data: SinglePokemonState[]) => {
+    const dataIds = data.map(({ id }) => id);
+    const dataIdSet = new Set(dataIds);
+
     dispatch(
       setFavoritePokemonIds([
         // Update order of displayed favorite Pokemon
-        ...data.map(({ id }) => id),
+        ...dataIds,
         // Add remaining favorite Pokemon ids (that were not displayed)
-        ...favoritesIds.slice(displayedFavoritesIds.length)
+        ...favoritesIds.filter(id => !dataIdSet.has(id))
       ])
     );
   };
@@ -226,7 +228,7 @@ const FavoritesGrid: React.FC<FavoritesGridProps> = ({
       <Animated.View entering={ZoomIn.duration(500).delay(delay)}>
         <Pressable
           onPress={() => {
-            if (!isCardBeingDragged.value)
+            if (!isCardBeingDragged.value && !areFavoritesDeletable.value)
               navigation.navigate('FullScreenStack', {
                 screen: 'PokemonDetails',
                 params: { pokemonId }

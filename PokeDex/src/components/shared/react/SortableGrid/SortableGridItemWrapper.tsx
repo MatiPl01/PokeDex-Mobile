@@ -145,7 +145,7 @@ const SortableGridItemWrapper: React.FC<SortableGridItemWrapperProps> = ({
         gridConfig.value
       );
       dropIndicatorPosition.x.value = dropPosition.x;
-      dropIndicatorPosition.y.value = dropPosition.y
+      dropIndicatorPosition.y.value = dropPosition.y;
     },
     onActive: ({ translationX, translationY }, ctx) => {
       // Drag
