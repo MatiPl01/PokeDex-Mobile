@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { SearchItem } from '@utils/search';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { SearchItem } from '@utils/search';
 import { RootStackParamList } from '@core/Navigation/Navigation';
 import SearchBar from '@components/shared/react/SearchBar/SearchBar';
 import PokemonList from '@components/pokemon/PokemonList/PokemonList';
@@ -67,6 +67,7 @@ const PokemonScreen: React.FC = () => {
   };
 
   const handleSearchBarClose = () => {
+    dispatch(setSearchPokemonValue(''));
     dispatch(displayAllPokemon());
     dispatch(closeSearchBar());
   };

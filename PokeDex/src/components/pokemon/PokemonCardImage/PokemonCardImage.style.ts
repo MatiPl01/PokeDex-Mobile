@@ -1,9 +1,10 @@
 import styled, { css } from 'styled-components/native';
 import { SvgUri } from 'react-native-svg';
+import Animated from 'react-native-reanimated';
+import { absoluteFill } from '@styles/shared';
 
 const pokemonImageStyles = css`
   position: absolute;
-  z-index: 1;
   left: 50%;
 
   ${({ theme }) => css`
@@ -11,6 +12,12 @@ const pokemonImageStyles = css`
     ${theme.shadow.box.medium.md};
   `};
 `;
+
+export const Wrapper = styled(Animated.View)`
+  z-index: 1;
+  ${absoluteFill};
+`;
+
 
 export const PokemonSvg = styled(SvgUri)<{ width: number; height: number }>`
   ${({ width }) => css`
@@ -32,4 +39,3 @@ export const PokemonImage = styled.Image<{
   `};
   ${pokemonImageStyles};
 `;
-
