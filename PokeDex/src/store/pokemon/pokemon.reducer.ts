@@ -285,40 +285,28 @@ const pokemonReducer = (
 ): PokemonState => {
   switch (action.type) {
     case PokemonActionType.FETCH_BATCH_START:
-      console.log('FETCH_BATCH_START');
       return handleFetchBatchStart(state, action.payload);
     case PokemonActionType.FETCH_BATCH_SUCCESS:
-      console.log('FETCH_BATCH_SUCCESS');
       return handleFetchBatchSuccess(state, action.payload);
     case PokemonActionType.FETCH_BATCH_FAILURE:
-      console.log('FETCH_BATCH_FAILURE');
       return handleFetchBatchFailure(state, action.payload);
     case PokemonActionType.FETCH_SINGLE_START:
-      console.log('FETCH_SINGLE_START');
       return handleFetchSingleStart(state, action.payload);
     case PokemonActionType.FETCH_SINGLE_SUCCESS:
-      console.log('FETCH_SINGLE_SUCCESS');
       return handleFetchSingleSuccess(state, action.payload);
     case PokemonActionType.FETCH_SINGLE_FAILURE:
-      console.log('FETCH_SINGLE_FAILURE');
       return handleFetchSingleFailure(state, action.payload);
     case PokemonActionType.FETCH_NEXT_URLS_START:
-      console.log('FETCH_NEXT_URLS_START');
       return handleFetchNextPokemonUrlsStart(state);
     case PokemonActionType.FETCH_NEXT_URLS_SUCCESS:
-      console.log('FETCH_NEXT_URLS_SUCCESS');
       return handleFetchNextPokemonUrlsSuccess(state, action.payload);
     case PokemonActionType.FETCH_NEXT_URLS_FAILURE:
-      console.log('FETCH_NEXT_URLS_FAILURE');
       return handleFetchNextPokemonUrlsFailure(state, action.payload);
     case PokemonActionType.DISPLAY_ALL_POKEMON:
-      console.log('DISPLAY_ALL_POKEMON');
       return handleDisplayAllPokemon(state);
     case PokemonActionType.SET_DISPLAYED_POKEMON_WIDTH_IDS:
-      console.log('SET_DISPLAYED_POKEMON_WIDTH_IDS');
       return handleSetDisplayedPokemonWithIds(state, action.payload);
     case PokemonActionType.RESET_POKEMON_STATE:
-      console.log('RESET_POKEMON_STATE');
       return INITIAL_STATE;
     default:
       return state;

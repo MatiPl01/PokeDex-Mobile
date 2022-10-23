@@ -18,9 +18,14 @@ export const ImageTextWrapper = styled.View<{ top: number }>`
   `}
 `;
 
-export const ImageText = styled.Text<{ size?: 'small' | 'large' }>`
-  ${({ theme, size }) => css`
-    color: ${theme.color.text.primary};
+export const ImageText = styled.Text<{
+  size?: 'small' | 'large';
+  inverse?: boolean;
+}>`
+  ${({ theme, size, inverse }) => css`
+    color: ${inverse
+      ? theme.color.background.primary
+      : theme.color.text.primary};
     font-weight: ${theme.fontWeight.bold};
     font-size: ${size === 'large'
       ? theme.fontSize.title

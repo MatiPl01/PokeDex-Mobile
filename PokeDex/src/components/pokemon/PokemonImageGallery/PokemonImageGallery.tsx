@@ -47,6 +47,7 @@ type PokemonImageGalleryProps = Pick<
 };
 
 const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
+  /* eslint-disable  react/prop-types */
   const { pokemonTypes, scrollY, fullScreenSettings, ...restProps } = props;
   const theme = useTheme();
   const edges = useSafeAreaInsets();
@@ -91,9 +92,17 @@ const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
     }) => (
       <ImageWrapper>
         <ImageTextWrapper top={theme.space.sm}>
-          <ImageText size="large">{name}</ImageText>
+          <ImageText size="large" inverse>
+            {name}
+          </ImageText>
         </ImageTextWrapper>
-        <GalleryImage url={url} dimensions={dimensions} />
+        <GalleryImage
+          url={url}
+          dimensions={{
+            width: dimensions.width - 2 * theme.space.lg,
+            height: dimensions.height - 2 * theme.space.xxl
+          }}
+        />
       </ImageWrapper>
     ),
     []
