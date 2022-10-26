@@ -162,6 +162,7 @@ const StickyHeaderScrollView: React.FC<StickyHeaderScrollViewProps> = ({
           updateActiveTabIndex.value = true;
         }}
         onMomentumScrollEnd={() => (updateActiveSectionIndex.value = true)}
+        showsVerticalScrollIndicator={false}
       >
         <ScrollViewGallery scrollY={scrollY}>
           {ImageGalleryComponent}

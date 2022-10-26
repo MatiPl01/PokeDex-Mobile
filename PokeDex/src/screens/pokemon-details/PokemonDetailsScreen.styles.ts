@@ -20,11 +20,15 @@ export const SectionText = styled.Text`
 `;
 
 export const ProgressCircular = styled(DefaultProgressCircular).attrs(
-  ({ theme }) => ({
-    textColor: theme.color.text.tertiary,
-    strokeColor: theme.color.accent.primary,
-    strokeBackgroundColor: theme.color.accent.primary
-  })
+  ({ theme }) => {
+    const accent = theme.color.accent.secondary || theme.color.accent.primary;
+
+    return {
+      textColor: theme.color.text.tertiary,
+      strokeColor: accent,
+      strokeBackgroundColor: accent
+    };
+  }
 )``;
 
 export const ItemsGridWrapper = styled.View`

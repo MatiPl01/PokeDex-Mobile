@@ -16,7 +16,8 @@ export const ActiveTabBackground = styled(Animated.View)`
   border-radius: 50px;
 
   ${({ theme }) => css`
-    background-color: ${theme.color.text.primary};
+    background-color: ${theme.color.accent.secondary ||
+    theme.color.text.primary};
     height: ${theme.fontSize.body + 2 * theme.space.md}px;
     margin-left: ${theme.space.md}px;
   `};

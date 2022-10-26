@@ -2,7 +2,13 @@ import { DefaultTheme } from 'styled-components/native';
 
 export enum ThemeName {
   DEFAULT = 'DEFAULT',
-  OCEAN = 'OCEAN'
+  GRAYSCALE = 'GRAYSCALE',
+  DEEP_OCEAN = 'DEEP_OCEAN',
+  PEACEFUL_VIOLET = 'PEACEFUL_VIOLET',
+  PINKY_TWINKY = 'PINKY_TWINKY',
+  RAIN_FOREST = 'RAIN_FOREST',
+  SHINY_GOLD = 'SHINY_GOLD',
+  TROPICAL_ISLAND = 'TROPICAL_ISLAND'
 }
 
 export enum ThemeMode {

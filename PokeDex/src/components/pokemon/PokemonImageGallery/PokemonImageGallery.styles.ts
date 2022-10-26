@@ -20,12 +20,10 @@ export const ImageTextWrapper = styled.View<{ top: number }>`
 
 export const ImageText = styled.Text<{
   size?: 'small' | 'large';
-  inverse?: boolean;
+  light?: boolean;
 }>`
-  ${({ theme, size, inverse }) => css`
-    color: ${inverse
-      ? theme.color.background.primary
-      : theme.color.text.primary};
+  ${({ theme, size, light }) => css`
+    color: ${light ? theme.color.white : theme.color.text.primary};
     font-weight: ${theme.fontWeight.bold};
     font-size: ${size === 'large'
       ? theme.fontSize.title
