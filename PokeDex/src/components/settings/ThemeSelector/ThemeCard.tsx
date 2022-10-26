@@ -37,7 +37,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({
     <CardSelectionWrapper gap={GAP} width={CARD_WIDTH} selected={selected}>
       <CardWrapper onPress={onPress && (() => onPress(name))}>
         <CardHeader backgroundColor={theme.color.accent.primary}>
-          <CardTitle color={theme.color.text.primary}>{name}</CardTitle>
+          <CardTitle color={theme.color.text.primary}>{name.split('_').join(' ')}</CardTitle>
         </CardHeader>
         <CardBody>
           <BackgroundGradient

@@ -18,6 +18,7 @@ declare module 'styled-components/native' {
   export type ThemeColors = {
     accent: {
       primary: string;
+      secondary?: string;
     };
     text: {
       primary: string;
@@ -36,8 +37,8 @@ declare module 'styled-components/native' {
       dark: string[];
     };
     red: {
-      light: string;
-      dark: string;
+      primary: string;
+      secondary: string;
     };
     green: {
       primary: string;

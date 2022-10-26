@@ -92,7 +92,7 @@ const PokemonImageGallery: React.FC<PokemonImageGalleryProps> = props => {
     }) => (
       <ImageWrapper>
         <ImageTextWrapper top={theme.space.sm}>
-          <ImageText size="large" inverse>
+          <ImageText size="large" light>
             {name}
           </ImageText>
         </ImageTextWrapper>

@@ -2,7 +2,8 @@ import color from '../../shared/colors';
 
 export default {
   accent: {
-    primary: '#DF1818'
+    primary: '#B351FF',
+    secondary: '#5E00A7'
   },
   text: {
     primary: color.black,
@@ -10,16 +11,16 @@ export default {
     tertiary: color.gray.dark[2]
   },
   background: {
-    primary: color.white,
-    secondary: color.gray.light[1],
-    tertiary: color.gray.light[2]
+    primary: '#FFF',
+    secondary: '#EFDBFF',
+    tertiary: '#E5C3FF'
   },
   red: {
-    primary: '#FF4944',
-    secondary: '#A70400'
+    primary: '#A633FF',
+    secondary: '#C57AFF'
   },
   green: {
-    primary: '#004400',
-    secondary: '#26cb4f'
+    primary: '#410073',
+    secondary: '#5F00A8'
   }
 };
